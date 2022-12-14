@@ -110,7 +110,7 @@ typedef std::map<std::string, SymEntry> dict;
 typedef std::vector<StackEntry> frame;
 
 
-enum class Type {INVALID=0, INT, BYTE, BOOL, STRING, FUNC, TOKEN, RET_TYPE};
+enum class Type {INVALID=0, INT, BYTE, BOOL, STRING, TOKEN};
 enum class DeclType {INVALID=0, VAR, FUNC};
 enum class FrameType {FUNC, LOOP, BLOCK};
 
@@ -121,7 +121,7 @@ public:
     long offset;
     bool valid;
 
-    symTableEntry(std::string entry_name, DeclType entry_type, long entry_offset, bool entry_valid=true){
+    symTableEntry(std::string& entry_name, DeclType entry_type, long entry_offset, bool entry_valid=true){
         name = entry_name;
         this->entry_type = entry_type;
         offset = entry_offset;
@@ -133,7 +133,7 @@ public:
 class symTableEntryFunc : public symTableEntry{
 public:
     Type ret_type;
-    std::vector<Type> parameter_list;
+    std::vector<std::pair<Type, std::string>> parameter_list;
 
     symTableEntryFunc(std::string entry_name, DeclType entry_type, long entry_offset, Type return_type, std::vector<Type> func_params) : symTableEntry(entry_name, entry_type, entry_offset, true){
         ret_type = return_type;
@@ -223,102 +223,8 @@ public:
     }
 
 };
+
 Frame_class frame_manager;
-
-class Data{
-public:
-    const Type type;
-    bool lVAL;
-
-    Data(Type data_type) : type(data_type){
-        lVAL = false;
-    }
-    ~Data();
-    Data(Data&) = delete;
-
-    
-};
-
-class DataID : public Data{
-public:
-    std::string name;
-    symTableEntry* id_entry;
-    
-    DataID(Type data_type, std::string name): Data(data_type){
-        this->name = name;
-        /// TODO: fill id_entry
-    }
-    ~DataID();
-    DataID(DataID&) = delete;
-};
-
-class DataType : public Data{
-public:
-    DataType(Type d_type): Data(d_type){}
-    ~DataType();
-    DataType(DataType&)=delete;
-};
-class DataToken : public Data{
-public:
-    std::string value;
-    
-    DataToken(std::string token_value): Data(Type::TOKEN){
-        value = token_value;
-    }
-    ~DataToken();
-    DataToken(DataToken&)=delete;
-
-};
-class DataNum : public Data{
-public:
-    int value;
-    DataNum(Type num_type) : Data(num_type){
-        value = 0;
-    }   
-    DataNum(Type num_type, int num_value): Data(num_type){
-        value = num_value;
-    }
-    ~DataNum();
-    DataNum(DataNum&)=delete;
-
-};
-class DataBool : public Data{
-public:
-    bool value;
-
-    DataBool(bool val): Data(Type::BOOL){
-        value = val;
-    }
-    ~DataBool();
-    DataBool(DataBool&)=delete;
-};
-class DataStr : public Data{
-public:
-    std::string value;
-
-    DataStr(std::string str_value): Data(Type::STRING){
-        value = str_value;
-    }
-    ~DataStr();
-    DataStr(DataStr&)=delete;
-};
-
-
-class DataFunc : public Data{
-public:
-    std::string name;
-    Type retType;
-
-    DataFunc(Type ret_type): Data(ret_type){
-        name = "";
-    }
-    ~DataFunc();
-    DataFunc(DataFunc&)=delete;
-
-
-};
-
-
 std::vector<Node> TreeNodes;
 
 class Generic_Node{
@@ -371,6 +277,7 @@ public:
 class Node_FormalDecl : public Generic_Node{
 public:
     Type param_type;
+    /// std::pair<Type, std::string> parameter;
 /////////// Methods ///////////
 
     Node_FormalDecl(NodeVector children, Type parameter_type): Generic_Node(children){
@@ -384,6 +291,7 @@ public:
 class Node_FormalsList : public Generic_Node{
 public:
     std::vector<Node_FormalDecl> parameter_list;
+    /// std::vector<std::pair<Type, std::string>> parameter_list;
 /////////// Methods ///////////
 
     Node_FormalsList(NodeVector children): Generic_Node(children){

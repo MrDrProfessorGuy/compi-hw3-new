@@ -148,10 +148,34 @@ public:
 class Node_Exp_IfElse : public Node_Exp{
 public:
 
-    Node_Exp_IfElse(NodeVector children, Type exp_type): Node_Exp(children, exp_type){
-        ///TODO: check validity and update frame stack 
+    Node_Exp_IfElse(NodeVector children): Node_Exp(children, Type::INVALID){
+        ///TODO: check validity and update frame stack
+        auto exp1 = std::dynamic_pointer_cast<Node_Exp>(children[0]);
+        auto exp2 = std::dynamic_pointer_cast<Node_Exp>(children[3]);
+        auto exp3 = std::dynamic_pointer_cast<Node_Exp>(children[6]);
+    
+        if (!exp2->typeCheck({Type::BOOL})){
+            throw MismatchExc(yylineno);
+        }
+        
+        if (exp1->type != exp3->type){
+            if (exp1->typeCheck({Type::INT}) && exp3->typeCheck({Type::BYTE})){
+                set_type(Type::INT);
+            }
+            else if(exp1->typeCheck({Type::BYTE}) && exp3->typeCheck({Type::INT})){
+                set_type(Type::INT);
+            }
+            else{
+                throw MismatchExc(yylineno);
+            }
+        }
+        else{
+            set_type(exp1->type);
+        }
+        
+        
     }
-    ~Node_Exp_IfElse();
+    ~Node_Exp_IfElse()=default;
     Node_Exp_IfElse(Node_Exp_IfElse&) = delete;;
 
 };
