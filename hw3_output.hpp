@@ -283,6 +283,12 @@ bool valid_implicit_cast(Type to, Type from){
 Frame_class frame_manager;
 std::vector<Node> TreeNodes;
 
+#define CreateNode(NType) std::make_shared<NType>
+Node AddNode(Node node){
+    TreeNodes.push_back(node);
+    return TreeNodes.back();
+}
+
 class Generic_Node{
     long node_tree_index;
 public:
@@ -712,8 +718,8 @@ public:
 };
 
 //#define YYSTYPE Node
-/*
- * union YYSTYPE {
+
+union YYSTYPE {
     Shared(Generic_Node) ProgramNode;
     Shared(Node_Token) NodeToken;
     Shared(Node_RetType) NodeRetType;
@@ -726,11 +732,10 @@ public:
     Shared(Node_Exp) NodeExp;
     Shared(Node_ExpList) NodeExpList;
     Shared(Node_Call) NodeCall;
-
-    
 };
 
- */
+
+
 
 
 #endif

@@ -6,6 +6,7 @@
 #include "hw3_output.hpp"
 #include "iostream"
 //printf("FLEX:: %d: %s\n", yylineno, yytext);
+//#define newToken(token_type) token_value = yytext;return token_type;
 #define newToken(token_type) token_value = yytext;return token_type;
 #define Comment token_value = "\\\\"; return COMMENT;
 
@@ -39,6 +40,8 @@ void str_es(int escapeSequence_type);
 
 %option yylineno
 %option noyywrap
+
+
 digit   		([0-9])
 hexa            ([0-9A-Fa-f])
 letter  		([a-zA-Z])
@@ -81,9 +84,9 @@ token_string    (\"([^\n\r\"\\]|\\[rnt"\\])+\")
 
 %%
 
-{token_void}      return new Node_Token(std::string(yytext));
-{token_int}       return new Node_Token(std::string(yytext));
-{token_byte}      return new Node_Token(std::string(yytext));
+{token_void}      yylval.NodeToken = (CreateNode(Node_Token)(yytext));
+{token_int}       yylval.NodeToken = (CreateNode(Node_Token)(yytext));
+{token_byte}      yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 {token_b}         return new Node_Token(std::string(yytext));
 {token_bool}      return new Node_Token(std::string(yytext));
 {token_and}       return new Node_Token(std::string(yytext));

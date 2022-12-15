@@ -542,6 +542,7 @@ char *yytext;
 #include "hw3_output.hpp"
 #include "iostream"
 //printf("FLEX:: %d: %s\n", yylineno, yytext);
+//#define newToken(token_type) token_value = yytext;return token_type;
 #define newToken(token_type) token_value = yytext;return token_type;
 #define Comment token_value = "\\\\"; return COMMENT;
 
@@ -571,8 +572,8 @@ void str_es(int escapeSequence_type);
 //token_string    ("[{printable}*-[{token_illegal}]]")
 
 
-#line 574 "lex.yy.c"
 #line 575 "lex.yy.c"
+#line 576 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -789,10 +790,10 @@ YY_DECL
 		}
 
 	{
-#line 82 "scanner.lex"
+#line 85 "scanner.lex"
 
 
-#line 795 "lex.yy.c"
+#line 796 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -861,177 +862,177 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 84 "scanner.lex"
-return new Node_Token(std::string(yytext));
+#line 87 "scanner.lex"
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 85 "scanner.lex"
-return new Node_Token(std::string(yytext));
+#line 88 "scanner.lex"
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 3:
-YY_RULE_SETUP
-#line 86 "scanner.lex"
-return new Node_Token(std::string(yytext));
-	YY_BREAK
-case 4:
-YY_RULE_SETUP
-#line 87 "scanner.lex"
-return new Node_Token(std::string(yytext));
-	YY_BREAK
-case 5:
-YY_RULE_SETUP
-#line 88 "scanner.lex"
-return new Node_Token(std::string(yytext));
-	YY_BREAK
-case 6:
 YY_RULE_SETUP
 #line 89 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 7:
+case 4:
 YY_RULE_SETUP
 #line 90 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 8:
+case 5:
 YY_RULE_SETUP
 #line 91 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 9:
+case 6:
 YY_RULE_SETUP
 #line 92 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 10:
+case 7:
 YY_RULE_SETUP
 #line 93 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 11:
+case 8:
 YY_RULE_SETUP
 #line 94 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 12:
+case 9:
 YY_RULE_SETUP
 #line 95 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 13:
+case 10:
 YY_RULE_SETUP
 #line 96 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 14:
+case 11:
 YY_RULE_SETUP
 #line 97 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 15:
+case 12:
 YY_RULE_SETUP
 #line 98 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 16:
+case 13:
 YY_RULE_SETUP
 #line 99 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 17:
+case 14:
 YY_RULE_SETUP
 #line 100 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 18:
+case 15:
 YY_RULE_SETUP
 #line 101 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 19:
+case 16:
 YY_RULE_SETUP
 #line 102 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 20:
+case 17:
 YY_RULE_SETUP
 #line 103 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 21:
+case 18:
 YY_RULE_SETUP
 #line 104 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 22:
+case 19:
 YY_RULE_SETUP
 #line 105 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 23:
+case 20:
 YY_RULE_SETUP
 #line 106 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 24:
+case 21:
 YY_RULE_SETUP
 #line 107 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 25:
+case 22:
 YY_RULE_SETUP
 #line 108 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 26:
+case 23:
 YY_RULE_SETUP
 #line 109 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 27:
+case 24:
 YY_RULE_SETUP
 #line 110 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 28:
+case 25:
+YY_RULE_SETUP
+#line 111 "scanner.lex"
+return new Node_Token(std::string(yytext));
+	YY_BREAK
+case 26:
 YY_RULE_SETUP
 #line 112 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
-case 29:
+case 27:
 YY_RULE_SETUP
 #line 113 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
+case 28:
+YY_RULE_SETUP
+#line 115 "scanner.lex"
+return new Node_Token(std::string(yytext));
+	YY_BREAK
+case 29:
+YY_RULE_SETUP
+#line 116 "scanner.lex"
+return new Node_Token(std::string(yytext));
+	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 114 "scanner.lex"
+#line 117 "scanner.lex"
 return new Node_Token(std::string(yytext));
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 116 "scanner.lex"
+#line 119 "scanner.lex"
 ;
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 117 "scanner.lex"
+#line 120 "scanner.lex"
 ;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 118 "scanner.lex"
+#line 121 "scanner.lex"
 output::errorLex(yylineno);exit(0);
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 121 "scanner.lex"
+#line 124 "scanner.lex"
 ECHO;
 	YY_BREAK
-#line 1034 "lex.yy.c"
+#line 1035 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2048,7 +2049,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 121 "scanner.lex"
+#line 124 "scanner.lex"
 
 
 

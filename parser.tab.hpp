@@ -90,30 +90,6 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 21 "parser.ypp"
-union YYSTYPE
-{
-#line 21 "parser.ypp"
-
-    Generic_Node* ProgramNode;
-    shared_ptr<Node_Token> NodeToken;
-    std::shared_ptr<Node_RetType> NodeRetType;
-    std::shared_ptr<Node_FormalDecl> NodeFormalDecl;
-    std::shared_ptr<Node_FormalsList> NodeFormalsList;
-    std::shared_ptr<Node_FuncDecl> NodeFuncDecl;
-    std::shared_ptr<Node_FuncsList> NodeFuncsList;
-    std::shared_ptr<Node_Statement> NodeStatement;
-    std::shared_ptr<Node_StatementList> NodeStatementList;
-    std::shared_ptr<Node_Exp> NodeExp;
-    std::shared_ptr<Node_ExpList> NodeExpList;
-    std::shared_ptr<Node_Call> NodeCall;
-
-
-
-#line 114 "parser.tab.hpp"
-
-};
-#line 21 "parser.ypp"
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
