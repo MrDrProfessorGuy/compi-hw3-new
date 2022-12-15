@@ -9,5 +9,4 @@ add_executable(compi_hw3_new
         scanner.lex
         hw3_output.cpp hw3_output.hpp
         statement_node.hpp
-        exp_node.hpp
         )

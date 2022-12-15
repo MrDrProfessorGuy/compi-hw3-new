@@ -8,8 +8,9 @@
 //#include <stack>
 
 //using namespace std;
-extern int yylineno; 
+extern int yylineno;
 
+#define Shared(Class) std::shared_ptr<Class>
 
 namespace output{
     void endScope();
@@ -34,6 +35,10 @@ namespace output{
 
 }
 
+enum class Type {INVALID=0, INT, BYTE, BOOL, STRING, VOID, TOKEN};
+enum class DeclType {INVALID=0, VAR, FUNC};
+enum class FrameType {FUNC, LOOP, BLOCK};
+
 class AppaException : public std::exception{
 public:
     long lineno;
@@ -51,7 +56,6 @@ class Lexception : public AppaException{
 public:
     Lexception(long lineno) : AppaException(lineno){};
 };
-
 class SynExc : public AppaException{
 public:
     SynExc(long lineno) : AppaException(lineno){};
@@ -66,7 +70,7 @@ public:
 };
 class UndDefFuncExc : public AppaException{
 public:
-    UndDefFuncExc(long lineno) : AppaException(lineno){};
+    UndDefFuncExc(long lineno, std::string id) : AppaException(lineno){};
 };
 class MismatchExc : public AppaException{
 public:
@@ -74,7 +78,7 @@ public:
 };
 class PrototypeMismatchExc : public AppaException{
 public:
-    PrototypeMismatchExc(long lineno) : AppaException(lineno){};
+    PrototypeMismatchExc(long lineno, std::string id, std::vector<Type> param_types) : AppaException(lineno){};
 };
 class UnexpectedBreakExc : public AppaException{
 public:
@@ -93,7 +97,6 @@ public:
     ByteTooLargeExc(long lineno) : AppaException(lineno){};
 };
 
-class Node_class;
 class Generic_Node;
 class Data;
 class symTableEntry;
@@ -103,54 +106,62 @@ class Node_FormalDecl;
 class Node_Exp_Type;
 
 typedef std::shared_ptr<Generic_Node> Node;
-typedef std::vector<Node>   NodeVector;
-typedef std::shared_ptr<Data> DataP;
+typedef std::vector<Node> NodeVector;
 typedef std::shared_ptr<symTableEntry> SymEntry;
 typedef std::map<std::string, SymEntry> dict;
 typedef std::vector<StackEntry> frame;
 
+class Symbol {
+public:
+    Type type;
+    std::string name;
+    Symbol(Type sym_type, std::string sym_name): type(sym_type), name(sym_name){
+    }
+    Symbol(Symbol&)=default;
+    Symbol(Symbol const&)=default;
+    Symbol& operator=(Symbol const& sym)=default;
+    
+    static Symbol invalidSymbol(){
+        return Symbol(Type::INVALID, "");
+    }
+};
 
-enum class Type {INVALID=0, INT, BYTE, BOOL, STRING, TOKEN};
-enum class DeclType {INVALID=0, VAR, FUNC};
-enum class FrameType {FUNC, LOOP, BLOCK};
 
 class symTableEntry{
 public:
-    std::string name;
+    //std::string name;
+    Symbol symbol;
     DeclType entry_type;
     long offset;
     bool valid;
 
-    symTableEntry(std::string& entry_name, DeclType entry_type, long entry_offset, bool entry_valid=true){
-        name = entry_name;
+    symTableEntry(Symbol sym, DeclType entry_type, long entry_offset, bool entry_valid=true): symbol(sym){
         this->entry_type = entry_type;
         offset = entry_offset;
         valid = entry_valid;
     }
     ~symTableEntry() = default;
-    symTableEntry(symTableEntry& entry) = default;
-};
-class symTableEntryFunc : public symTableEntry{
-public:
-    Type ret_type;
-    std::vector<std::pair<Type, std::string>> parameter_list;
-
-    symTableEntryFunc(std::string entry_name, DeclType entry_type, long entry_offset, Type return_type, std::vector<Type> func_params) : symTableEntry(entry_name, entry_type, entry_offset, true){
-        ret_type = return_type;
-        parameter_list = func_params;
-    }
-    ~symTableEntryFunc() = default;
-    symTableEntryFunc(symTableEntryFunc& entry) = default;
+    symTableEntry(symTableEntry& entry) = delete;
+    virtual void stam(){};
 };
 class symTableEntryID : public symTableEntry{
 public:
-    Type type;
-
-    symTableEntryID(std::string entry_name, DeclType entry_type, long entry_offset, Type id_type) : symTableEntry(entry_name, entry_type, entry_offset, true){
-        type = id_type;
+    
+    symTableEntryID(Symbol sym, DeclType entry_type, long entry_offset) : symTableEntry(sym, entry_type, entry_offset, true){
+    
     }
     ~symTableEntryID() = default;
-    symTableEntryID(symTableEntryID& entry) = default;
+    symTableEntryID(symTableEntryID& entry) = delete;
+};
+class symTableEntryFunc : public symTableEntry{
+public:
+    std::vector<Symbol> parameter_list;
+
+    symTableEntryFunc(Symbol sym, DeclType entry_type, long entry_offset, std::vector<Symbol> func_params) : symTableEntry(sym, entry_type, entry_offset, true){
+        parameter_list = func_params;
+    }
+    ~symTableEntryFunc() = default;
+    symTableEntryFunc(symTableEntryFunc& entry) = delete;
 };
 
 class StackEntry{
@@ -160,33 +171,30 @@ public:
     FrameType frame_type;
     dict entries;
     
-    StackEntry():invalid_entry(std::make_shared<symTableEntry>("", DeclType::INVALID, 0, false)){
-        
+    StackEntry(FrameType frame_type){
+        this->frame_type = frame_type;
     };
     ~StackEntry()=default;
     StackEntry(StackEntry&) = delete;
 
-    void newIdEntry(std::string name, Type id_type){
-        auto entry = std::make_shared<symTableEntryID>(name, DeclType::VAR, next_offset, id_type);
+    void newIdEntry(Symbol sym){
+        auto entry = std::make_shared<symTableEntryID>(sym, DeclType::VAR, next_offset);
         next_offset++;
 
-        entries.insert({name, entry});
+        entries.insert({entry->symbol.name, entry});
     }
-    void newFuncEntry(std::string name, Type ret_type, std::vector<Type> func_params){
-        auto entry = std::make_shared<symTableEntryFunc>(name, DeclType::FUNC, next_offset, ret_type, func_params);
+    void newFuncEntry(Symbol sym, std::vector<Symbol> func_params){
+        auto entry = std::make_shared<symTableEntryFunc>(sym, DeclType::FUNC, next_offset, func_params);
         next_offset++;
 
-        entries.insert({name, entry});
+        entries.insert({entry->symbol.name, entry});
     }
     SymEntry find(std::string name){
         auto search = entries.find(name);
         if (search == entries.end()){
-            return invalid_entry;
+            return nullptr;
         }
         return search->second;
-    }
-    SymEntry invalidEntry(){
-        return invalid_entry;
     }
 };
 
@@ -203,14 +211,15 @@ public:
         if (entry->valid){
             throw UndefExc(yylineno);
         }
-        frames.back().newIdEntry(name, id_type);
+        frames.back().newIdEntry(Symbol(id_type, name));
     }
-    void newEntry(DeclType entry_type, std::string name, Type ret_type, std::vector<Type> func_params){
+    void newEntry(DeclType entry_type, std::string name, Type ret_type, std::vector<Symbol> func_params){
         SymEntry entry = find(name);
         if (entry->valid){
-            throw UndDefFuncExc(yylineno);
+            output::errorUndefFunc(yylineno, name);
+            exit(0);
         }
-        frames.back().newFuncEntry(name, ret_type, func_params);
+        frames.back().newFuncEntry(Symbol(ret_type,name), func_params);
     }
     SymEntry find(std::string name){
         for(auto iter = frames.rbegin(); iter != frames.rend(); ++iter){
@@ -219,10 +228,12 @@ public:
                 return entry;
             }
         }
-        return StackEntry().invalidEntry();
+        return nullptr;
     }
-
+    
 };
+
+bool valid_cast(Type to, Type from);
 
 Frame_class frame_manager;
 std::vector<Node> TreeNodes;
@@ -254,7 +265,21 @@ public:
     Node get(){
         return TreeNodes[node_tree_index];
     }
+    virtual void stam(){};
 
+};
+
+class Node_Token : public Generic_Node{
+public:
+    std::string value;
+
+/////////// Methods ///////////
+    
+    Node_Token(std::string token_value): Generic_Node({}){
+        value = token_value;
+    }
+    ~Node_Token()=default;
+    Node_Token(Node_Token&) = delete;
 };
 
 class Node_RetType : public Generic_Node{
@@ -276,27 +301,22 @@ public:
 
 class Node_FormalDecl : public Generic_Node{
 public:
-    Type param_type;
-    /// std::pair<Type, std::string> parameter;
+    //Type param_type;
+    Symbol id_symbol;
 /////////// Methods ///////////
 
-    Node_FormalDecl(NodeVector children, Type parameter_type): Generic_Node(children){
-        param_type = parameter_type;
-        //TODO: check validity in symtable.
-    }
+    Node_FormalDecl(Shared(Node_Exp_Type) node_type, Shared(Node_Token) node_token_id);
     ~Node_FormalDecl()=default;
     Node_FormalDecl(Node_FormalDecl&) = delete;
 };
 
 class Node_FormalsList : public Generic_Node{
 public:
-    std::vector<Node_FormalDecl> parameter_list;
+    std::vector<Symbol> parameter_list;
     /// std::vector<std::pair<Type, std::string>> parameter_list;
 /////////// Methods ///////////
-
-    Node_FormalsList(NodeVector children): Generic_Node(children){
-        //TODO: check validity in symtable, unite lists.
-    }
+    Node_FormalsList(Shared(Node_FormalDecl) node_formalDecl);
+    Node_FormalsList(Shared(Node_FormalDecl) node_formalDecl, Shared(Node_Token) node_comma, Shared(Node_FormalsList) node_formalsList);
     ~Node_FormalsList()=default;
     Node_FormalsList(Node_FormalsList&) = delete;
 };
@@ -305,9 +325,7 @@ class Node_FuncDecl : public Generic_Node{
 public:
 /////////// Methods ///////////
 
-    Node_FuncDecl(NodeVector children): Generic_Node(children){
-        //TODO: check validity in sym table
-    }
+    Node_FuncDecl(NodeVector children);
     ~Node_FuncDecl()=default;
     Node_FuncDecl(Node_FuncDecl&) = delete;
 
@@ -326,26 +344,11 @@ public:
 
 };
 
-class Node_Token : public Generic_Node{
-public:
-    std::string value;
-
-/////////// Methods ///////////
-
-    Node_Token(std::string token_value): Generic_Node({}){
-        value = token_value;
-    }
-    ~Node_Token()=default;
-    Node_Token(Node_Token&) = delete;
-};
-
 class Node_Statement : public Generic_Node{
 public:
 
 /////////// Methods ///////////
-    Node_Statement(NodeVector children): Generic_Node(children){
-        
-    }
+    Node_Statement(NodeVector children);
     ~Node_Statement()=default;
     Node_Statement(Node_Statement&) = delete;
 
@@ -356,9 +359,7 @@ class Node_StatementList : public Generic_Node{
 public:
     std::vector<Node_Statement> statement_list;
 /////////// Methods ///////////
-    Node_StatementList(NodeVector children): Generic_Node(children){
-        //TODO: unite lists
-    }
+    Node_StatementList(NodeVector children);
     ~Node_StatementList()=default;
     Node_StatementList(Node_StatementList&) = delete;
 };
@@ -379,37 +380,229 @@ public:
 
 class Node_ExpList : public Generic_Node{
 public:
-    std::vector<Node_Exp> exp_list;
+    std::vector<Type> exp_list;
 /////////// Methods ///////////
 
-    Node_ExpList(NodeVector children): Generic_Node(children){
-        //TODO: unite the lists
-    }
+    Node_ExpList(Shared(Node_Exp) exp);
+    Node_ExpList(Shared(Node_Exp) node_exp, Shared(Node_Token) node_token, Shared(Node_ExpList) node_expList);
     ~Node_ExpList()=default;
     Node_ExpList(Node_ExpList&) = delete;
-
+    
+    
 };
 
 class Node_Call : public Generic_Node{
 public:
-
+    Symbol func_id;
+    std::vector<Type> func_parameters;
 /////////// Methods ///////////
 
-    Node_Call(NodeVector children): Generic_Node(children){
-        //TODO: check validity in sym table
-    }
+    Node_Call(Shared(Node_Token) node_id, Shared(Node_Token) node_lparen, Shared(Node_ExpList) node_expList, Shared(Node_Token) node_rparen);
     ~Node_Call()=default;
     Node_Call(Node_Call&) = delete;
-    std::string ID(){
+};
+
+class Node_Exp_Type : public Node_Exp{
+public:
+    Node_Exp_Type(NodeVector children, Type exp_type): Node_Exp(children, exp_type){
     
-    };
+    }
+    ~Node_Exp_Type()=default;
+    Node_Exp_Type(Node_Exp_Type&) = delete;;
+    
+    
+};
+
+class Node_Exp_NUM : public Node_Exp{
+public:
+/////////// Methods ///////////
+    
+    Node_Exp_NUM(NodeVector children, Type exp_type): Node_Exp(children, exp_type){
+        if (type == Type::BYTE){
+            long token_val = std::atoi(std::static_pointer_cast<Node_Token>(children[0])->value.c_str());
+            
+            if (token_val > 255){
+                throw ByteTooLargeExc(yylineno);
+            }
+        }
+        
+    }
+    ~Node_Exp_NUM()=default;
+    Node_Exp_NUM(Node_Exp_NUM&) = delete;
+};
+
+class Node_Exp_Binop : public Node_Exp{
+public:
+/////////// Methods ///////////
+    
+    Node_Exp_Binop(NodeVector children): Node_Exp(children, Type::INT){
+        //Todo: if bool, update type
+        auto exp1 = std::static_pointer_cast<Node_Exp>(children[0]);
+        auto binop = std::static_pointer_cast<Node_Token>(children[1]);
+        auto exp2 = std::static_pointer_cast<Node_Exp>(children[2]);
+        
+        if (!exp1->typeCheck({Type::INT, Type::BYTE}) || !exp2->typeCheck({Type::INT, Type::BYTE})){
+            throw MismatchExc(yylineno);
+        }
+        if (exp1->type == Type::BYTE && exp2->type == Type::BYTE){
+            set_type(Type::BYTE);
+        }
+        
+    }
+    ~Node_Exp_Binop()=default;
+    Node_Exp_Binop(Node_Exp_NUM&) = delete;
+};
+
+class Node_Exp_Relop : public Node_Exp{
+public:
+/////////// Methods ///////////
+    
+    Node_Exp_Relop(NodeVector children): Node_Exp(children, Type::BOOL){
+        auto exp1 = std::static_pointer_cast<Node_Exp>(children[0]);
+        auto binop = std::static_pointer_cast<Node_Token>(children[1]);
+        auto exp2 = std::static_pointer_cast<Node_Exp>(children[2]);
+        
+        if (!exp1->typeCheck({Type::INT, Type::BYTE}) || !exp2->typeCheck({Type::INT, Type::BYTE})){
+            throw MismatchExc(yylineno);
+        }
+        
+    }
+    ~Node_Exp_Relop()=default;
+    Node_Exp_Relop(Node_Exp_Relop&) = delete;
+};
+
+class Node_Exp_Cast : public Node_Exp{
+public:
+/////////// Methods ///////////
+    
+    Node_Exp_Cast(NodeVector children): Node_Exp(children, Type::INT){
+        //Todo: if bool, update type
+        auto type_node = std::static_pointer_cast<Node_Exp_Type>(children[1]);
+        auto exp = std::static_pointer_cast<Node_Exp>(children[3]);
+        
+        if (!type_node->typeCheck({Type::INT, Type::BYTE}) || !exp->typeCheck({Type::INT, Type::BYTE})){
+            throw MismatchExc(yylineno);
+        }
+        
+        set_type(type_node->type);
+    }
+    ~Node_Exp_Cast()=default;
+    Node_Exp_Cast(Node_Exp_Relop&) = delete;
+};
+
+class Node_Exp_Str : public Node_Exp{
+public:
+/////////// Methods ///////////
+    
+    Node_Exp_Str(NodeVector children): Node_Exp(children, Type::STRING){
+    
+    }
+    ~Node_Exp_Str()=default;
+    Node_Exp_Str(Node_Exp_Str&) = delete;
+};
+
+class Node_Exp_Bool : public Node_Exp{
+public:
+/////////// Methods ///////////
+    
+    Node_Exp_Bool(NodeVector children): Node_Exp(children, Type::BOOL){
+    
+    }
+    ~Node_Exp_Bool()=default;
+    Node_Exp_Bool(Node_Exp_Bool&) = delete;
+};
+
+class Node_Exp_ID : public Node_Exp{
+public:
+    Symbol id;
+    Node_Exp_ID(Node_Token node_token): Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()){
+        //TODO: check validity and update frame stack
+        auto node_token_id = std::dynamic_pointer_cast<Node_Token>(children[0]);
+        auto entry = std::dynamic_pointer_cast<symTableEntryID>(frame_manager.find(node_token_id->value));
+        if (!entry->valid){
+            throw UndefExc(yylineno);
+            //printf();
+        }
+        set_type(entry->symbol.type);
+        id = entry->symbol;
+    }
+    ~Node_Exp_ID()=default;
+    Node_Exp_ID(Node_Exp_ID&) = delete;
+    
+};
+
+class Node_Exp_Call : public Node_Exp{
+public:
+    
+    Node_Exp_Call(NodeVector children): Node_Exp(children, Type::INVALID){
+        ///TODO: check validity and update frame stack
+        auto node_call = std::dynamic_pointer_cast<Node_Call>(children[0]);
+        //auto func_entry = (frame_manager.find(node_call->func_id.name));
+        //assert(func_entry->valid);
+        
+        set_type(node_call->func_id.type);
+    }
+    ~Node_Exp_Call()=default;
+    Node_Exp_Call(Node_Exp_Call&) = delete;;
+    
+};
+
+class Node_Exp_IfElse : public Node_Exp{
+public:
+    
+    Node_Exp_IfElse(NodeVector children): Node_Exp(children, Type::INVALID){
+        ///TODO: check validity and update frame stack
+        auto exp1 = std::dynamic_pointer_cast<Node_Exp>(children[0]);
+        auto exp2 = std::dynamic_pointer_cast<Node_Exp>(children[3]);
+        auto exp3 = std::dynamic_pointer_cast<Node_Exp>(children[6]);
+        
+        if (!exp2->typeCheck({Type::BOOL})){
+            throw MismatchExc(yylineno);
+        }
+        
+        if (exp1->type != exp3->type){
+            if (exp1->typeCheck({Type::INT}) && exp3->typeCheck({Type::BYTE})){
+                set_type(Type::INT);
+            }
+            else if(exp1->typeCheck({Type::BYTE}) && exp3->typeCheck({Type::INT})){
+                set_type(Type::INT);
+            }
+            else{
+                throw MismatchExc(yylineno);
+            }
+        }
+        else{
+            set_type(exp1->type);
+        }
+        
+        
+    }
+    ~Node_Exp_IfElse()=default;
+    Node_Exp_IfElse(Node_Exp_IfElse&) = delete;;
+    
 };
 
 
 //#define YYSTYPE Node
-union YYSTYPE {
-  
+/*
+ * union YYSTYPE {
+    Shared(Generic_Node) ProgramNode;
+    Shared(Node_Token) NodeToken;
+    Shared(Node_RetType) NodeRetType;
+    Shared(Node_FormalDecl) NodeFormalDecl;
+    Shared(Node_FormalsList) NodeFormalsList;
+    Shared(Node_FuncDecl) NodeFuncDecl;
+    Shared(Node_FuncsList) NodeFuncsList;
+    Shared(Node_Statement) NodeStatement;
+    Shared(Node_StatementList) NodeStatementList;
+    Shared(Node_Exp) NodeExp;
+    Shared(Node_ExpList) NodeExpList;
+    Shared(Node_Call) NodeCall;
+
+    
 };
+
+ */
 
 
 #endif

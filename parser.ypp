@@ -3,6 +3,7 @@
 /* Declarations section */
 #include "hw3_output.hpp"
 #include <cstdlib>
+#include <memory>
 
 #define YYDEBUG 1 
 
@@ -12,67 +13,78 @@ int yyerror(const char * message);
 
 #define NewNode(attr, children) $$ = createNode(); $$->setAttributes(attr); $$->setChildren(children);
 #define Cast(obj, Type) (std::static_pointer_cast<TYPE>(obj))
-
-void type_check(Node node, Type type){
-    if(node->attributes->type != type){
-        errorMismatch(node->attributes->lineno);
-    }
-}
+#define Shared(Class) std::shared_ptr<Class>
 
 %}
-
-%type <> Program
-%type <Node_FuncsList> Funcs
-%type <Node_FuncDecl> FuncDecl
-%type <Node_RetType> RetType
-%type <Node_FormalsList> FormalsList
-%type <Node_FormalsList> Formals
-%type <Node_FormalDecl> FormalDecl
-%type <Node_StatementList> Statements
-%type <Node_Statement> Statement
-%type <Node_Exp> Type
-%type <Node_Call> Call
-%type <Node_ExpList> ExpList
-%type <Node_Exp> Exp
-
-
-%token <Node_Token> VOID
-%token <Node_Token> INT
-%token <Node_Token> BYTE
-%token <Node_Token> B
-%token <Node_Token> BOOL
+%union YYSTYPE {
+    std::shared_ptr<Generic_Node> ProgramNode;
+    std::shared_ptr<Node_Token> NodeToken;
+    std::shared_ptr<Node_RetType> NodeRetType;
+    std::shared_ptr<Node_FormalDecl> NodeFormalDecl;
+    std::shared_ptr<Node_FormalsList> NodeFormalsList;
+    std::shared_ptr<Node_FuncDecl> NodeFuncDecl;
+    std::shared_ptr<Node_FuncsList> NodeFuncsList;
+    std::shared_ptr<Node_Statement> NodeStatement;
+    std::shared_ptr<Node_StatementList> NodeStatementList;
+    std::shared_ptr<Node_Exp> NodeExp;
+    std::shared_ptr<Node_ExpList> NodeExpList;
+    std::shared_ptr<Node_Call> NodeCall;
 
 
+};
 
-%token <Node_Token> TRUE
-%token <Node_Token> FALSE
-%token <Node_Token> RETURN
-%token <Node_Token> IF
+%type <ProgramNode> Program
+%type <NodeFuncsList> Funcs
+%type <NodeFuncDecl> FuncDecl
+%type <NodeRetType> RetType
+%type <NodeFormalsList> FormalsList
+%type <NodeFormalsList> Formals
+%type <NodeFormalDecl> FormalDecl
+%type <NodeStatementList> Statements
+%type <NodeStatement> Statement
+%type <NodeExp> Type
+%type <NodeCall> Call
+%type <NodeExpList> ExpList
+%type <NodeExp> Exp
 
-%token <Node_Token> WHILE
-%token <Node_Token> BREAK
-%token <Node_Token> CONTINUE
-%token <Node_Token> SC
-%token <Node_Token> COMMA
-%token <Node_Token> LPAREN
 
-%token <Node_Token> LBRACE
-%token <Node_Token> RBRACE
+%token <NodeToken> VOID
+%token <NodeToken> INT
+%token <NodeToken> BYTE
+%token <NodeToken> B
+%token <NodeToken> BOOL
 
-%token <Node_Token> ID
-%token <Node_Token> NUM
-%token <Node_Token> STRING
 
-%left <Node_Token> OR
-%left <Node_Token> AND
-%right <Node_Token> ASSIGN
-%left <Node_Token> EQUALITY
-%left <Node_Token> RELOP
-%left <Node_Token> BINOP_ADD
-%left <Node_Token> BINOP_MUL
-%left <Node_Token> NOT
-%left <Node_Token> RPAREN
-%nonassoc <Node_Token> ELSE
+
+%token <NodeToken> TRUE
+%token <NodeToken> FALSE
+%token <NodeToken> RETURN
+%token <NodeToken> IF
+
+%token <NodeToken> WHILE
+%token <NodeToken> BREAK
+%token <NodeToken> CONTINUE
+%token <NodeToken> SC
+%token <NodeToken> COMMA
+%token <NodeToken> LPAREN
+
+%token <NodeToken> LBRACE
+%token <NodeToken> RBRACE
+
+%token <NodeToken> ID
+%token <NodeToken> NUM
+%token <NodeToken> STRING
+
+%left <NodeToken> OR
+%left <NodeToken> AND
+%right <NodeToken> ASSIGN
+%left <NodeToken> EQUALITY
+%left <NodeToken> RELOP
+%left <NodeToken> BINOP_ADD
+%left <NodeToken> BINOP_MUL
+%left <NodeToken> NOT
+%left <NodeToken> RPAREN
+%nonassoc <NodeToken> ELSE
 
 
 %%
@@ -80,8 +92,8 @@ void type_check(Node node, Type type){
     Funcs: /*epsilon*/                                                          {output::printProductionRule(2);}; 
     Funcs: FuncDecl Funcs                                                       {output::printProductionRule(3);};
     FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         {output::printProductionRule(4);};
-    RetType: Type                                                               {NewNode(std::allocate_shared<DataType>($1->attributes->type), NodeVector{$1});output::printProductionRule(5);};
-    RetType:  VOID                                                              {NewNode(std::allocate_shared<DataType>(Type::VOID), NodeVector{$1});output::printProductionRule(6);};
+    RetType: Type                                                               {output::printProductionRule(5);};
+    RetType:  VOID                                                              {output::printProductionRule(6);};
     Formals: /*epsilon*/                                                        {output::printProductionRule(7);};
     Formals: FormalsList                                                        {output::printProductionRule(8);};
     FormalsList: FormalDecl                                                     {output::printProductionRule(9);};
@@ -105,30 +117,30 @@ void type_check(Node node, Type type){
     Call: ID LPAREN RPAREN                                                      {output::printProductionRule(27);};
     ExpList: Exp                                                                {output::printProductionRule(28);};
     ExpList: Exp COMMA ExpList                                                  {output::printProductionRule(29);};
-    Type: INT                                                                   {NewNode(std::allocate_shared<DataType>(Type::INT), NodeVector{$1});output::printProductionRule(30);};
-    Type: BYTE                                                                  {NewNode(std::allocate_shared<DataType>(Type::BYTE), NodeVector{$1});output::printProductionRule(31);};
-    Type: BOOL                                                                  {NewNode(std::allocate_shared<DataType>(Type::BOOL), NodeVector{$1}); output::printProductionRule(32);};
+    Type: INT                                                                   {output::printProductionRule(30);};
+    Type: BYTE                                                                  {output::printProductionRule(31);};
+    Type: BOOL                                                                  {output::printProductionRule(32);};
     Exp: LPAREN Exp RPAREN                                                      {output::printProductionRule(33);};
     Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                      {output::printProductionRule(34);};
-    Exp: Exp BINOP_ADD Exp                                                      {$$=createNode();$$->setChildren({$1,$2,$3});$$->updateAttrBinop();};
-    Exp: Exp BINOP_MUL Exp                                                      {$$=createNode();$$->setChildren({$1,$2,$3});$$->updateAttrBinop();};
+    Exp: Exp BINOP_ADD Exp                                                      {};
+    Exp: Exp BINOP_MUL Exp                                                      {};
     Exp: ID                                                                     {output::printProductionRule(36);};
     Exp: Call                                                                   {output::printProductionRule(37);};
-    Exp: NUM                                                                    {NewNode(std::allocate_shared<DataNum>(Type::INT, std::atoi(Cast($1->attributes, DataToken)->value)), NodeVector{$1});output::printProductionRule(38);};
-    Exp: NUM B                                                                  {NewNode(std::allocate_shared<DataNum>(Type::BYTE, std::atoi(Cast($1->attributes, DataToken)->value)), NodeVector{$1});output::printProductionRule(39);};
-    Exp: STRING                                                                 {NewNode(std::allocate_shared<DataStr>(Cast($1->attributes, DataToken)->value), NodeVector{$1});output::printProductionRule(40);};
-    Exp: TRUE                                                                   {NewNode(std::allocate_shared<DataBool>(true), NodeVector{$1});output::printProductionRule(41);};
-    Exp: FALSE                                                                  {NewNode(std::allocate_shared<DataBool>(false), NodeVector{$1});output::printProductionRule(42);};
-    Exp: NOT Exp                                                                {type_check($2, Type::BOOL);NewNode(std::allocate_shared<DataBool>(!($2->attributes->value)), NodeVector{$1, $2});output::printProductionRule(43);};
-    Exp: Exp AND Exp                                                            {type_check($1, Type::BOOL);type_check($3, Type::BOOL);NewNode(std::allocate_shared<DataBool>($1->attributes->value && $3->attributes->value), NodeVector{$1, $2, $3});output::printProductionRule(44);};
-    Exp: Exp OR Exp                                                             {type_check($1, Type::BOOL);type_check($3, Type::BOOL);NewNode(std::allocate_shared<DataBool>($1->attributes->value || $3->attributes->value), NodeVector{$1, $2, $3});};
-    Exp: Exp RELOP Exp                                                          {$$=createNode();$$->setChildren({$1,$2,$3});$$->updateAttrRelop();};
-    Exp: Exp EQUALITY Exp                                                       {$$=createNode();$$->setChildren({$1,$2,$3});$$->updateAttrRelop();};
-    Exp: LPAREN Type RPAREN Exp                                                 {$$=createNode();$$->setChildren({$1,$2,$3,$4});$$->updateAttrCast();};
+    Exp: NUM                                                                    {output::printProductionRule(38);};
+    Exp: NUM B                                                                  {output::printProductionRule(39);};
+    Exp: STRING                                                                 {output::printProductionRule(40);};
+    Exp: TRUE                                                                   {output::printProductionRule(41);};
+    Exp: FALSE                                                                  {output::printProductionRule(42);};
+    Exp: NOT Exp                                                                {output::printProductionRule(43);};
+    Exp: Exp AND Exp                                                            {output::printProductionRule(44);};
+    Exp: Exp OR Exp                                                             {};
+    Exp: Exp RELOP Exp                                                          {};
+    Exp: Exp EQUALITY Exp                                                       {};
+    Exp: LPAREN Type RPAREN Exp                                                 {};
 %%
 
 int main(){
-	yydebug = 0;
+	yydebug = 1;
     
     
 	int token;

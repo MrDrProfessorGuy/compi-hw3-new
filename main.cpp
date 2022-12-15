@@ -1,6 +1,6 @@
 
 #include "hw3_output.hpp"
-#include "exp_node.hpp"
+//#include "exp_node.hpp"
 #include "statement_node.hpp"
 #include <cstdlib>
 
@@ -21,7 +21,7 @@ int yyerror(const char * message);
 
 
 int main(){
-    yydebug = 0;
+    yydebug = 1;
     
     int token;
     //cout << "max size = " << token_value.max_size() << endl;
