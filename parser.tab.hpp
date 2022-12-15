@@ -62,18 +62,18 @@ extern int yydebug;
     TRUE = 263,                    /* TRUE  */
     FALSE = 264,                   /* FALSE  */
     RETURN = 265,                  /* RETURN  */
-    IF = 266,                      /* IF  */
-    WHILE = 267,                   /* WHILE  */
-    BREAK = 268,                   /* BREAK  */
-    CONTINUE = 269,                /* CONTINUE  */
-    SC = 270,                      /* SC  */
-    COMMA = 271,                   /* COMMA  */
-    LPAREN = 272,                  /* LPAREN  */
-    LBRACE = 273,                  /* LBRACE  */
-    RBRACE = 274,                  /* RBRACE  */
-    ID = 275,                      /* ID  */
-    NUM = 276,                     /* NUM  */
-    STRING = 277,                  /* STRING  */
+    WHILE = 266,                   /* WHILE  */
+    BREAK = 267,                   /* BREAK  */
+    CONTINUE = 268,                /* CONTINUE  */
+    SC = 269,                      /* SC  */
+    COMMA = 270,                   /* COMMA  */
+    LPAREN = 271,                  /* LPAREN  */
+    LBRACE = 272,                  /* LBRACE  */
+    RBRACE = 273,                  /* RBRACE  */
+    ID = 274,                      /* ID  */
+    NUM = 275,                     /* NUM  */
+    STRING = 276,                  /* STRING  */
+    IF = 277,                      /* IF  */
     OR = 278,                      /* OR  */
     AND = 279,                     /* AND  */
     ASSIGN = 280,                  /* ASSIGN  */
@@ -90,13 +90,13 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-#line 19 "parser.ypp"
+#line 21 "parser.ypp"
 union YYSTYPE
 {
-#line 19 "parser.ypp"
+#line 21 "parser.ypp"
 
-    std::shared_ptr<Generic_Node> ProgramNode;
-    std::shared_ptr<Node_Token> NodeToken;
+    Generic_Node* ProgramNode;
+    shared_ptr<Node_Token> NodeToken;
     std::shared_ptr<Node_RetType> NodeRetType;
     std::shared_ptr<Node_FormalDecl> NodeFormalDecl;
     std::shared_ptr<Node_FormalsList> NodeFormalsList;
@@ -113,7 +113,7 @@ union YYSTYPE
 #line 114 "parser.tab.hpp"
 
 };
-#line 19 "parser.ypp"
+#line 21 "parser.ypp"
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

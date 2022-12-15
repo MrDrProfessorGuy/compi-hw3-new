@@ -1,9 +1,11 @@
 %{
 
 /* Declarations section */
+
 #include "hw3_output.hpp"
 #include <cstdlib>
 #include <memory>
+
 
 #define YYDEBUG 1 
 
@@ -13,12 +15,12 @@ int yyerror(const char * message);
 
 #define NewNode(attr, children) $$ = createNode(); $$->setAttributes(attr); $$->setChildren(children);
 #define Cast(obj, Type) (std::static_pointer_cast<TYPE>(obj))
-#define Shared(Class) std::shared_ptr<Class>
+
 
 %}
 %union YYSTYPE {
-    std::shared_ptr<Generic_Node> ProgramNode;
-    std::shared_ptr<Node_Token> NodeToken;
+    Generic_Node* ProgramNode;
+    shared_ptr<Node_Token> NodeToken;
     std::shared_ptr<Node_RetType> NodeRetType;
     std::shared_ptr<Node_FormalDecl> NodeFormalDecl;
     std::shared_ptr<Node_FormalsList> NodeFormalsList;
@@ -47,19 +49,16 @@ int yyerror(const char * message);
 %type <NodeExpList> ExpList
 %type <NodeExp> Exp
 
-
 %token <NodeToken> VOID
 %token <NodeToken> INT
 %token <NodeToken> BYTE
 %token <NodeToken> B
 %token <NodeToken> BOOL
 
-
-
 %token <NodeToken> TRUE
 %token <NodeToken> FALSE
 %token <NodeToken> RETURN
-%token <NodeToken> IF
+
 
 %token <NodeToken> WHILE
 %token <NodeToken> BREAK
@@ -74,27 +73,29 @@ int yyerror(const char * message);
 %token <NodeToken> ID
 %token <NodeToken> NUM
 %token <NodeToken> STRING
+%nonassoc <NodeToken> IF
 
 %left <NodeToken> OR
 %left <NodeToken> AND
-%right <NodeToken> ASSIGN
+%token <NodeToken> ASSIGN
 %left <NodeToken> EQUALITY
 %left <NodeToken> RELOP
 %left <NodeToken> BINOP_ADD
 %left <NodeToken> BINOP_MUL
-%left <NodeToken> NOT
-%left <NodeToken> RPAREN
+%precedence <NodeToken> NOT
+%precedence <NodeToken> RPAREN
 %nonassoc <NodeToken> ELSE
+
 
 
 %%
     Program: Funcs                                                              {output::printProductionRule(1);};
-    Funcs: /*epsilon*/                                                          {output::printProductionRule(2);}; 
+    Funcs: /*epsilon*/                                                          %empty {output::printProductionRule(2);};
     Funcs: FuncDecl Funcs                                                       {output::printProductionRule(3);};
     FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         {output::printProductionRule(4);};
     RetType: Type                                                               {output::printProductionRule(5);};
     RetType:  VOID                                                              {output::printProductionRule(6);};
-    Formals: /*epsilon*/                                                        {output::printProductionRule(7);};
+    Formals: /*epsilon*/                                                        %empty {output::printProductionRule(7);};
     Formals: FormalsList                                                        {output::printProductionRule(8);};
     FormalsList: FormalDecl                                                     {output::printProductionRule(9);};
     FormalsList: FormalDecl COMMA FormalsList                                   {output::printProductionRule(10);};
@@ -108,7 +109,7 @@ int yyerror(const char * message);
     Statement: Call SC                                                          {output::printProductionRule(18);};
     Statement: RETURN SC                                                        {output::printProductionRule(19);};
     Statement: RETURN Exp SC                                                    {output::printProductionRule(20);};
-    Statement: IF LPAREN Exp RPAREN Statement                                   {output::printProductionRule(21);};
+    Statement: IF LPAREN Exp RPAREN Statement %prec IF                                  {output::printProductionRule(21);};
     Statement: IF LPAREN Exp RPAREN Statement ELSE Statement                    {output::printProductionRule(22);};
     Statement: WHILE LPAREN Exp RPAREN Statement                                {output::printProductionRule(23);};
     Statement: BREAK SC                                                         {output::printProductionRule(24);};
@@ -121,7 +122,7 @@ int yyerror(const char * message);
     Type: BYTE                                                                  {output::printProductionRule(31);};
     Type: BOOL                                                                  {output::printProductionRule(32);};
     Exp: LPAREN Exp RPAREN                                                      {output::printProductionRule(33);};
-    Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                      {output::printProductionRule(34);};
+    Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                     {output::printProductionRule(34);};
     Exp: Exp BINOP_ADD Exp                                                      {};
     Exp: Exp BINOP_MUL Exp                                                      {};
     Exp: ID                                                                     {output::printProductionRule(36);};

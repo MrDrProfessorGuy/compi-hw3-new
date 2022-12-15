@@ -1,11 +1,12 @@
+
 #ifndef _236360_3_
 #define _236360_3_
+
 
 #include <vector>
 #include <string>
 #include <memory>
 #include <map>
-//#include <stack>
 
 //using namespace std;
 extern int yylineno;
@@ -37,7 +38,7 @@ namespace output{
 
 enum class Type {INVALID=0, INT, BYTE, BOOL, STRING, VOID, TOKEN};
 enum class DeclType {INVALID=0, VAR, FUNC};
-enum class FrameType {FUNC, LOOP, BLOCK};
+enum class FrameType {FUNC, LOOP, BLOCK, IF_ELSE};
 
 class AppaException : public std::exception{
 public:
@@ -62,15 +63,15 @@ public:
 };
 class UndefExc : public AppaException{
 public:
-    UndefExc(long lineno) : AppaException(lineno){};
+    UndefExc(long lineno, std::string& id) : AppaException(lineno){};
 };
 class DefExc : public AppaException{
 public:
-    DefExc(long lineno) : AppaException(lineno){};
+    DefExc(long lineno, std::string& id) : AppaException(lineno){};
 };
 class UndDefFuncExc : public AppaException{
 public:
-    UndDefFuncExc(long lineno, std::string id) : AppaException(lineno){};
+    UndDefFuncExc(long lineno, std::string& id) : AppaException(lineno){};
 };
 class MismatchExc : public AppaException{
 public:
@@ -98,18 +99,19 @@ public:
 };
 
 class Generic_Node;
-class Data;
 class symTableEntry;
 class StackEntry;
 class Frame_class;
 class Node_FormalDecl;
 class Node_Exp_Type;
+class Node_Statement;
 
 typedef std::shared_ptr<Generic_Node> Node;
 typedef std::vector<Node> NodeVector;
 typedef std::shared_ptr<symTableEntry> SymEntry;
 typedef std::map<std::string, SymEntry> dict;
 typedef std::vector<StackEntry> frame;
+typedef std::shared_ptr<Generic_Node> GenericNode;
 
 class Symbol {
 public:
@@ -141,7 +143,7 @@ public:
         valid = entry_valid;
     }
     ~symTableEntry() = default;
-    symTableEntry(symTableEntry& entry) = delete;
+    symTableEntry(symTableEntry& entry) = default;
     virtual void stam(){};
 };
 class symTableEntryID : public symTableEntry{
@@ -151,7 +153,7 @@ public:
     
     }
     ~symTableEntryID() = default;
-    symTableEntryID(symTableEntryID& entry) = delete;
+    symTableEntryID(symTableEntryID& entry) = default;
 };
 class symTableEntryFunc : public symTableEntry{
 public:
@@ -161,18 +163,21 @@ public:
         parameter_list = func_params;
     }
     ~symTableEntryFunc() = default;
-    symTableEntryFunc(symTableEntryFunc& entry) = delete;
+    symTableEntryFunc(symTableEntryFunc& entry) = default;
 };
 
 class StackEntry{
-    const SymEntry invalid_entry;
 public:
     long next_offset;
     FrameType frame_type;
+    SymEntry scope_func_entry;
+    bool inside_loop;
     dict entries;
     
-    StackEntry(FrameType frame_type){
+    StackEntry(FrameType frame_type, bool in_loop, SymEntry scope_func){
         this->frame_type = frame_type;
+        inside_loop = in_loop;
+        scope_func_entry = scope_func;
     };
     ~StackEntry()=default;
     StackEntry(StackEntry&) = delete;
@@ -196,6 +201,13 @@ public:
         }
         return search->second;
     }
+    void removeEntry(std::string name){
+        auto search = entries.find(name);
+        if (search == entries.end()){
+            return;
+        }
+        entries.extract(search);
+    }
 };
 
 class Frame_class{
@@ -209,18 +221,32 @@ public:
     void newEntry(DeclType entry_type, std::string name, Type id_type){
         SymEntry entry = find(name);
         if (entry->valid){
-            throw UndefExc(yylineno);
+            output::errorDef(yylineno, name);
+            exit(0);
         }
         frames.back().newIdEntry(Symbol(id_type, name));
     }
     void newEntry(DeclType entry_type, std::string name, Type ret_type, std::vector<Symbol> func_params){
         SymEntry entry = find(name);
         if (entry->valid){
-            output::errorUndefFunc(yylineno, name);
+            output::errorDef(yylineno, name);
             exit(0);
         }
         frames.back().newFuncEntry(Symbol(ret_type,name), func_params);
     }
+    
+    void newFrame(FrameType frame_type){
+        auto &curr_frame = frames.back();
+        bool in_loop = (frame_type == FrameType::LOOP) || curr_frame.inside_loop;
+        frames.emplace_back(frame_type, in_loop, curr_frame.scope_func_entry);
+    }
+    void newFrame(FrameType frame_type, std::string scope_func){
+        assert(frame_type == FrameType::FUNC);
+        SymEntry func_entry = find(scope_func);
+        assert(func_entry != nullptr);
+        frames.emplace_back(frame_type, false, func_entry);
+    }
+    
     SymEntry find(std::string name){
         for(auto iter = frames.rbegin(); iter != frames.rend(); ++iter){
             SymEntry entry = iter->find(name);
@@ -230,10 +256,29 @@ public:
         }
         return nullptr;
     }
+    void removeEntryFromCurrentScope(std::string name){
+        auto &scope = frames.back();
+        scope.removeEntry(name);
+    }
     
+    bool inLoop(){
+        return frames.back().inside_loop;
+    }
+    Type scopeRetType(){
+        return frames.back().scope_func_entry->symbol.type;
+    }
 };
 
 bool valid_cast(Type to, Type from);
+bool valid_implicit_cast(Type to, Type from){
+    if (to == from){
+        return true;
+    }
+    if (to == Type::INT && from == Type::BYTE){
+        return true;
+    }
+    return false;
+}
 
 Frame_class frame_manager;
 std::vector<Node> TreeNodes;
@@ -325,7 +370,9 @@ class Node_FuncDecl : public Generic_Node{
 public:
 /////////// Methods ///////////
 
-    Node_FuncDecl(NodeVector children);
+    Node_FuncDecl(Shared(Node_Exp_Type) node_retType, Shared(Node_Token) node_id, Shared(Node_Token) node_lparen,
+                  Shared(Node_FormalsList) node_formals, Shared(Node_Token) node_rparen, Shared(Node_Token) node_lbrace,
+                  Shared(Node_Statement) node_statement, Shared(Node_Token) node_rbrace);
     ~Node_FuncDecl()=default;
     Node_FuncDecl(Node_FuncDecl&) = delete;
 
@@ -333,12 +380,10 @@ public:
 
 class Node_FuncsList : public Generic_Node{
 public:
-    std::vector<Node_FuncDecl> funcs_list;
+    //std::vector<Node_FuncDecl> funcs_list;
 /////////// Methods ///////////
 
-    Node_FuncsList(NodeVector children): Generic_Node(children){
-        //TODO: check validity in sym table
-    }
+    Node_FuncsList(NodeVector children);
     ~Node_FuncsList()=default;
     Node_FuncsList(Node_FuncsList&) = delete;
 
@@ -357,7 +402,7 @@ public:
 
 class Node_StatementList : public Generic_Node{
 public:
-    std::vector<Node_Statement> statement_list;
+    //std::vector<Node_Statement> statement_list;
 /////////// Methods ///////////
     Node_StatementList(NodeVector children);
     ~Node_StatementList()=default;
@@ -516,12 +561,10 @@ class Node_Exp_ID : public Node_Exp{
 public:
     Symbol id;
     Node_Exp_ID(Node_Token node_token): Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()){
-        //TODO: check validity and update frame stack
         auto node_token_id = std::dynamic_pointer_cast<Node_Token>(children[0]);
         auto entry = std::dynamic_pointer_cast<symTableEntryID>(frame_manager.find(node_token_id->value));
         if (!entry->valid){
-            throw UndefExc(yylineno);
-            //printf();
+            throw UndefExc(yylineno, node_token_id->value);
         }
         set_type(entry->symbol.type);
         id = entry->symbol;
@@ -582,6 +625,91 @@ public:
     
 };
 
+#include "hw3_output.hpp"
+
+
+class Node_Statement_Block : public Node_Statement{
+public:
+/////////// Methods ///////////
+    Node_Statement_Block(NodeVector children);
+    ~Node_Statement_Block()=default;
+    Node_Statement_Block(Node_Statement_Block&) = delete;
+    
+};
+
+class Node_Statement_ID_Decl : public Node_Statement{
+public:
+
+/////////// Methods ///////////
+    Node_Statement_ID_Decl(Shared(Node_Exp_Type) node_type, Shared(Node_Token) node_token, Shared(Node_Token) node_sc);
+    Node_Statement_ID_Decl(Shared(Node_Exp_Type) node_type, Shared(Node_Token) node_token, Shared(Node_Token) node_assign,
+                           Shared(Node_Exp) node_exp, Shared(Node_Token) node_sc);
+    ~Node_Statement_ID_Decl()=default;
+    Node_Statement_ID_Decl(Node_Statement_ID_Decl&) = delete;
+    
+};
+
+class Node_Statement_ID_Assign : public Node_Statement{
+public:
+
+/////////// Methods ///////////
+    Node_Statement_ID_Assign(Shared(Node_Token) node_id, Shared(Node_Token) node_assign, Shared(Node_Exp) node_exp,
+                             Shared(Node_Token) node_sc);
+    ~Node_Statement_ID_Assign()=default;
+    Node_Statement_ID_Assign(Node_Statement_ID_Assign&) = delete;
+    
+};
+
+class Node_Statement_Call : public Node_Statement{
+public:
+
+/////////// Methods ///////////
+    Node_Statement_Call(Shared(Node_Call) node_call, Shared(Node_Token) node_sc);
+    ~Node_Statement_Call()=default;
+    Node_Statement_Call(Node_Statement_Call&) = delete;
+    
+};
+
+class Node_Statement_Ret : public Node_Statement{
+public:
+/////////// Methods ///////////
+    Node_Statement_Ret(Shared(Node_Token) node_ret, Shared(Node_Token) node_sc);
+    Node_Statement_Ret(Shared(Node_Token) node_ret, Shared(Node_Exp) node_exp, Shared(Node_Token) node_sc);
+    ~Node_Statement_Ret()=default;
+    Node_Statement_Ret(Node_Statement_Ret&) = delete;
+    
+};
+
+class Node_Statement_IF : public Node_Statement{
+public:
+/////////// Methods ///////////
+    Node_Statement_IF(Shared(Node_Token) node_if, Shared(Node_Token) node_lparen, Shared(Node_Exp) node_exp, Shared(Node_Token) node_rparen,
+                      Shared(Node_Statement) node_statement);
+    Node_Statement_IF(Shared(Node_Token) node_if, Shared(Node_Token) node_lparen, Shared(Node_Exp) node_exp, Shared(Node_Token) node_rparen,
+                      Shared(Node_Statement) node_statement1, Shared(Node_Token) node_else, Shared(Node_Statement) node_statement2);
+    ~Node_Statement_IF()=default;
+    Node_Statement_IF(Node_Statement_IF&) = delete;
+    
+};
+
+class Node_Statement_While : public Node_Statement{
+public:
+/////////// Methods ///////////
+    Node_Statement_While(Shared(Node_Token) node_while, Shared(Node_Token) node_lparen, Shared(Node_Exp) node_exp,
+                         Shared(Node_Token) node_rparen, Shared(Node_Statement) node_statement);
+    ~Node_Statement_While()=default;
+    Node_Statement_While(Node_Statement_While&) = delete;
+    
+};
+
+class Node_Statement_LoopMod : public Node_Statement{
+public:
+/////////// Methods ///////////
+    Node_Statement_LoopMod(Shared(Node_Token) node_loop_mod, Shared(Node_Token) node_sc);
+    ~Node_Statement_LoopMod()=default;
+    Node_Statement_LoopMod(Node_Statement_LoopMod&) = delete;
+    
+};
 
 //#define YYSTYPE Node
 /*

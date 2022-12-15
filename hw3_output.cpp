@@ -165,6 +165,181 @@ Node_Call::Node_Call(std::shared_ptr<Node_Token> node_id, std::shared_ptr<Node_T
 /// ############################    Node_Statement    ############################///
 /// ############################################################################## ///
 
+Node_Statement::Node_Statement(NodeVector children): Generic_Node(children) {
+
+}
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_ID_Decl    ############################///
+/// ############################################################################## ///
+
+Node_Statement_ID_Decl::Node_Statement_ID_Decl(std::shared_ptr<Node_Exp_Type> node_type,
+                                               std::shared_ptr<Node_Token> node_token,
+                                               std::shared_ptr<Node_Token> node_sc)
+                                               : Node_Statement({node_type, node_token, node_sc}) {
+    frame_manager.newEntry(DeclType::VAR, node_token->value, node_type->type);
+}
+
+Node_Statement_ID_Decl::Node_Statement_ID_Decl(std::shared_ptr<Node_Exp_Type> node_type,
+                                               std::shared_ptr<Node_Token> node_token,
+                                               std::shared_ptr<Node_Token> node_assign,
+                                               std::shared_ptr<Node_Exp> node_exp,
+                                               std::shared_ptr<Node_Token> node_sc)
+                                               : Node_Statement({node_type, node_token, node_assign, node_exp, node_sc}) {
+    
+    frame_manager.newEntry(DeclType::VAR, node_token->value, node_type->type);
+    
+    if (!valid_implicit_cast(node_type->type, node_exp->type)){
+        frame_manager.removeEntryFromCurrentScope(node_token->value);
+        output::errorMismatch(yylineno);
+    }
+}
+
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_ID_Assign    ############################///
+/// ############################################################################## ///
+
+Node_Statement_ID_Assign::Node_Statement_ID_Assign(std::shared_ptr<Node_Token> node_id,
+                                                   std::shared_ptr<Node_Token> node_assign,
+                                                   std::shared_ptr<Node_Exp> node_exp,
+                                                   std::shared_ptr<Node_Token> node_sc)
+                                                   : Node_Statement({node_id, node_assign, node_exp, node_sc}) {
+    
+    auto id_entry = frame_manager.find(node_id->value);
+    if (id_entry == nullptr){
+        throw UndefExc(yylineno, node_id->value);
+    }
+    
+    if (!valid_implicit_cast(id_entry->symbol.type, node_exp->type)){
+        throw MismatchExc(yylineno);
+    }
+    
+}
+
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_Call    ############################///
+/// ############################################################################## ///
+
+Node_Statement_Call::Node_Statement_Call(std::shared_ptr<Node_Call> node_call, std::shared_ptr<Node_Token> node_sc)
+                                        : Node_Statement({node_call, node_sc}){
+    
+    
+    
+}
+
+
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_Ret    ############################///
+/// ############################################################################## ///
+
+
+Node_Statement_Ret::Node_Statement_Ret(std::shared_ptr<Node_Token> node_ret, std::shared_ptr<Node_Token> node_sc)
+                                        : Node_Statement({node_ret, node_sc}){
+    
+    if (frame_manager.scopeRetType() != Type::VOID){
+        throw MismatchExc(yylineno);
+    }
+    
+}
+
+
+Node_Statement_Ret::Node_Statement_Ret(std::shared_ptr<Node_Token> node_ret, std::shared_ptr<Node_Exp> node_exp,
+                                       std::shared_ptr<Node_Token> node_sc)
+                                       : Node_Statement({node_ret, node_exp, node_sc}) {
+    
+    if (valid_implicit_cast(frame_manager.scopeRetType(), node_exp->type) == false){
+        throw MismatchExc(yylineno);
+    }
+}
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_IF    ############################///
+/// ############################################################################## ///
+
+Node_Statement_IF::Node_Statement_IF(std::shared_ptr<Node_Token> node_if, std::shared_ptr<Node_Token> node_lparen,
+                                     std::shared_ptr<Node_Exp> node_exp, std::shared_ptr<Node_Token> node_rparen,
+                                     std::shared_ptr<Node_Statement> node_statement)
+                                     : Node_Statement({node_if, node_lparen, node_exp, node_rparen, node_statement}){
+    
+    if (node_exp->typeCheck({Type::BOOL}) == false){
+        throw MismatchExc(yylineno);
+    }
+}
+
+
+Node_Statement_IF::Node_Statement_IF(std::shared_ptr<Node_Token> node_if, std::shared_ptr<Node_Token> node_lparen,
+                                     std::shared_ptr<Node_Exp> node_exp, std::shared_ptr<Node_Token> node_rparen,
+                                     std::shared_ptr<Node_Statement> node_statement1,
+                                     std::shared_ptr<Node_Token> node_else,
+                                     std::shared_ptr<Node_Statement> node_statement2)
+                                     :  Node_Statement({node_if, node_lparen, node_exp, node_rparen, node_statement1, node_else, node_statement2}){
+    if (node_exp->typeCheck({Type::BOOL}) == false){
+        throw MismatchExc(yylineno);
+    }
+}
+
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_While    ############################///
+/// ############################################################################## ///
+
+Node_Statement_While::Node_Statement_While(std::shared_ptr<Node_Token> node_while,
+                                           std::shared_ptr<Node_Token> node_lparen, std::shared_ptr<Node_Exp> node_exp,
+                                           std::shared_ptr<Node_Token> node_rparen,
+                                           std::shared_ptr<Node_Statement> node_statement)
+                                           : Node_Statement({node_while, node_lparen, node_exp, node_rparen, node_statement}) {
+    
+    if (node_exp->typeCheck({Type::BOOL}) == false){
+        throw MismatchExc(yylineno);
+    }
+}
+
+
+/// ############################################################################## ///
+/// ############################    Node_Statement_LoopMod    ############################///
+/// ############################################################################## ///
+
+Node_Statement_LoopMod::Node_Statement_LoopMod(std::shared_ptr<Node_Token> node_loop_mod, std::shared_ptr<Node_Token> node_sc)
+                                                : Node_Statement({node_loop_mod, node_sc}){
+    
+    
+    if (!frame_manager.inLoop()){
+        if (node_loop_mod->value == "break"){
+            throw UnexpectedBreakExc(yylineno);
+        }
+        throw UnexpectedContinueExc(yylineno);
+    }
+}
+
+
+/// ############################################################################## ///
+/// ############################    Node_FuncDecl    ############################///
+/// ############################################################################## ///
+
+Node_FuncDecl::Node_FuncDecl(std::shared_ptr<Node_Exp_Type> node_retType, std::shared_ptr<Node_Token> node_id,
+                             std::shared_ptr<Node_Token> node_lparen, std::shared_ptr<Node_FormalsList> node_formals,
+                             std::shared_ptr<Node_Token> node_rparen, std::shared_ptr<Node_Token> node_lbrace,
+                             std::shared_ptr<Node_Statement> node_statement, std::shared_ptr<Node_Token> node_rbrace)
+                             : Generic_Node({node_retType, node_id, node_lparen, node_formals, node_rparen, node_lbrace, node_statement, node_rbrace}){
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
