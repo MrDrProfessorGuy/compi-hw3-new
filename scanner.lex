@@ -84,36 +84,36 @@ token_string    (\"([^\n\r\"\\]|\\[rnt"\\])+\")
 
 %%
 
-{token_void}      yylval.NodeToken = (new Node_Token(yytext));
-{token_int}       yylval.NodeToken = (new Node_Token(yytext));
-{token_byte}      yylval.NodeToken = (new Node_Token(yytext));
-{token_b}         yylval.NodeToken = (new Node_Token(yytext));
-{token_bool}      yylval.NodeToken = (new Node_Token(yytext));
-{token_and}       yylval.NodeToken = (new Node_Token(yytext));
-{token_or}        yylval.NodeToken = (new Node_Token(yytext));
-{token_not}       yylval.NodeToken = (new Node_Token(yytext));
-{token_true}      yylval.NodeToken = (new Node_Token(yytext));
-{token_false}     yylval.NodeToken = (new Node_Token(yytext));
-{token_return}    yylval.NodeToken = (new Node_Token(yytext));
-{token_if}        yylval.NodeToken = (new Node_Token(yytext));
-{token_else}      yylval.NodeToken = (new Node_Token(yytext));
-{token_while}     yylval.NodeToken = (new Node_Token(yytext));
-{token_break}     yylval.NodeToken = (new Node_Token(yytext));
-{token_continue}  yylval.NodeToken = (new Node_Token(yytext));
-{token_sc}        yylval.NodeToken = (new Node_Token(yytext));
-{token_lparen}    yylval.NodeToken = (new Node_Token(yytext));
-{token_rparen}    yylval.NodeToken = (new Node_Token(yytext));
-{token_lbrace}    yylval.NodeToken = (new Node_Token(yytext));
-{token_rbrace}    yylval.NodeToken = (new Node_Token(yytext));
-{token_assign}    yylval.NodeToken = (new Node_Token(yytext));
-{token_relop}     yylval.NodeToken = (new Node_Token(yytext));
-{token_equeality}    yylval.NodeToken = (new Node_Token(yytext));
-{token_binop_add}     yylval.NodeToken = (new Node_Token(yytext));
-{token_binop_mul}     yylval.NodeToken = (new Node_Token(yytext));
+{token_void}      yylval.NodeToken = (new Node_Token(yytext));return VOID;
+{token_int}       yylval.NodeToken = (new Node_Token(yytext));return INT;
+{token_byte}      yylval.NodeToken = (new Node_Token(yytext));return BYTE;
+{token_b}         yylval.NodeToken = (new Node_Token(yytext));return B;
+{token_bool}      yylval.NodeToken = (new Node_Token(yytext));return BOOL;
+{token_and}       yylval.NodeToken = (new Node_Token(yytext));return AND;
+{token_or}        yylval.NodeToken = (new Node_Token(yytext));return OR;
+{token_not}       yylval.NodeToken = (new Node_Token(yytext));return NOT;
+{token_true}      yylval.NodeToken = (new Node_Token(yytext));return TRUE;
+{token_false}     yylval.NodeToken = (new Node_Token(yytext));return FALSE;
+{token_return}    yylval.NodeToken = (new Node_Token(yytext));return RETURN;
+{token_if}        yylval.NodeToken = (new Node_Token(yytext));return IF;
+{token_else}      yylval.NodeToken = (new Node_Token(yytext));return ELSE;
+{token_while}     yylval.NodeToken = (new Node_Token(yytext));return WHILE;
+{token_break}     yylval.NodeToken = (new Node_Token(yytext));return BREAK;
+{token_continue}  yylval.NodeToken = (new Node_Token(yytext));return CONTINUE;
+{token_sc}        yylval.NodeToken = (new Node_Token(yytext));return SC;
+{token_lparen}    yylval.NodeToken = (new Node_Token(yytext));return LPAREN;
+{token_rparen}    yylval.NodeToken = (new Node_Token(yytext));return RPAREN;
+{token_lbrace}    yylval.NodeToken = (new Node_Token(yytext));return LBRACE;
+{token_rbrace}    yylval.NodeToken = (new Node_Token(yytext));return RBRACE;
+{token_assign}    yylval.NodeToken = (new Node_Token(yytext));return ASSIGN;
+{token_relop}     yylval.NodeToken = (new Node_Token(yytext));return RELOP;
+{token_equeality}    yylval.NodeToken = (new Node_Token(yytext));return EQUALITY;
+{token_binop_add}     yylval.NodeToken = (new Node_Token(yytext));return BINOP_ADD;
+{token_binop_mul}     yylval.NodeToken = (new Node_Token(yytext));return BINOP_MUL;
 
-{token_id}        {yylval.NodeToken = (new Node_Token(yytext));};
-{token_num}       yylval.NodeToken = (new Node_Token(yytext));
-{token_string}    {yylval.NodeToken = (new Node_Token(yytext));};
+{token_id}        {yylval.NodeToken = (new Node_Token(yytext));};return ID;
+{token_num}       yylval.NodeToken = (new Node_Token(yytext));return NUM;
+{token_string}    {yylval.NodeToken = (new Node_Token(yytext));};return STRING;
 
 {token_comment}              ;
 {whitespace}                 ;

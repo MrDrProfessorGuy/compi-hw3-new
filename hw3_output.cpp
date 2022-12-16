@@ -214,8 +214,9 @@ Node_ExpList::Node_ExpList(Node_Exp* node_exp, Node_Token* node_token,
 /// ############################    Node_FormalDecl    ############################///
 /// ############################################################################## ///
 
-Node_FormalDecl::Node_FormalDecl(Node_Exp_Type* node_type, Node_Token* node_token_id)
+Node_FormalDecl::Node_FormalDecl(Node_Exp* node_type, Node_Token* node_token_id)
                 : Generic_Node({node_type, node_token_id}), id_symbol(node_type->type, node_token_id->value){
+    
     if (frame_manager.find(id_symbol.name) != nullptr){
         output::errorDef(yylineno, id_symbol.name);
         exit(0);
@@ -237,6 +238,19 @@ Node_FormalsList::Node_FormalsList(Node_FormalDecl* node_formalDecl,
     parameter_list = node_formalsList->parameter_list;
     parameter_list.insert(parameter_list.begin(), node_formalDecl->id_symbol);
 }
+
+/// ############################################################################## ///
+/// ############################    Node_Formals    ############################///
+/// ############################################################################## ///
+Node_Formals::Node_Formals(): Generic_Node({}) {
+
+}
+
+Node_Formals::Node_Formals(Node_FormalsList* node_formalsList): Generic_Node({node_formalsList}) {
+    parameter_list = node_formalsList->parameter_list;
+}
+
+
 
 /// ############################################################################## ///
 /// ############################    Node_Exp_ID    ############################///
@@ -281,7 +295,27 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen,
     
 }
 
-
+Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen, Node_Token* node_rparen)
+        : Generic_Node({node_id, node_lparen, node_rparen}), func_id(Symbol::invalidSymbol()){
+    // check if func declared
+    auto id_entry = frame_manager.find(node_id->value);
+    if (id_entry == nullptr || id_entry->entry_type != DeclType::FUNC){
+        throw UndDefFuncExc(yylineno, node_id->value);
+    }
+    func_id = Symbol(id_entry->symbol.type, id_entry->symbol.name);
+    func_parameters = {};
+    // check if func prototype matches func call
+    auto func_entry = std::dynamic_pointer_cast<symTableEntryFunc>(id_entry);
+    if (func_entry->parameter_list.size() != func_parameters.size()){
+        throw PrototypeMismatchExc(yylineno, func_id.name, func_parameters);
+    }
+    for (int index = 0; index < func_entry->parameter_list.size(); index++){
+        if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
+            throw PrototypeMismatchExc(yylineno, func_id.name, func_parameters);
+        }
+    }
+    
+}
 
 
 /// ############################################################################## ///
@@ -441,8 +475,8 @@ Node_Statement_LoopMod::Node_Statement_LoopMod(Node_Token* node_loop_mod, Node_T
 /// ############################    Node_FuncDecl    ############################///
 /// ############################################################################## ///
 
-Node_FuncDecl::Node_FuncDecl(Node_Exp_Type* node_retType, Node_Token* node_id,
-                             Node_Token* node_lparen, Node_FormalsList* node_formals,
+Node_FuncDecl::Node_FuncDecl(Node_RetType* node_retType, Node_Token* node_id,
+                             Node_Token* node_lparen, Node_Formals* node_formals,
                              Node_Token* node_rparen, Node_Token* node_lbrace,
                              Node_Statement* node_statement, Node_Token* node_rbrace)
                              : Generic_Node({node_retType, node_id, node_lparen, node_formals, node_rparen, node_lbrace, node_statement, node_rbrace}){

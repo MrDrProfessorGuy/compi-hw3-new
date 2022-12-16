@@ -49,7 +49,7 @@ enum class DeclType {
     INVALID = 0, VAR, FUNC
 };
 enum class FrameType {
-    FUNC, LOOP, BLOCK, IF_ELSE
+    FUNC, LOOP, BLOCK, IF_ELSE, GLOBAL
 };
 static std::vector<std::string> TypeToSTRVec = {"INVALID", "INT", "BYTE", "BOOL", "STRING", "VOID", "TOKEN"};
 static std::string TypeToSTR(Type type){
@@ -79,59 +79,81 @@ public:
 
 class Lexception : public AppaException {
 public:
-    Lexception(long lineno) : AppaException(lineno) {};
+    
+    Lexception(long lineno) : AppaException(lineno) {
+        errorLex(lineno);
+    };
 };
 
 class SynExc : public AppaException {
 public:
-    SynExc(long lineno) : AppaException(lineno) {};
+    SynExc(long lineno) : AppaException(lineno) {
+        output::errorSyn(lineno);
+    };
 };
 
 class UndefExc : public AppaException {
 public:
-    UndefExc(long lineno, std::string &id) : AppaException(lineno) {};
+    UndefExc(long lineno, std::string &id) : AppaException(lineno) {
+        output::errorUndef(lineno, &id);
+    };
 };
 
 class DefExc : public AppaException {
 public:
-    DefExc(long lineno, std::string &id) : AppaException(lineno) {};
+    DefExc(long lineno, std::string &id) : AppaException(lineno) {
+        output::errorDef(lineno, &id);
+    };
 };
 
 class UndDefFuncExc : public AppaException {
 public:
-    UndDefFuncExc(long lineno, std::string &id) : AppaException(lineno) {};
+    UndDefFuncExc(long lineno, std::string &id) : AppaException(lineno) {
+        output::errorUndefFunc(lineno, &id);
+    };
 };
 
 class MismatchExc : public AppaException {
 public:
-    MismatchExc(long lineno) : AppaException(lineno) {};
+    MismatchExc(long lineno) : AppaException(lineno) {
+        output::errorMismatch(lineno);
+    };
 };
 
 class PrototypeMismatchExc : public AppaException {
 public:
-    PrototypeMismatchExc(long lineno, std::string id, std::vector<Type> param_types) : AppaException(lineno) {};
+    PrototypeMismatchExc(long lineno, std::string &id, std::vector<Type> param_types) : AppaException(lineno) {
+        output::errorPrototypeMismatch(lineno, &id, param_types);
+    };
 };
 
 class UnexpectedBreakExc : public AppaException {
 public:
-    UnexpectedBreakExc(long lineno) : AppaException(lineno) {};
+    UnexpectedBreakExc(long lineno) : AppaException(lineno) {
+        output::errorUnexpectedBreak(lineno);
+    };
 };
 
 class UnexpectedContinueExc : public AppaException {
 public:
-    UnexpectedContinueExc(long lineno) : AppaException(lineno) {};
+    UnexpectedContinueExc(long lineno) : AppaException(lineno) {
+        output::errorUnexpectedContinue(lineno);
+    };
 };
 
 class MainMissingExc : public AppaException {
 public:
-    MainMissingExc(long lineno) : AppaException(lineno) {};
+    MainMissingExc(long lineno) : AppaException(lineno) {
+        output::errorMainMissing(lineno);
+    };
 };
 
 class ByteTooLargeExc : public AppaException {
 public:
-    ByteTooLargeExc(long lineno) : AppaException(lineno) {};
+    ByteTooLargeExc(long lineno) : AppaException(lineno) {
+        output::errorByteTooLarge(lineno);
+    };
 };
-
 class Generic_Node;
 class symTableEntry;
 class StackEntry;
@@ -139,6 +161,7 @@ class Frame_class;
 class Node_FormalDecl;
 class Node_Exp_Type;
 class Node_Statement;
+class Node_Exp;
 
 typedef Generic_Node* Node;
 typedef std::vector<Node> NodeVector;
@@ -266,8 +289,11 @@ public:
     }
     
     SymEntry find(std::string name) {
+        Log() << "StackEntry::find(" << name <<")" << std::endl;
         auto search = entries.find(name);
+        
         if (search == entries.end()) {
+            Log() << "StackEntry::find -> NO" << std::endl;
             return nullptr;
         }
         return search->second;
@@ -298,7 +324,10 @@ public:
     Frame_class() {
         Symbol sym(Type::INVALID, "Global");
         SymEntry a = std::make_shared<symTableEntryID>(sym, DeclType::INVALID, 0);
-        frames.emplace_back(FrameType::BLOCK, false, a);
+        frames.emplace_back(FrameType::GLOBAL, false, a);
+    
+        newEntry(DeclType::FUNC, "print", Type::VOID, {Symbol(Type::STRING, "str")});
+        newEntry(DeclType::FUNC, "printi", Type::VOID, {Symbol(Type::INT, "str")});
         Log() << "Frame_class::Constructor Done" << std::endl;
     };
     ~Frame_class() = default;
@@ -309,15 +338,16 @@ public:
     
     void newEntry(DeclType entry_type, std::string name, Type id_type) {
         SymEntry entry = find(name);
-        if (entry->valid) {
+        if (entry != nullptr) {
             output::errorDef(yylineno, name);
             exit(0);
         }
         frames.back().newIdEntry(Symbol(id_type, name));
     }
     void newEntry(DeclType entry_type, std::string name, Type ret_type, std::vector<Symbol> func_params) {
+        
         SymEntry entry = find(name);
-        if (entry->valid) {
+        if (entry != nullptr) {
             output::errorDef(yylineno, name);
             exit(0);
         }
@@ -335,9 +365,11 @@ public:
         frames.emplace_back(frame_type, false, func_entry);
     }
     SymEntry find(std::string name) {
+        Log() << "frameManager::find(" << name <<")" << std::endl;
         for (auto iter = frames.rbegin(); iter != frames.rend(); ++iter) {
             SymEntry entry = iter->find(name);
-            if (entry->valid) {
+            if (entry != nullptr) {
+                //entry->print();
                 return entry;
             }
         }
@@ -433,7 +465,7 @@ public:
     Symbol id_symbol;
 /////////// Methods ///////////
     
-    Node_FormalDecl(Node_Exp_Type * node_type, Node_Token * node_token_id);
+    Node_FormalDecl(Node_Exp * node_type, Node_Token * node_token_id);
     
     ~Node_FormalDecl() = default;
     
@@ -456,12 +488,26 @@ public:
     Node_FormalsList(Node_FormalsList &) = delete;
 };
 
+class Node_Formals : public Generic_Node {
+public:
+    std::vector<Symbol> parameter_list;
+    
+    /// std::vector<std::pair<Type, std::string>> parameter_list;
+/////////// Methods ///////////
+    Node_Formals(Node_FormalsList * node_formalsList);
+    Node_Formals();
+    
+    ~Node_Formals() = default;
+    Node_Formals(Node_Formals &) = delete;
+};
+
+
 class Node_FuncDecl : public Generic_Node {
 public:
 /////////// Methods ///////////
     
-    Node_FuncDecl(Node_Exp_Type * node_retType, Node_Token * node_id, Node_Token * node_lparen,
-                  Node_FormalsList * node_formals, Node_Token * node_rparen,
+    Node_FuncDecl(Node_RetType* node_retType, Node_Token * node_id, Node_Token * node_lparen,
+                  Node_Formals * node_formals, Node_Token * node_rparen,
                   Node_Token * node_lbrace,
                   Node_Statement * node_statement, Node_Token * node_rbrace);
     
@@ -559,6 +605,7 @@ public:
     
     Node_Call(Node_Token * node_id, Node_Token * node_lparen, Node_ExpList * node_expList,
               Node_Token * node_rparen);
+    Node_Call(Node_Token * node_id, Node_Token * node_lparen, Node_Token * node_rparen);
     
     ~Node_Call() = default;
     
@@ -864,6 +911,7 @@ public:
 //#define YYSTYPE Node
     
 
+/*
 struct YYSTYPE {
     Generic_Node * ProgramNode;
     Node_Token * NodeToken;
@@ -878,9 +926,10 @@ struct YYSTYPE {
     Node_ExpList * NodeExpList;
     Node_Call * NodeCall;
 };
+*/
 
 
-    
+
 
 
 

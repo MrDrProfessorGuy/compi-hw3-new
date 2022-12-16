@@ -2,10 +2,9 @@
 
 /* Declarations section */
 
-#include "hw3_output.hpp"
+
 #include <cstdlib>
-
-
+#include "hw3_output.hpp"
 
 #define YYDEBUG 1 
 
@@ -18,8 +17,25 @@ int yyerror(const char * message);
 
 
 %}
+%code requires{
+    #include "hw3_output.hpp"
+}
 
-%define api.value.type {struct YYSTYPE}
+%union {
+    Generic_Node * ProgramNode;
+    Node_Token * NodeToken;
+    Node_RetType * NodeRetType;
+    Node_FormalDecl * NodeFormalDecl;
+    Node_Formals* NodeFormals;
+    Node_FormalsList * NodeFormalsList;
+    Node_FuncDecl * NodeFuncDecl;
+    Node_FuncsList * NodeFuncsList;
+    Node_Statement * NodeStatement;
+    Node_StatementList * NodeStatementList;
+    Node_Exp * NodeExp;
+    Node_ExpList * NodeExpList;
+    Node_Call * NodeCall;
+};
 
 
 %type <ProgramNode> Program
@@ -27,99 +43,101 @@ int yyerror(const char * message);
 %type <NodeFuncDecl> FuncDecl
 %type <NodeRetType> RetType
 %type <NodeFormalsList> FormalsList
-%type <NodeFormalsList> Formals
+%type <NodeFormals> Formals
 %type <NodeFormalDecl> FormalDecl
-%type <NodeStatementList> Statements
+%type <NodeStatement> Statements
 %type <NodeStatement> Statement
 %type <NodeExp> Type
 %type <NodeCall> Call
 %type <NodeExpList> ExpList
 %type <NodeExp> Exp
 
+%token <NodeToken> ID
+%token <NodeToken> NUM
+%token <NodeToken> STRING
 %token <NodeToken> VOID
 %token <NodeToken> INT
 %token <NodeToken> BYTE
 %token <NodeToken> B
 %token <NodeToken> BOOL
-
 %token <NodeToken> TRUE
 %token <NodeToken> FALSE
 %token <NodeToken> RETURN
-
 
 %token <NodeToken> WHILE
 %token <NodeToken> BREAK
 %token <NodeToken> CONTINUE
 %token <NodeToken> SC
 %token <NodeToken> COMMA
-%token <NodeToken> LPAREN
 
-%token <NodeToken> LBRACE
-%token <NodeToken> RBRACE
 
-%token <NodeToken> ID
-%token <NodeToken> NUM
-%token <NodeToken> STRING
+
+%right <NodeToken> LPAREN
+%left <NodeToken> RPAREN
+%right <NodeToken> ASSIGN
+
 %nonassoc <NodeToken> IF
+%nonassoc <NodeToken> ELSE
+
 
 %left <NodeToken> OR
 %left <NodeToken> AND
-%token <NodeToken> ASSIGN
 %left <NodeToken> EQUALITY
 %left <NodeToken> RELOP
 %left <NodeToken> BINOP_ADD
 %left <NodeToken> BINOP_MUL
-%precedence <NodeToken> NOT
-%precedence <NodeToken> RPAREN
-%nonassoc <NodeToken> ELSE
+%right <NodeToken> NOT
+%token <NodeToken> LBRACE
+%token <NodeToken> RBRACE
+
 
 
 
 %%
     Program: Funcs                                                              {output::printProductionRule(1);};
-    Funcs: /*epsilon*/                                                          {output::printProductionRule(2);};
+    Funcs: /*epsilon*/                                                          %empty {output::printProductionRule(2);};
     Funcs: FuncDecl Funcs                                                       {output::printProductionRule(3);};
-    FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         {output::printProductionRule(4);};
-    RetType: Type                                                               {output::printProductionRule(5);};
-    RetType:  VOID                                                              {output::printProductionRule(6);};
-    Formals: /*epsilon*/                                                        {output::printProductionRule(7);};
-    Formals: FormalsList                                                        {output::printProductionRule(8);};
-    FormalsList: FormalDecl                                                     {output::printProductionRule(9);};
-    FormalsList: FormalDecl COMMA FormalsList                                   {output::printProductionRule(10);};
-    FormalDecl: Type ID                                                         {output::printProductionRule(11);};
-    Statements: Statement                                                       {output::printProductionRule(12);};
-    Statements: Statements Statement                                            {output::printProductionRule(13);};
-    Statement: LBRACE Statements RBRACE                                         {output::printProductionRule(14);};
+    FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         {$$ = new Node_FuncDecl($1,$2,$3,$4,$5,$6,$7,$8);output::printProductionRule(4);};
+    RetType: Type                                                               {$$ = new Node_RetType({$1}, ($1)->type);output::printProductionRule(5);};
+    RetType:  VOID                                                              {$$ = new Node_RetType({$1}, Type::VOID);output::printProductionRule(6);};
+    Formals: /*epsilon*/                                                        %empty {$$ = new Node_Formals();output::printProductionRule(7);};
+    Formals: FormalsList                                                        {$$ = new Node_Formals($1);output::printProductionRule(8);};
+    FormalsList: FormalDecl                                                     {$$ = new Node_FormalsList($1);output::printProductionRule(9);};
+    FormalsList: FormalDecl COMMA FormalsList                                   {$$ = new Node_FormalsList($1, $2, $3);output::printProductionRule(10);};
+    FormalDecl: Type ID                                                         {$$ = new Node_FormalDecl($1, $2);output::printProductionRule(11);};
+    Statements: Statement                                                       {$$ = new Node_Statement({$1});output::printProductionRule(12);};
+    Statements: Statements Statement                                            {$$ = new Node_Statement({$1, $2});output::printProductionRule(13);};
+    Statement: LBRACE Statements RBRACE                                         {$$ = new Node_Statement({$1, $2, $3});output::printProductionRule(14);};
     Statement: Type ID SC                                                       {output::printProductionRule(15);$$ = new Node_Statement_ID_Decl($1, $2, $3);};
     Statement: Type ID ASSIGN Exp SC                                            {output::printProductionRule(16);$$ = new Node_Statement_ID_Decl($1, $2, $3, $4, $5);};
-    Statement: ID ASSIGN Exp SC                                                 {output::printProductionRule(17);};
-    Statement: Call SC                                                          {output::printProductionRule(18);};
-    Statement: RETURN SC                                                        {output::printProductionRule(19);};
-    Statement: RETURN Exp SC                                                    {output::printProductionRule(20);};
-    Statement: IF LPAREN Exp RPAREN Statement %prec IF                          {output::printProductionRule(21);};
-    Statement: IF LPAREN Exp RPAREN Statement ELSE Statement                    {output::printProductionRule(22);};
-    Statement: WHILE LPAREN Exp RPAREN Statement                                {output::printProductionRule(23);};
-    Statement: BREAK SC                                                         {output::printProductionRule(24);};
-    Statement: CONTINUE SC                                                      {output::printProductionRule(25);};
-    Call: ID LPAREN ExpList RPAREN                                              {output::printProductionRule(26);};
-    Call: ID LPAREN RPAREN                                                      {output::printProductionRule(27);};
-    ExpList: Exp                                                                {output::printProductionRule(28);};
-    ExpList: Exp COMMA ExpList                                                  {output::printProductionRule(29);};
-    Type: INT                                                                   {output::printProductionRule(30);};
-    Type: BYTE                                                                  {output::printProductionRule(31);};
-    Type: BOOL                                                                  {output::printProductionRule(32);};
-    Exp: LPAREN Exp RPAREN                                                      {output::printProductionRule(33);};
-    Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                      {output::printProductionRule(34);};
-    Exp: Exp BINOP_ADD Exp                                                      {output::printProductionRule(35);};
-    Exp: Exp BINOP_MUL Exp                                                      {output::printProductionRule(35);};
-    Exp: ID                                                                     {output::printProductionRule(36);$$ = new Node_Exp_ID($1);};
-    Exp: Call                                                                   {output::printProductionRule(37);};
-    Exp: NUM                                                                    {output::printProductionRule(38);};
-    Exp: NUM B                                                                  {output::printProductionRule(39);};
-    Exp: STRING                                                                 {output::printProductionRule(40);};
-    Exp: TRUE                                                                   {output::printProductionRule(41);};
-    Exp: FALSE                                                                  {output::printProductionRule(42);};
-    Exp: NOT Exp                                                                {output::printProductionRule(43);};
+    Statement: ID ASSIGN Exp SC                                                 {$$ = new Node_Statement_ID_Assign($1,$2,$3,$4);output::printProductionRule(17);};
+    Statement: Call SC                                                          {$$ = new Node_Statement_Call($1,$2);output::printProductionRule(18);};
+    Statement: RETURN SC                                                        {$$ = new Node_Statement_Ret($1,$2);output::printProductionRule(19);};
+    Statement: RETURN Exp SC                                                    {$$ = new Node_Statement_Ret($1,$2,$3);output::printProductionRule(20);};
+    Statement: IF LPAREN Exp RPAREN Statement %prec IF                          {$$ = new Node_Statement_IF($1,$2,$3,$4,$5);output::printProductionRule(21);};
+    Statement: IF LPAREN Exp RPAREN Statement ELSE Statement                    {$$ = new Node_Statement_IF($1,$2,$3,$4,$5,$6,$7);output::printProductionRule(22);};
+    Statement: WHILE LPAREN Exp RPAREN Statement                                {$$ = new Node_Statement_While($1,$2,$3,$4,$5);output::printProductionRule(23);};
+    Statement: BREAK SC                                                         {$$ = new Node_Statement_LoopMod($1,$2);output::printProductionRule(24);};
+    Statement: CONTINUE SC                                                      {$$ = new Node_Statement_LoopMod($1,$2);output::printProductionRule(25);};
+    Call: ID LPAREN ExpList RPAREN                                              {$$ = new Node_Call($1,$2,$3,$4);output::printProductionRule(26);};
+    Call: ID LPAREN RPAREN                                                      {$$ = new Node_Call($1,$2,$3);output::printProductionRule(27);};
+    ExpList: Exp                                                                {$$ = new Node_ExpList($1);output::printProductionRule(28);};
+    ExpList: Exp COMMA ExpList                                                  {$$ = new Node_ExpList($1,$2,$3);output::printProductionRule(29);};
+    Type: INT                                                                   {$$ = new Node_Exp_Type({$1}, Type::INT);output::printProductionRule(30);};
+    Type: BYTE                                                                  {$$ = new Node_Exp_Type({$1}, Type::BYTE);output::printProductionRule(31);};
+    Type: BOOL                                                                  {$$ = new Node_Exp_Type({$1}, Type::BOOL);output::printProductionRule(32);};
+    Exp: LPAREN Exp RPAREN                                                      {$$ = new Node_Exp({$1,$2,$3},$2->type);output::printProductionRule(33);};
+    Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                      {$$ = new Node_Exp_IfElse({$1,$2,$3,$4,$5,$6,$7});output::printProductionRule(34);};
+    Exp: Exp BINOP_ADD Exp                                                      {$$ = new Node_Exp_Binop({$1,$2,$3});output::printProductionRule(35);};
+    Exp: Exp BINOP_MUL Exp                                                      {$$ = new Node_Exp_Binop({$1,$2,$3});output::printProductionRule(35);};
+    Exp: ID                                                                     {$$ = new Node_Exp_ID($1);output::printProductionRule(36);$$ = new Node_Exp_ID($1);};
+    Exp: Call                                                                   {$$ = new Node_Exp_Call({$1});output::printProductionRule(37);};
+    Exp: NUM                                                                    {$$ = new Node_Exp_NUM({$1}, Type::INT);output::printProductionRule(38);};
+    Exp: NUM B                                                                  {$$ = new Node_Exp_NUM({$1}, Type::BYTE);output::printProductionRule(39);};
+    Exp: STRING                                                                 {$$ = new Node_Exp_Str({$1});output::printProductionRule(40);};
+    Exp: TRUE                                                                   {$$ = new Node_Exp_Bool({$1});output::printProductionRule(41);};
+    Exp: FALSE                                                                  {$$ = new Node_Exp_Bool({$1});output::printProductionRule(42);};
+    Exp: NOT Exp                                                                {$$ = new Node_Exp_Bool({$1, $2});output::printProductionRule(43);};
     Exp: Exp AND Exp                                                            {output::printProductionRule(44);};
     Exp: Exp OR Exp                                                             {output::printProductionRule(44);};
     Exp: Exp RELOP Exp                                                          {output::printProductionRule(45);};
@@ -128,7 +146,7 @@ int yyerror(const char * message);
 %%
 
 int main(){
-	yydebug = 1;
+	yydebug = 0;
 	int token;
 	Frame_class::getInstance();
 	while ((token = yyparse())) {

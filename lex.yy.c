@@ -861,147 +861,147 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 87 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return VOID;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 88 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return INT;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 89 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return BYTE;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 90 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return B;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 91 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return BOOL;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 92 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return AND;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 93 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return OR;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 94 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return NOT;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 95 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return TRUE;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 96 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return FALSE;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 97 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return RETURN;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 98 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return IF;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 99 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return ELSE;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 100 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return WHILE;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 101 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return BREAK;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 102 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return CONTINUE;
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 103 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return SC;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 104 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return LPAREN;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 105 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return RPAREN;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 106 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return LBRACE;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 107 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return RBRACE;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 108 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return ASSIGN;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 109 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return RELOP;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 110 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return EQUALITY;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 111 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return BINOP_ADD;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 112 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return BINOP_MUL;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 114 "scanner.lex"
-{yylval.NodeToken = (new Node_Token(yytext));};
+{yylval.NodeToken = (new Node_Token(yytext));};return ID;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 115 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+yylval.NodeToken = (new Node_Token(yytext));return NUM;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 116 "scanner.lex"
-{yylval.NodeToken = (new Node_Token(yytext));};
+{yylval.NodeToken = (new Node_Token(yytext));};return STRING;
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */

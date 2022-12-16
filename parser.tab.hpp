@@ -44,6 +44,12 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 20 "parser.ypp"
+
+    #include "hw3_output.hpp"
+
+#line 53 "parser.tab.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -54,43 +60,64 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    VOID = 258,                    /* VOID  */
-    INT = 259,                     /* INT  */
-    BYTE = 260,                    /* BYTE  */
-    B = 261,                       /* B  */
-    BOOL = 262,                    /* BOOL  */
-    TRUE = 263,                    /* TRUE  */
-    FALSE = 264,                   /* FALSE  */
-    RETURN = 265,                  /* RETURN  */
-    WHILE = 266,                   /* WHILE  */
-    BREAK = 267,                   /* BREAK  */
-    CONTINUE = 268,                /* CONTINUE  */
-    SC = 269,                      /* SC  */
-    COMMA = 270,                   /* COMMA  */
-    LPAREN = 271,                  /* LPAREN  */
-    LBRACE = 272,                  /* LBRACE  */
-    RBRACE = 273,                  /* RBRACE  */
-    ID = 274,                      /* ID  */
-    NUM = 275,                     /* NUM  */
-    STRING = 276,                  /* STRING  */
+    ID = 258,                      /* ID  */
+    NUM = 259,                     /* NUM  */
+    STRING = 260,                  /* STRING  */
+    VOID = 261,                    /* VOID  */
+    INT = 262,                     /* INT  */
+    BYTE = 263,                    /* BYTE  */
+    B = 264,                       /* B  */
+    BOOL = 265,                    /* BOOL  */
+    TRUE = 266,                    /* TRUE  */
+    FALSE = 267,                   /* FALSE  */
+    RETURN = 268,                  /* RETURN  */
+    WHILE = 269,                   /* WHILE  */
+    BREAK = 270,                   /* BREAK  */
+    CONTINUE = 271,                /* CONTINUE  */
+    SC = 272,                      /* SC  */
+    COMMA = 273,                   /* COMMA  */
+    LPAREN = 274,                  /* LPAREN  */
+    RPAREN = 275,                  /* RPAREN  */
+    ASSIGN = 276,                  /* ASSIGN  */
     IF = 277,                      /* IF  */
-    OR = 278,                      /* OR  */
-    AND = 279,                     /* AND  */
-    ASSIGN = 280,                  /* ASSIGN  */
+    ELSE = 278,                    /* ELSE  */
+    OR = 279,                      /* OR  */
+    AND = 280,                     /* AND  */
     EQUALITY = 281,                /* EQUALITY  */
     RELOP = 282,                   /* RELOP  */
     BINOP_ADD = 283,               /* BINOP_ADD  */
     BINOP_MUL = 284,               /* BINOP_MUL  */
     NOT = 285,                     /* NOT  */
-    RPAREN = 286,                  /* RPAREN  */
-    ELSE = 287                     /* ELSE  */
+    LBRACE = 286,                  /* LBRACE  */
+    RBRACE = 287                   /* RBRACE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef struct YYSTYPE YYSTYPE;
+union YYSTYPE
+{
+#line 24 "parser.ypp"
+
+    Generic_Node * ProgramNode;
+    Node_Token * NodeToken;
+    Node_RetType * NodeRetType;
+    Node_FormalDecl * NodeFormalDecl;
+    Node_Formals* NodeFormals;
+    Node_FormalsList * NodeFormalsList;
+    Node_FuncDecl * NodeFuncDecl;
+    Node_FuncsList * NodeFuncsList;
+    Node_Statement * NodeStatement;
+    Node_StatementList * NodeStatementList;
+    Node_Exp * NodeExp;
+    Node_ExpList * NodeExpList;
+    Node_Call * NodeCall;
+
+#line 118 "parser.tab.hpp"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
