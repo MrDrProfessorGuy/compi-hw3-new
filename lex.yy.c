@@ -873,142 +873,142 @@ yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 case 3:
 YY_RULE_SETUP
 #line 89 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 90 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 91 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 92 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 93 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 94 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 95 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 96 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 97 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 98 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 99 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 100 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 101 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 102 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 103 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 104 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 105 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 106 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 107 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 108 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 109 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 110 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 111 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 112 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 113 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 115 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 116 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 117 "scanner.lex"
-return new Node_Token(std::string(yytext));
+yylval.NodeToken = (CreateNode(Node_Token)(yytext));
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
