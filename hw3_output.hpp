@@ -8,11 +8,17 @@
 #include <memory>
 #include <map>
 #include <ostream>
+#include "iostream"
+
+static std::ostream& Log(){
+    return std::cout;
+}
 
 //using namespace std;
 extern int yylineno;
 
 namespace output{
+    extern const std::string rules[];
     void endScope();
     void printID(const std::string& id, int offset, const std::string& type);
 
@@ -32,7 +38,7 @@ namespace output{
     void errorUnexpectedContinue(int lineno);
     void errorMainMissing();
     void errorByteTooLarge(int lineno, const std::string& value);
-
+    void printProductionRule(const int ruleno);
 }
 
 
@@ -45,6 +51,17 @@ enum class DeclType {
 enum class FrameType {
     FUNC, LOOP, BLOCK, IF_ELSE
 };
+static std::vector<std::string> TypeToSTRVec = {"INVALID", "INT", "BYTE", "BOOL", "STRING", "VOID", "TOKEN"};
+static std::string TypeToSTR(Type type){
+    return TypeToSTRVec.at(static_cast<unsigned long>(type));
+}
+static std::vector<std::string> typeToStrVector(std::vector<Type> vec){
+    std::vector<std::string> str_vec;
+    for (auto iter = vec.begin(); iter != vec.end(); iter++){
+        str_vec.push_back(TypeToSTR(*iter));
+    }
+    return str_vec;
+}
 
 class AppaException : public std::exception {
 public:
@@ -197,10 +214,16 @@ public:
             : symTableEntry(sym, entry_type, entry_offset, true) {
         parameter_list = func_params;
     }
-    
     ~symTableEntryFunc() = default;
-    
     symTableEntryFunc(symTableEntryFunc &entry) = default;
+    
+    std::vector<Type> paramsToTypeVec() const{
+        std::vector<Type> type_vec;
+        for (auto iter = parameter_list.begin(); iter != parameter_list.end(); iter++){
+            type_vec.push_back(iter->type);
+        }
+        return type_vec;
+    }
     
     void print() const override;
 };
@@ -276,6 +299,7 @@ public:
         Symbol sym(Type::INVALID, "Global");
         SymEntry a = std::make_shared<symTableEntryID>(sym, DeclType::INVALID, 0);
         frames.emplace_back(FrameType::BLOCK, false, a);
+        Log() << "Frame_class::Constructor Done" << std::endl;
     };
     ~Frame_class() = default;
     Frame_class(Frame_class &) = delete;
@@ -321,7 +345,8 @@ public:
     }
     
     void closeFrame(){
-        
+        std::cout << frames.back();
+        frames.pop_back();
     }
     
     void removeEntryFromCurrentScope(std::string name) {
@@ -375,6 +400,7 @@ public:
     
     Node_Token(std::string token_value) : Generic_Node({}) {
         value = token_value;
+        Log() << "Node_Token:: " << token_value << std::endl;
     }
     
     ~Node_Token() = default;

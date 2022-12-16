@@ -6,6 +6,62 @@
 
 using namespace std;
 
+
+const std::string output::rules[] = {
+        "Program -> Funcs",
+        "Funcs -> epsilon",
+        "Funcs -> FuncDecl Funcs",
+        "FuncDecl -> RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE",
+        "RetType -> Type",
+        "RetType ->  VOID",
+        "Formals -> epsilon",
+        "Formals -> FormalsList",
+        "FormalsList -> FormalDecl",
+        "FormalsList -> FormalDecl COMMA FormalsList",
+        "FormalDecl -> Type ID",
+        "Statements -> Statement",
+        "Statements -> Statements Statement",
+        "Statement -> LBRACE Statements RBRACE",
+        "Statement -> Type ID SC",
+        "Statement -> Type ID ASSIGN Exp SC",
+        "Statement -> ID ASSIGN Exp SC",
+        "Statement -> Call SC",
+        "Statement -> RETURN SC",
+        "Statement -> RETURN Exp SC",
+        "Statement -> IF LPAREN Exp RPAREN Statement",
+        "Statement -> IF LPAREN Exp RPAREN Statement ELSE Statement",
+        "Statement -> WHILE LPAREN Exp RPAREN Statement",
+        "Statement -> BREAK SC",
+        "Statement -> CONTINUE SC",
+        "Call -> ID LPAREN ExpList RPAREN",
+        "Call -> ID LPAREN RPAREN",
+        "ExpList -> Exp",
+        "ExpList -> Exp COMMA ExpList",
+        "Type -> INT",
+        "Type -> BYTE",
+        "Type -> BOOL",
+        "Exp -> LPAREN Exp RPAREN",
+        "Exp -> Exp BINOP Exp",
+        "Exp -> ID",
+        "Exp -> Call",
+        "Exp -> NUM",
+        "Exp -> NUM B",
+        "Exp -> STRING",
+        "Exp -> TRUE",
+        "Exp -> FALSE",
+        "Exp -> NOT Exp",
+        "Exp -> Exp AND Exp",
+        "Exp -> Exp OR Exp",
+        "Exp -> Exp RELOP Exp",
+        "Exp -> LPAREN Type RPAREN Exp"
+};
+
+void output::printProductionRule(const int ruleno) {
+    std::cout << ruleno << ": " << output::rules[ruleno-1] << "\n";
+}
+
+
+
 Frame_class frame_manager;
 
 Frame_class& Frame_class::getInstance() {
@@ -130,12 +186,12 @@ bool valid_implicit_cast(Type to, Type from) {
 /// ############################################################################## ///
 
 void symTableEntryID::print() const{
-    output::printID(symbol.name, offset, "Type placeholder");
+    output::printID(symbol.name, offset, TypeToSTR(symbol.type));
 }
 
 void symTableEntryFunc::print() const{
-    std::vector<string> a = {"arguments"};
-    cout << symbol.name << " " << output::makeFunctionType( "Type placeholder",a);
+    std::vector<string> a = typeToStrVector(paramsToTypeVec());
+    cout << symbol.name << " " << output::makeFunctionType(TypeToSTR(symbol.type),a);
 }
 
 /// ############################################################################## ///
@@ -258,9 +314,10 @@ Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp* node_type,
     frame_manager.newEntry(DeclType::VAR, node_token->value, node_type_p->type);
     
     if (!valid_implicit_cast(node_type_p->type, node_exp->type)){
-        frame_manager.removeEntryFromCurrentScope(node_token->value);
+        //frame_manager.removeEntryFromCurrentScope(node_token->value);
         output::errorMismatch(yylineno);
     }
+    Log() << "Node_Statement_ID_Decl:: " << TypeToSTR(node_type->type) << " " << node_token->value << std::endl;
 }
 
 

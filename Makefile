@@ -3,6 +3,7 @@
 all: clean
 	flex scanner.lex
 	/usr/local/opt/bison/bin/bison -Wcounterexamples -d parser.ypp
+	g++ -std=c++17 -o hw3 *.c *.cpp
 clean:
 	rm -f lex.yy.c
 	rm -f parser.tab.*pp
