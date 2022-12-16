@@ -6,6 +6,13 @@
 
 using namespace std;
 
+Frame_class frame_manager;
+
+Frame_class& Frame_class::getInstance() {
+    return frame_manager;
+}
+
+
 void output::endScope(){
     cout << "---end scope---" << endl;
 }
@@ -89,12 +96,47 @@ void output::errorByteTooLarge(int lineno, const string& value) {
 }
 
 
+bool valid_cast(Type to, Type from){
+    if (from == to){
+        return true;
+    }
+    if (to == Type::INT || to == Type::BYTE){
+        if (from == Type::INT || from == Type::BYTE){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool valid_implicit_cast(Type to, Type from) {
+    if (to == from) {
+        return true;
+    }
+    if (to == Type::INT && from == Type::BYTE) {
+        return true;
+    }
+    return false;
+}
+
+
 /// ############################################################################## ///
 /// ############################    Symbol    ############################///
 /// ############################################################################## ///
 
 
 
+/// ############################################################################## ///
+/// ############################    symTableEntryID    ############################///
+/// ############################################################################## ///
+
+void symTableEntryID::print() const{
+    output::printID(symbol.name, offset, "Type placeholder");
+}
+
+void symTableEntryFunc::print() const{
+    std::vector<string> a = {"arguments"};
+    cout << symbol.name << " " << output::makeFunctionType( "Type placeholder",a);
+}
 
 /// ############################################################################## ///
 /// ############################    Node_ExpList    ############################///
@@ -141,6 +183,22 @@ Node_FormalsList::Node_FormalsList(Node_FormalDecl* node_formalDecl,
 }
 
 /// ############################################################################## ///
+/// ############################    Node_Exp_ID    ############################///
+/// ############################################################################## ///
+
+Node_Exp_ID::Node_Exp_ID(Node_Token* node_token) : Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()) {
+    auto node_token_id = (Node_Token*)(children[0]);
+    auto entry = std::dynamic_pointer_cast<symTableEntryID>(frame_manager.find(node_token_id->value));
+    if (!entry->valid) {
+        throw UndefExc(yylineno, node_token_id->value);
+    }
+    set_type(entry->symbol.type);
+    id = entry->symbol;
+    
+}
+
+
+/// ############################################################################## ///
 /// ############################    Node_Call    ############################///
 /// ############################################################################## ///
 
@@ -182,23 +240,24 @@ Node_Statement::Node_Statement(NodeVector children): Generic_Node(children) {
 /// ############################    Node_Statement_ID_Decl    ############################///
 /// ############################################################################## ///
 
-Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp_Type* node_type,
+Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp *node_type,
                                                Node_Token* node_token,
                                                Node_Token* node_sc)
                                                : Node_Statement({node_type, node_token, node_sc}) {
     frame_manager.newEntry(DeclType::VAR, node_token->value, node_type->type);
 }
 
-Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp_Type* node_type,
+Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp* node_type,
                                                Node_Token* node_token,
                                                Node_Token* node_assign,
                                                Node_Exp* node_exp,
                                                Node_Token* node_sc)
                                                : Node_Statement({node_type, node_token, node_assign, node_exp, node_sc}) {
     
-    frame_manager.newEntry(DeclType::VAR, node_token->value, node_type->type);
+    Node_Exp_Type* node_type_p = dynamic_cast<Node_Exp_Type*>(node_type);
+    frame_manager.newEntry(DeclType::VAR, node_token->value, node_type_p->type);
     
-    if (!valid_implicit_cast(node_type->type, node_exp->type)){
+    if (!valid_implicit_cast(node_type_p->type, node_exp->type)){
         frame_manager.removeEntryFromCurrentScope(node_token->value);
         output::errorMismatch(yylineno);
     }
@@ -223,6 +282,7 @@ Node_Statement_ID_Assign::Node_Statement_ID_Assign(Node_Token* node_id,
     if (!valid_implicit_cast(id_entry->symbol.type, node_exp->type)){
         throw MismatchExc(yylineno);
     }
+    
     
 }
 

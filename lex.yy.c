@@ -538,13 +538,13 @@ char *yytext;
 #include <stdio.h>
 #include "parser.tab.hpp"
 #include "hw3_output.hpp"
+
 #include "iostream"
 //printf("FLEX:: %d: %s\n", yylineno, yytext);
 //#define newToken(token_type) token_value = yytext;return token_type;
 #define newToken(token_type) token_value = yytext;return token_type;
 #define Comment token_value = "\\\\"; return COMMENT;
 
-using namespace std;
 
 std::string token_value;
 
@@ -991,7 +991,7 @@ yylval.NodeToken = (new Node_Token(yytext));
 case 27:
 YY_RULE_SETUP
 #line 114 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+{yylval.NodeToken = (new Node_Token(yytext));};
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
@@ -1001,7 +1001,7 @@ yylval.NodeToken = (new Node_Token(yytext));
 case 29:
 YY_RULE_SETUP
 #line 116 "scanner.lex"
-yylval.NodeToken = (new Node_Token(yytext));
+{yylval.NodeToken = (new Node_Token(yytext));};
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */

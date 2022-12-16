@@ -41,3 +41,9 @@ cmake-build-debug/cmake_install.cmake
 .idea/misc.xml
 .idea/compi-hw3 new.iml
 .idea/.name
+.DS_Store
+cmake-build-debug/.DS_Store
+cmake-build-debug/CMakeFiles/3.19.2/CompilerIdC/a.out
+cmake-build-debug/CMakeFiles/3.19.2/CompilerIdCXX/a.out
+cmake-build-debug/CMakeFiles/compi_hw3_new.dir/C.includecache
+cmake-build-debug/CMakeFiles/compi_hw3_new.dir/parser.tab.cpp.o

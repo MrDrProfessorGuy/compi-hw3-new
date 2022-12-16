@@ -2,11 +2,12 @@
 #ifndef _236360_3_
 #define _236360_3_
 
+#include <string>
 
 #include <vector>
-#include <string>
 #include <memory>
 #include <map>
+#include <ostream>
 
 //using namespace std;
 extern int yylineno;
@@ -166,7 +167,12 @@ public:
     
     symTableEntry(symTableEntry &entry) = default;
     
-    virtual void stam() {};
+    virtual void print() const=0;
+    
+    friend std::ostream &operator<<(std::ostream &os, const symTableEntry &entry) {
+        entry.print();
+        return os;
+    };
 };
 
 class symTableEntryID : public symTableEntry {
@@ -176,10 +182,11 @@ public:
                                                                                         entry_offset, true) {
         
     }
-    
     ~symTableEntryID() = default;
-    
     symTableEntryID(symTableEntryID &entry) = default;
+    
+    void print() const override;
+    
 };
 
 class symTableEntryFunc : public symTableEntry {
@@ -194,6 +201,8 @@ public:
     ~symTableEntryFunc() = default;
     
     symTableEntryFunc(symTableEntryFunc &entry) = default;
+    
+    void print() const override;
 };
 
 class StackEntry {
@@ -203,6 +212,8 @@ public:
     SymEntry scope_func_entry;
     bool inside_loop;
     dict entries;
+    std::vector<SymEntry> entries_vector;
+    
     
     StackEntry(FrameType frame_type, bool in_loop, SymEntry &scope_func) {
         this->frame_type = frame_type;
@@ -219,13 +230,16 @@ public:
         next_offset++;
         
         entries.insert({entry->symbol.name, entry});
+        entries_vector.push_back(entry);
+        entry->print();
     }
-    
     void newFuncEntry(Symbol sym, std::vector<Symbol> func_params) {
         auto entry = std::make_shared<symTableEntryFunc>(sym, DeclType::FUNC, next_offset, func_params);
         next_offset++;
         
         entries.insert({entry->symbol.name, entry});
+        entries_vector.push_back(entry);
+        entry->print();
     }
     
     SymEntry find(std::string name) {
@@ -235,7 +249,6 @@ public:
         }
         return search->second;
     }
-    
     void removeEntry(std::string name) {
         auto search = entries.find(name);
         if (search == entries.end()) {
@@ -243,17 +256,32 @@ public:
         }
         entries.extract(search);
     }
+    
+    friend std::ostream &operator<<(std::ostream &os, const StackEntry &frame) {
+        output::endScope();
+        for (auto iter = frame.entries_vector.begin(); iter != frame.entries_vector.end(); iter++) {
+            os << iter->get();
+        }
+        return os;
+    }
+    
+    
 };
 
 class Frame_class {
 public:
     frame frames;
     
-    Frame_class() = default;
-    
+    Frame_class() {
+        Symbol sym(Type::INVALID, "Global");
+        SymEntry a = std::make_shared<symTableEntryID>(sym, DeclType::INVALID, 0);
+        frames.emplace_back(FrameType::BLOCK, false, a);
+    };
     ~Frame_class() = default;
-    
     Frame_class(Frame_class &) = delete;
+    
+    static Frame_class &getInstance();
+    
     
     void newEntry(DeclType entry_type, std::string name, Type id_type) {
         SymEntry entry = find(name);
@@ -263,7 +291,6 @@ public:
         }
         frames.back().newIdEntry(Symbol(id_type, name));
     }
-    
     void newEntry(DeclType entry_type, std::string name, Type ret_type, std::vector<Symbol> func_params) {
         SymEntry entry = find(name);
         if (entry->valid) {
@@ -272,20 +299,17 @@ public:
         }
         frames.back().newFuncEntry(Symbol(ret_type, name), func_params);
     }
-    
     void newFrame(FrameType frame_type) {
         auto &curr_frame = frames.back();
         bool in_loop = (frame_type == FrameType::LOOP) || curr_frame.inside_loop;
         frames.emplace_back(frame_type, in_loop, curr_frame.scope_func_entry);
     }
-    
     void newFrame(FrameType frame_type, std::string scope_func) {
         assert(frame_type == FrameType::FUNC);
         SymEntry func_entry = find(scope_func);
         assert(func_entry != nullptr);
         frames.emplace_back(frame_type, false, func_entry);
     }
-    
     SymEntry find(std::string name) {
         for (auto iter = frames.rbegin(); iter != frames.rend(); ++iter) {
             SymEntry entry = iter->find(name);
@@ -296,39 +320,22 @@ public:
         return nullptr;
     }
     
+    void closeFrame(){
+        
+    }
+    
     void removeEntryFromCurrentScope(std::string name) {
         auto &scope = frames.back();
         scope.removeEntry(name);
     }
-    
     bool inLoop() {
         return frames.back().inside_loop;
     }
-    
     Type scopeRetType() {
         return frames.back().scope_func_entry->symbol.type;
     }
 };
 
-bool valid_cast(Type to, Type from);
-
-bool valid_implicit_cast(Type to, Type from) {
-    if (to == from) {
-        return true;
-    }
-    if (to == Type::INT && from == Type::BYTE) {
-        return true;
-    }
-    return false;
-}
-
-Frame_class frame_manager;
-std::vector<Node> TreeNodes;
-
-Node AddNode(Node node) {
-    TreeNodes.push_back(node);
-    return TreeNodes.back();
-}
 
 class Generic_Node {
     long node_tree_index;
@@ -344,22 +351,16 @@ public:
     }
     
     ~Generic_Node() = default;
-    
     Generic_Node(Generic_Node &) = delete;
     
     void setChildren(NodeVector vector) {
         for (int index = 0; index < vector.size(); index++) {
             children.push_back(vector[index]);
-            children[index]->setParent(get());
+            children[index]->setParent(this);
         }
     }
-    
     void setParent(Node parent) {
         this->parent = parent;
-    }
-    
-    Node get() {
-        return TreeNodes[node_tree_index];
     }
     
     virtual void stam() {};
@@ -494,12 +495,17 @@ public:
     
     Node_Exp(Node_Exp &) = delete;
     
-    void set_type(Type exp_type);
+    void set_type(Type exp_type){
+        type = exp_type;
+    }
     
     bool typeCheck(std::vector<Type> type_list){
-        for (auto iter = type_list.begin()){
-            
+        for (auto iter = type_list.begin(); iter != type_list.end(); iter++){
+            if (type == *iter){
+                return true;
+            }
         }
+        return false;
     }
 };
 
@@ -661,18 +667,8 @@ class Node_Exp_ID : public Node_Exp {
 public:
     Symbol id;
     
-    Node_Exp_ID(Node_Token node_token) : Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()) {
-        auto node_token_id = (Node_Token*)(children[0]);
-        auto entry = std::dynamic_pointer_cast<symTableEntryID>(frame_manager.find(node_token_id->value));
-        if (!entry->valid) {
-            throw UndefExc(yylineno, node_token_id->value);
-        }
-        set_type(entry->symbol.type);
-        id = entry->symbol;
-    }
-    
+    Node_Exp_ID(Node_Token* node_token);
     ~Node_Exp_ID() = default;
-    
     Node_Exp_ID(Node_Exp_ID &) = delete;
     
 };
@@ -747,10 +743,10 @@ class Node_Statement_ID_Decl : public Node_Statement {
 public:
 
 /////////// Methods ///////////
-    Node_Statement_ID_Decl(Node_Exp_Type * node_type, Node_Token * node_token,
+    Node_Statement_ID_Decl(Node_Exp *node_type, Node_Token * node_token,
                            Node_Token * node_sc);
     
-    Node_Statement_ID_Decl(Node_Exp_Type * node_type, Node_Token * node_token,
+    Node_Statement_ID_Decl(Node_Exp * node_type, Node_Token * node_token,
                            Node_Token * node_assign,
                            Node_Exp * node_exp, Node_Token * node_sc);
     
@@ -841,7 +837,8 @@ public:
 
 //#define YYSTYPE Node
     
-union YYSTYPE {
+
+struct YYSTYPE {
     Generic_Node * ProgramNode;
     Node_Token * NodeToken;
     Node_RetType * NodeRetType;
@@ -855,6 +852,7 @@ union YYSTYPE {
     Node_ExpList * NodeExpList;
     Node_Call * NodeCall;
 };
+
 
     
 

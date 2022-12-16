@@ -1271,7 +1271,7 @@ yyreduce:
 
   case 12: /* FormalDecl: Type ID  */
 #line 89 "parser.ypp"
-                                                                                {output::errorLex(11);}
+                                                                                {;}
 #line 1276 "parser.tab.cpp"
     break;
 
@@ -1295,13 +1295,13 @@ yyreduce:
 
   case 16: /* Statement: Type ID SC  */
 #line 93 "parser.ypp"
-                                                                                {output::errorLex(15);}
+                                                                                {(yyval.NodeStatement) = new Node_Statement_ID_Decl((yyvsp[-2].NodeExp), (yyvsp[-1].NodeToken), (yyvsp[0].NodeToken));}
 #line 1300 "parser.tab.cpp"
     break;
 
   case 17: /* Statement: Type ID ASSIGN Exp SC  */
 #line 94 "parser.ypp"
-                                                                                {output::errorLex(16);}
+                                                                                {(yyval.NodeStatement) = new Node_Statement_ID_Decl((yyvsp[-4].NodeExp), (yyvsp[-3].NodeToken), (yyvsp[-2].NodeToken), (yyvsp[-1].NodeExp), (yyvsp[0].NodeToken));}
 #line 1306 "parser.tab.cpp"
     break;
 
@@ -1331,7 +1331,7 @@ yyreduce:
 
   case 22: /* Statement: IF LPAREN Exp RPAREN Statement  */
 #line 99 "parser.ypp"
-                                                                                        {output::errorLex(21);}
+                                                                                {output::errorLex(21);}
 #line 1336 "parser.tab.cpp"
     break;
 
@@ -1409,7 +1409,7 @@ yyreduce:
 
   case 35: /* Exp: Exp IF LPAREN Exp RPAREN ELSE Exp  */
 #line 112 "parser.ypp"
-                                                                               {output::errorLex(34);}
+                                                                                {output::errorLex(34);}
 #line 1414 "parser.tab.cpp"
     break;
 
@@ -1427,7 +1427,7 @@ yyreduce:
 
   case 38: /* Exp: ID  */
 #line 115 "parser.ypp"
-                                                                                {output::errorLex(36);}
+                                                                                {(yyval.NodeExp) = new Node_Exp_ID((yyvsp[0].NodeToken));}
 #line 1432 "parser.tab.cpp"
     break;
 
@@ -1701,12 +1701,9 @@ yyreturnlab:
 
 
 int main(){
-	yydebug = 1;
-    
-    
+	yydebug = 0;
 	int token;
-	//cout << "max size = " << token_value.max_size() << endl;
-	
+	//Frame_class::getInstance().newFrame(FrameType::FUNC);
 	while ((token = yyparse())) {
 		continue;
 	      //printf("%d %s %s\n", yylineno, token, yytext);

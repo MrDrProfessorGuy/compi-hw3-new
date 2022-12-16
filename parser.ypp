@@ -19,7 +19,7 @@ int yyerror(const char * message);
 
 %}
 
-%define api.value.type {union YYSTYPE}
+%define api.value.type {struct YYSTYPE}
 
 
 %type <ProgramNode> Program
@@ -86,17 +86,17 @@ int yyerror(const char * message);
     Formals: FormalsList                                                        {output::errorLex(8);};
     FormalsList: FormalDecl                                                     {output::errorLex(9);};
     FormalsList: FormalDecl COMMA FormalsList                                   {output::errorLex(10);};
-    FormalDecl: Type ID                                                         {output::errorLex(11);};
+    FormalDecl: Type ID                                                         {;};
     Statements: Statement                                                       {output::errorLex(12);};
     Statements: Statements Statement                                            {output::errorLex(13);};
     Statement: LBRACE Statements RBRACE                                         {output::errorLex(14);};
-    Statement: Type ID SC                                                       {output::errorLex(15);};
-    Statement: Type ID ASSIGN Exp SC                                            {output::errorLex(16);};
+    Statement: Type ID SC                                                       {$$ = new Node_Statement_ID_Decl($1, $2, $3);};
+    Statement: Type ID ASSIGN Exp SC                                            {$$ = new Node_Statement_ID_Decl($1, $2, $3, $4, $5);};
     Statement: ID ASSIGN Exp SC                                                 {output::errorLex(17);};
     Statement: Call SC                                                          {output::errorLex(18);};
     Statement: RETURN SC                                                        {output::errorLex(19);};
     Statement: RETURN Exp SC                                                    {output::errorLex(20);};
-    Statement: IF LPAREN Exp RPAREN Statement %prec IF                                  {output::errorLex(21);};
+    Statement: IF LPAREN Exp RPAREN Statement %prec IF                          {output::errorLex(21);};
     Statement: IF LPAREN Exp RPAREN Statement ELSE Statement                    {output::errorLex(22);};
     Statement: WHILE LPAREN Exp RPAREN Statement                                {output::errorLex(23);};
     Statement: BREAK SC                                                         {output::errorLex(24);};
@@ -109,10 +109,10 @@ int yyerror(const char * message);
     Type: BYTE                                                                  {output::errorLex(31);};
     Type: BOOL                                                                  {output::errorLex(32);};
     Exp: LPAREN Exp RPAREN                                                      {output::errorLex(33);};
-    Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                     {output::errorLex(34);};
+    Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                      {output::errorLex(34);};
     Exp: Exp BINOP_ADD Exp                                                      {};
     Exp: Exp BINOP_MUL Exp                                                      {};
-    Exp: ID                                                                     {output::errorLex(36);};
+    Exp: ID                                                                     {$$ = new Node_Exp_ID($1);};
     Exp: Call                                                                   {output::errorLex(37);};
     Exp: NUM                                                                    {output::errorLex(38);};
     Exp: NUM B                                                                  {output::errorLex(39);};
@@ -128,12 +128,9 @@ int yyerror(const char * message);
 %%
 
 int main(){
-	yydebug = 1;
-    
-    
+	yydebug = 0;
 	int token;
-	//cout << "max size = " << token_value.max_size() << endl;
-	
+	//Frame_class::getInstance().newFrame(FrameType::FUNC);
 	while ((token = yyparse())) {
 		continue;
 	      //printf("%d %s %s\n", yylineno, token, yytext);

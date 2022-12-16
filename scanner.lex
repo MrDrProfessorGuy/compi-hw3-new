@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include "parser.tab.hpp"
 #include "hw3_output.hpp"
+
 #include "iostream"
 //printf("FLEX:: %d: %s\n", yylineno, yytext);
 //#define newToken(token_type) token_value = yytext;return token_type;
 #define newToken(token_type) token_value = yytext;return token_type;
 #define Comment token_value = "\\\\"; return COMMENT;
 
-using namespace std;
 
 std::string token_value;
 
@@ -111,9 +111,9 @@ token_string    (\"([^\n\r\"\\]|\\[rnt"\\])+\")
 {token_binop_add}     yylval.NodeToken = (new Node_Token(yytext));
 {token_binop_mul}     yylval.NodeToken = (new Node_Token(yytext));
 
-{token_id}        yylval.NodeToken = (new Node_Token(yytext));
+{token_id}        {yylval.NodeToken = (new Node_Token(yytext));};
 {token_num}       yylval.NodeToken = (new Node_Token(yytext));
-{token_string}    yylval.NodeToken = (new Node_Token(yytext));
+{token_string}    {yylval.NodeToken = (new Node_Token(yytext));};
 
 {token_comment}              ;
 {whitespace}                 ;
