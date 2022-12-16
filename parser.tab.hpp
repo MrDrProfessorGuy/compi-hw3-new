@@ -100,7 +100,7 @@ union YYSTYPE
 {
 #line 24 "parser.ypp"
 
-    Generic_Node * ProgramNode;
+    Node_Program * ProgramNode;
     Node_Token * NodeToken;
     Node_RetType * NodeRetType;
     Node_FormalDecl * NodeFormalDecl;

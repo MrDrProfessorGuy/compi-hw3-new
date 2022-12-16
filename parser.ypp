@@ -22,7 +22,7 @@ int yyerror(const char * message);
 }
 
 %union {
-    Generic_Node * ProgramNode;
+    Node_Program * ProgramNode;
     Node_Token * NodeToken;
     Node_RetType * NodeRetType;
     Node_FormalDecl * NodeFormalDecl;
@@ -51,6 +51,9 @@ int yyerror(const char * message);
 %type <NodeCall> Call
 %type <NodeExpList> ExpList
 %type <NodeExp> Exp
+%type OpenScope
+%type CloseScope
+%type Marker
 
 %token <NodeToken> ID
 %token <NodeToken> NUM
@@ -94,10 +97,10 @@ int yyerror(const char * message);
 
 
 %%
-    Program: Funcs                                                              {output::printProductionRule(1);};
-    Funcs: /*epsilon*/                                                          %empty {output::printProductionRule(2);};
-    Funcs: FuncDecl Funcs                                                       {output::printProductionRule(3);};
-    FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         {$$ = new Node_FuncDecl($1,$2,$3,$4,$5,$6,$7,$8);output::printProductionRule(4);};
+    Program: Funcs                                                              {$$ = new Node_Program($1);output::printProductionRule(1);};
+    Funcs: /*epsilon*/                                                          %empty {$$ = new Node_FuncsList({});output::printProductionRule(2);};
+    Funcs: FuncDecl Funcs                                                       {$$ = new Node_FuncsList({$1,$2});output::printProductionRule(3);};
+    FuncDecl: RetType ID LPAREN Formals RPAREN {Node_FuncDecl::newFuncFrame($1,$2,$3,$4,$5);}  LBRACE Statements RBRACE         {$$ = new Node_FuncDecl($1,$2,$3,$4,$5,$7,$8,$9);output::printProductionRule(4);};
     RetType: Type                                                               {$$ = new Node_RetType({$1}, ($1)->type);output::printProductionRule(5);};
     RetType:  VOID                                                              {$$ = new Node_RetType({$1}, Type::VOID);output::printProductionRule(6);};
     Formals: /*epsilon*/                                                        %empty {$$ = new Node_Formals();output::printProductionRule(7);};
@@ -137,12 +140,12 @@ int yyerror(const char * message);
     Exp: STRING                                                                 {$$ = new Node_Exp_Str({$1});output::printProductionRule(40);};
     Exp: TRUE                                                                   {$$ = new Node_Exp_Bool({$1});output::printProductionRule(41);};
     Exp: FALSE                                                                  {$$ = new Node_Exp_Bool({$1});output::printProductionRule(42);};
-    Exp: NOT Exp                                                                {$$ = new Node_Exp_Bool({$1, $2});output::printProductionRule(43);};
-    Exp: Exp AND Exp                                                            {output::printProductionRule(44);};
-    Exp: Exp OR Exp                                                             {output::printProductionRule(44);};
-    Exp: Exp RELOP Exp                                                          {output::printProductionRule(45);};
-    Exp: Exp EQUALITY Exp                                                       {output::printProductionRule(45);};
-    Exp: LPAREN Type RPAREN Exp                                                 {output::printProductionRule(46);};
+    Exp: NOT Exp                                                                {$$ = new Node_Exp_Bool($1, $2);output::printProductionRule(43);};
+    Exp: Exp AND Exp                                                            {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(44);};
+    Exp: Exp OR Exp                                                             {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(44);};
+    Exp: Exp RELOP Exp                                                          {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(45);};
+    Exp: Exp EQUALITY Exp                                                       {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(45);};
+    Exp: LPAREN Type RPAREN Exp                                                 {$$ = new Node_Exp_Cast({$1,$2,$3,$4});output::printProductionRule(46);};
 %%
 
 int main(){

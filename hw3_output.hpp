@@ -81,7 +81,7 @@ class Lexception : public AppaException {
 public:
     
     Lexception(long lineno) : AppaException(lineno) {
-        errorLex(lineno);
+        output::errorLex(lineno);
     };
 };
 
@@ -95,21 +95,21 @@ public:
 class UndefExc : public AppaException {
 public:
     UndefExc(long lineno, std::string &id) : AppaException(lineno) {
-        output::errorUndef(lineno, &id);
+        output::errorUndef(lineno, id);
     };
 };
 
 class DefExc : public AppaException {
 public:
     DefExc(long lineno, std::string &id) : AppaException(lineno) {
-        output::errorDef(lineno, &id);
+        output::errorDef(lineno, id);
     };
 };
 
 class UndDefFuncExc : public AppaException {
 public:
     UndDefFuncExc(long lineno, std::string &id) : AppaException(lineno) {
-        output::errorUndefFunc(lineno, &id);
+        output::errorUndefFunc(lineno, id);
     };
 };
 
@@ -122,8 +122,8 @@ public:
 
 class PrototypeMismatchExc : public AppaException {
 public:
-    PrototypeMismatchExc(long lineno, std::string &id, std::vector<Type> param_types) : AppaException(lineno) {
-        output::errorPrototypeMismatch(lineno, &id, param_types);
+    PrototypeMismatchExc(long lineno, std::string &id, std::vector<std::string> param_types) : AppaException(lineno) {
+        output::errorPrototypeMismatch(lineno, id, param_types);
     };
 };
 
@@ -144,15 +144,15 @@ public:
 class MainMissingExc : public AppaException {
 public:
     MainMissingExc(long lineno) : AppaException(lineno) {
-        output::errorMainMissing(lineno);
+        output::errorMainMissing();
     };
 };
 
 class ByteTooLargeExc : public AppaException {
 public:
-    ByteTooLargeExc(long lineno) : AppaException(lineno) {
-        output::errorByteTooLarge(lineno);
-    };
+    ByteTooLargeExc(long lineno, std::string &value) : AppaException(lineno) {
+        output::errorByteTooLarge(lineno, value);
+    }
 };
 class Generic_Node;
 class symTableEntry;
@@ -162,6 +162,7 @@ class Node_FormalDecl;
 class Node_Exp_Type;
 class Node_Statement;
 class Node_Exp;
+class Node_FuncsList;
 
 typedef Generic_Node* Node;
 typedef std::vector<Node> NodeVector;
@@ -195,12 +196,10 @@ public:
     Symbol symbol;
     DeclType entry_type;
     long offset;
-    bool valid;
     
     symTableEntry(Symbol sym, DeclType entry_type, long entry_offset, bool entry_valid = true) : symbol(sym) {
         this->entry_type = entry_type;
         offset = entry_offset;
-        valid = entry_valid;
     }
     
     ~symTableEntry() = default;
@@ -261,10 +260,14 @@ public:
     std::vector<SymEntry> entries_vector;
     
     
-    StackEntry(FrameType frame_type, bool in_loop, SymEntry &scope_func) {
+    StackEntry(FrameType frame_type, bool in_loop, SymEntry &scope_func, long offset=0) {
         this->frame_type = frame_type;
         inside_loop = in_loop;
         scope_func_entry = scope_func;
+        next_offset = offset;
+        if (frame_type == FrameType::FUNC){
+            next_offset = std::dynamic_pointer_cast<symTableEntryFunc>(scope_func_entry)->parameter_list.size();
+        }
     };
     
     ~StackEntry() = default;
@@ -289,13 +292,14 @@ public:
     }
     
     SymEntry find(std::string name) {
-        Log() << "StackEntry::find(" << name <<")" << std::endl;
+        Log() << "StackEntry::find(" << name <<")";
         auto search = entries.find(name);
         
         if (search == entries.end()) {
-            Log() << "StackEntry::find -> NO" << std::endl;
+            Log() << " -> NO" << std::endl;
             return nullptr;
         }
+        Log() << " -> YES" << std::endl;
         return search->second;
     }
     void removeEntry(std::string name) {
@@ -309,7 +313,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const StackEntry &frame) {
         output::endScope();
         for (auto iter = frame.entries_vector.begin(); iter != frame.entries_vector.end(); iter++) {
-            os << iter->get();
+            os << *(iter->get()) << std::endl;
         }
         return os;
     }
@@ -365,14 +369,17 @@ public:
         frames.emplace_back(frame_type, false, func_entry);
     }
     SymEntry find(std::string name) {
-        Log() << "frameManager::find(" << name <<")" << std::endl;
+        Log() << "########### frameManager::find(" << name <<") ###########" << std::endl;
+        std::cout << frames.back();
         for (auto iter = frames.rbegin(); iter != frames.rend(); ++iter) {
             SymEntry entry = iter->find(name);
             if (entry != nullptr) {
                 //entry->print();
+                Log() << "=========== frameManager::find(" << name <<") --> NO ===========" << std::endl;
                 return entry;
             }
         }
+        Log() << "=========== frameManager::find(" << name <<") --> YES ===========" << std::endl;
         return nullptr;
     }
     
@@ -422,6 +429,15 @@ public:
     
     virtual void stam() {};
     
+};
+
+class Node_Program : public Generic_Node {
+public:
+/////////// Methods ///////////
+    Node_Program(Node_FuncsList* node_funcsList);
+    
+    ~Node_Program() = default;
+    Node_Program(Node_Program &) = delete;
 };
 
 class Node_Token : public Generic_Node {
@@ -510,6 +526,8 @@ public:
                   Node_Formals * node_formals, Node_Token * node_rparen,
                   Node_Token * node_lbrace,
                   Node_Statement * node_statement, Node_Token * node_rbrace);
+    static void newFuncFrame(Node_RetType* node_retType, Node_Token* node_id, Node_Token* node_lparen,
+                      Node_Formals* node_formals, Node_Token * node_rparen);
     
     ~Node_FuncDecl() = default;
     
@@ -522,7 +540,9 @@ public:
     //std::vector<Node_FuncDecl> funcs_list;
 /////////// Methods ///////////
     
-    Node_FuncsList(NodeVector children);
+    Node_FuncsList(NodeVector children): Generic_Node(children){
+    
+    }
     
     ~Node_FuncsList() = default;
     
@@ -634,7 +654,7 @@ public:
             long token_val = std::atoi(((Node_Token*)(children[0]))->value.c_str());
             
             if (token_val > 255) {
-                throw ByteTooLargeExc(yylineno);
+                throw ByteTooLargeExc(yylineno, ((Node_Token*)(children[0]))->value);
             }
         }
         
@@ -673,16 +693,7 @@ class Node_Exp_Relop : public Node_Exp {
 public:
 /////////// Methods ///////////
     
-    Node_Exp_Relop(NodeVector children) : Node_Exp(children, Type::BOOL) {
-        auto exp1 = (Node_Exp*)(children[0]);
-        auto binop = (Node_Token*)(children[1]);
-        auto exp2 = (Node_Exp*)(children[2]);
-        
-        if (!exp1->typeCheck({Type::INT, Type::BYTE}) || !exp2->typeCheck({Type::INT, Type::BYTE})) {
-            throw MismatchExc(yylineno);
-        }
-        
-    }
+    Node_Exp_Relop(NodeVector children);
     
     ~Node_Exp_Relop() = default;
     
@@ -727,10 +738,9 @@ class Node_Exp_Bool : public Node_Exp {
 public:
 /////////// Methods ///////////
     
-    Node_Exp_Bool(NodeVector children) : Node_Exp(children, Type::BOOL) {
-    
-    }
-    
+    Node_Exp_Bool(Node_Token* node_token);
+    Node_Exp_Bool(Node_Token* node_not, Node_Exp* node_exp);
+    Node_Exp_Bool(Node_Exp* node_exp1, Node_Token* node_AndOR, Node_Exp* node_exp2);
     ~Node_Exp_Bool() = default;
     
     Node_Exp_Bool(Node_Exp_Bool &) = delete;

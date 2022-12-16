@@ -221,8 +221,12 @@ Node_FormalDecl::Node_FormalDecl(Node_Exp* node_type, Node_Token* node_token_id)
         output::errorDef(yylineno, id_symbol.name);
         exit(0);
     }
+    
 }
-
+Node_Program::Node_Program(Node_FuncsList* node_funcsList):
+    Generic_Node({node_funcsList}){
+    
+}
 
 /// ############################################################################## ///
 /// ############################    Node_FormalsList    ############################///
@@ -257,16 +261,54 @@ Node_Formals::Node_Formals(Node_FormalsList* node_formalsList): Generic_Node({no
 /// ############################################################################## ///
 
 Node_Exp_ID::Node_Exp_ID(Node_Token* node_token) : Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()) {
-    auto node_token_id = (Node_Token*)(children[0]);
-    auto entry = std::dynamic_pointer_cast<symTableEntryID>(frame_manager.find(node_token_id->value));
-    if (!entry->valid) {
-        throw UndefExc(yylineno, node_token_id->value);
+    Log() << "Node_Exp_ID(" << node_token->value << ")"  << std::endl;
+    auto entry = frame_manager.find(node_token->value);
+    Log() << "Node_Exp_ID() 2" << std::endl;
+    if (entry == nullptr) {
+        Log() << "Node_Exp_ID()::UndefExc" << std::endl;
+        throw UndefExc(yylineno, node_token->value);
     }
+    Log() << "Node_Exp_ID()::PASSED" << std::endl;
     set_type(entry->symbol.type);
     id = entry->symbol;
     
 }
 
+/// ############################################################################## ///
+/// ############################    Node_Exp_Bool    ############################///
+/// ############################################################################## ///
+
+Node_Exp_Bool::Node_Exp_Bool(Node_Token *node_token) : Node_Exp({node_token},Type::BOOL){
+
+}
+
+Node_Exp_Bool::Node_Exp_Bool(Node_Token *node_not, Node_Exp *node_exp) : Node_Exp({node_not, node_exp},Type::BOOL){
+    if (!node_exp->typeCheck({Type::BOOL})){
+        throw MismatchExc(yylineno);
+    }
+}
+
+Node_Exp_Bool::Node_Exp_Bool(Node_Exp *node_exp1, Node_Token *node_AndOR, Node_Exp *node_exp2)
+                                : Node_Exp({node_exp1, node_AndOR, node_exp2}, Type::BOOL){
+    if (!node_exp1->typeCheck({Type::BOOL}) || !node_exp2->typeCheck({Type::BOOL})){
+        throw MismatchExc(yylineno);
+    }
+}
+
+/// ############################################################################## ///
+/// ############################    Node_Exp_Relop    ############################///
+/// ############################################################################## ///
+
+Node_Exp_Relop::Node_Exp_Relop(NodeVector children) : Node_Exp(children, Type::BOOL) {
+    auto exp1 = (Node_Exp*)(children[0]);
+    auto binop = (Node_Token*)(children[1]);
+    auto exp2 = (Node_Exp*)(children[2]);
+    
+    if (!exp1->typeCheck({Type::INT, Type::BYTE}) || !exp2->typeCheck({Type::INT, Type::BYTE})) {
+        throw MismatchExc(yylineno);
+    }
+
+}
 
 /// ############################################################################## ///
 /// ############################    Node_Call    ############################///
@@ -285,11 +327,11 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen,
     // check if func prototype matches func call
     auto func_entry = std::dynamic_pointer_cast<symTableEntryFunc>(id_entry);
     if (func_entry->parameter_list.size() != func_parameters.size()){
-        throw PrototypeMismatchExc(yylineno, func_id.name, func_parameters);
+        throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
     }
     for (int index = 0; index < func_entry->parameter_list.size(); index++){
         if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
-            throw PrototypeMismatchExc(yylineno, func_id.name, func_parameters);
+            throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
         }
     }
     
@@ -307,11 +349,11 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen, Node_Token* n
     // check if func prototype matches func call
     auto func_entry = std::dynamic_pointer_cast<symTableEntryFunc>(id_entry);
     if (func_entry->parameter_list.size() != func_parameters.size()){
-        throw PrototypeMismatchExc(yylineno, func_id.name, func_parameters);
+        throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
     }
     for (int index = 0; index < func_entry->parameter_list.size(); index++){
         if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
-            throw PrototypeMismatchExc(yylineno, func_id.name, func_parameters);
+            throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
         }
     }
     
@@ -482,8 +524,17 @@ Node_FuncDecl::Node_FuncDecl(Node_RetType* node_retType, Node_Token* node_id,
                              : Generic_Node({node_retType, node_id, node_lparen, node_formals, node_rparen, node_lbrace, node_statement, node_rbrace}){
     
     
+    
+    
 }
 
+void Node_FuncDecl::newFuncFrame(Node_RetType *node_retType, Node_Token *node_id, Node_Token *node_lparen,
+                             Node_Formals *node_formals, Node_Token * node_rparen){
+    
+    frame_manager.newEntry(DeclType::FUNC, node_id->value, node_retType->type, node_formals->parameter_list);
+    frame_manager.newFrame(FrameType::FUNC, node_id->value);
+    
+}
 
 
 

@@ -7,8 +7,14 @@ set (CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -stdlib=libc++")
 
 
 
+
 add_executable(compi_hw3_new
         hw3_output.cpp hw3_output.hpp
         parser.tab.cpp parser.tab.hpp
         lex.yy.c
+        )
+
+add_custom_command(OUTPUT hw3
+        COMMAND make
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )

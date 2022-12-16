@@ -1,3 +1,10 @@
+Nonterminals useless in grammar
+
+    OpenScope
+    CloseScope
+    Marker
+
+
 Grammar
 
     0 $accept: Program $end
@@ -7,98 +14,100 @@ Grammar
     2 Funcs: ε
     3      | FuncDecl Funcs
 
-    4 FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE
+    4 $@1: ε
 
-    5 RetType: Type
-    6        | VOID
+    5 FuncDecl: RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE
 
-    7 Formals: ε
-    8        | FormalsList
+    6 RetType: Type
+    7        | VOID
 
-    9 FormalsList: FormalDecl
-   10            | FormalDecl COMMA FormalsList
+    8 Formals: ε
+    9        | FormalsList
 
-   11 FormalDecl: Type ID
+   10 FormalsList: FormalDecl
+   11            | FormalDecl COMMA FormalsList
 
-   12 Statements: Statement
-   13           | Statements Statement
+   12 FormalDecl: Type ID
 
-   14 Statement: LBRACE Statements RBRACE
-   15          | Type ID SC
-   16          | Type ID ASSIGN Exp SC
-   17          | ID ASSIGN Exp SC
-   18          | Call SC
-   19          | RETURN SC
-   20          | RETURN Exp SC
-   21          | IF LPAREN Exp RPAREN Statement
-   22          | IF LPAREN Exp RPAREN Statement ELSE Statement
-   23          | WHILE LPAREN Exp RPAREN Statement
-   24          | BREAK SC
-   25          | CONTINUE SC
+   13 Statements: Statement
+   14           | Statements Statement
 
-   26 Call: ID LPAREN ExpList RPAREN
-   27     | ID LPAREN RPAREN
+   15 Statement: LBRACE Statements RBRACE
+   16          | Type ID SC
+   17          | Type ID ASSIGN Exp SC
+   18          | ID ASSIGN Exp SC
+   19          | Call SC
+   20          | RETURN SC
+   21          | RETURN Exp SC
+   22          | IF LPAREN Exp RPAREN Statement
+   23          | IF LPAREN Exp RPAREN Statement ELSE Statement
+   24          | WHILE LPAREN Exp RPAREN Statement
+   25          | BREAK SC
+   26          | CONTINUE SC
 
-   28 ExpList: Exp
-   29        | Exp COMMA ExpList
+   27 Call: ID LPAREN ExpList RPAREN
+   28     | ID LPAREN RPAREN
 
-   30 Type: INT
-   31     | BYTE
-   32     | BOOL
+   29 ExpList: Exp
+   30        | Exp COMMA ExpList
 
-   33 Exp: LPAREN Exp RPAREN
-   34    | Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp BINOP_ADD Exp
-   36    | Exp BINOP_MUL Exp
-   37    | ID
-   38    | Call
-   39    | NUM
-   40    | NUM B
-   41    | STRING
-   42    | TRUE
-   43    | FALSE
-   44    | NOT Exp
-   45    | Exp AND Exp
-   46    | Exp OR Exp
-   47    | Exp RELOP Exp
-   48    | Exp EQUALITY Exp
-   49    | LPAREN Type RPAREN Exp
+   31 Type: INT
+   32     | BYTE
+   33     | BOOL
+
+   34 Exp: LPAREN Exp RPAREN
+   35    | Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp BINOP_ADD Exp
+   37    | Exp BINOP_MUL Exp
+   38    | ID
+   39    | Call
+   40    | NUM
+   41    | NUM B
+   42    | STRING
+   43    | TRUE
+   44    | FALSE
+   45    | NOT Exp
+   46    | Exp AND Exp
+   47    | Exp OR Exp
+   48    | Exp RELOP Exp
+   49    | Exp EQUALITY Exp
+   50    | LPAREN Type RPAREN Exp
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    ID <NodeToken> (258) 4 11 15 16 17 26 27 37
-    NUM <NodeToken> (259) 39 40
-    STRING <NodeToken> (260) 41
-    VOID <NodeToken> (261) 6
-    INT <NodeToken> (262) 30
-    BYTE <NodeToken> (263) 31
-    B <NodeToken> (264) 40
-    BOOL <NodeToken> (265) 32
-    TRUE <NodeToken> (266) 42
-    FALSE <NodeToken> (267) 43
-    RETURN <NodeToken> (268) 19 20
-    WHILE <NodeToken> (269) 23
-    BREAK <NodeToken> (270) 24
-    CONTINUE <NodeToken> (271) 25
-    SC <NodeToken> (272) 15 16 17 18 19 20 24 25
-    COMMA <NodeToken> (273) 10 29
-    LPAREN <NodeToken> (274) 4 21 22 23 26 27 33 34 49
-    RPAREN <NodeToken> (275) 4 21 22 23 26 27 33 34 49
-    ASSIGN <NodeToken> (276) 16 17
-    IF <NodeToken> (277) 21 22 34
-    ELSE <NodeToken> (278) 22 34
-    OR <NodeToken> (279) 46
-    AND <NodeToken> (280) 45
-    EQUALITY <NodeToken> (281) 48
-    RELOP <NodeToken> (282) 47
-    BINOP_ADD <NodeToken> (283) 35
-    BINOP_MUL <NodeToken> (284) 36
-    NOT <NodeToken> (285) 44
-    LBRACE <NodeToken> (286) 4 14
-    RBRACE <NodeToken> (287) 4 14
+    ID <NodeToken> (258) 5 12 16 17 18 27 28 38
+    NUM <NodeToken> (259) 40 41
+    STRING <NodeToken> (260) 42
+    VOID <NodeToken> (261) 7
+    INT <NodeToken> (262) 31
+    BYTE <NodeToken> (263) 32
+    B <NodeToken> (264) 41
+    BOOL <NodeToken> (265) 33
+    TRUE <NodeToken> (266) 43
+    FALSE <NodeToken> (267) 44
+    RETURN <NodeToken> (268) 20 21
+    WHILE <NodeToken> (269) 24
+    BREAK <NodeToken> (270) 25
+    CONTINUE <NodeToken> (271) 26
+    SC <NodeToken> (272) 16 17 18 19 20 21 25 26
+    COMMA <NodeToken> (273) 11 30
+    LPAREN <NodeToken> (274) 5 22 23 24 27 28 34 35 50
+    RPAREN <NodeToken> (275) 5 22 23 24 27 28 34 35 50
+    ASSIGN <NodeToken> (276) 17 18
+    IF <NodeToken> (277) 22 23 35
+    ELSE <NodeToken> (278) 23 35
+    OR <NodeToken> (279) 47
+    AND <NodeToken> (280) 46
+    EQUALITY <NodeToken> (281) 49
+    RELOP <NodeToken> (282) 48
+    BINOP_ADD <NodeToken> (283) 36
+    BINOP_MUL <NodeToken> (284) 37
+    NOT <NodeToken> (285) 45
+    LBRACE <NodeToken> (286) 5 15
+    RBRACE <NodeToken> (287) 5 15
 
 
 Nonterminals, with rules where they appear
@@ -112,38 +121,41 @@ Nonterminals, with rules where they appear
         on left: 2 3
         on right: 1 3
     FuncDecl <NodeFuncDecl> (36)
-        on left: 4
+        on left: 5
         on right: 3
-    RetType <NodeRetType> (37)
-        on left: 5 6
-        on right: 4
-    Formals <NodeFormals> (38)
-        on left: 7 8
-        on right: 4
-    FormalsList <NodeFormalsList> (39)
-        on left: 9 10
-        on right: 8 10
-    FormalDecl <NodeFormalDecl> (40)
-        on left: 11
-        on right: 9 10
-    Statements <NodeStatement> (41)
-        on left: 12 13
-        on right: 4 13 14
-    Statement <NodeStatement> (42)
-        on left: 14 15 16 17 18 19 20 21 22 23 24 25
-        on right: 12 13 21 22 23
-    Call <NodeCall> (43)
-        on left: 26 27
-        on right: 18 38
-    ExpList <NodeExpList> (44)
-        on left: 28 29
-        on right: 26 29
-    Type <NodeExp> (45)
-        on left: 30 31 32
-        on right: 5 11 15 16 49
-    Exp <NodeExp> (46)
-        on left: 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49
-        on right: 16 17 20 21 22 23 28 29 33 34 35 36 44 45 46 47 48 49
+    $@1 (37)
+        on left: 4
+        on right: 5
+    RetType <NodeRetType> (38)
+        on left: 6 7
+        on right: 5
+    Formals <NodeFormals> (39)
+        on left: 8 9
+        on right: 5
+    FormalsList <NodeFormalsList> (40)
+        on left: 10 11
+        on right: 9 11
+    FormalDecl <NodeFormalDecl> (41)
+        on left: 12
+        on right: 10 11
+    Statements <NodeStatement> (42)
+        on left: 13 14
+        on right: 5 14 15
+    Statement <NodeStatement> (43)
+        on left: 15 16 17 18 19 20 21 22 23 24 25 26
+        on right: 13 14 22 23 24
+    Call <NodeCall> (44)
+        on left: 27 28
+        on right: 19 39
+    ExpList <NodeExpList> (45)
+        on left: 29 30
+        on right: 27 30
+    Type <NodeExp> (46)
+        on left: 31 32 33
+        on right: 6 12 16 17 50
+    Exp <NodeExp> (47)
+        on left: 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
+        on right: 17 18 21 22 23 24 29 30 34 35 36 37 45 46 47 48 49 50
 
 
 State 0
@@ -152,12 +164,12 @@ State 0
     1 Program: • Funcs
     2 Funcs: ε •
     3      | • FuncDecl Funcs
-    4 FuncDecl: • RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE
-    5 RetType: • Type
-    6        | • VOID
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+    5 FuncDecl: • RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE
+    6 RetType: • Type
+    7        | • VOID
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
     VOID  shift, and go to state 1
     INT   shift, and go to state 2
@@ -175,30 +187,30 @@ State 0
 
 State 1
 
-    6 RetType: VOID •
+    7 RetType: VOID •
 
-    $default  reduce using rule 6 (RetType)
+    $default  reduce using rule 7 (RetType)
 
 
 State 2
 
-   30 Type: INT •
-
-    $default  reduce using rule 30 (Type)
-
-
-State 3
-
-   31 Type: BYTE •
+   31 Type: INT •
 
     $default  reduce using rule 31 (Type)
 
 
-State 4
+State 3
 
-   32 Type: BOOL •
+   32 Type: BYTE •
 
     $default  reduce using rule 32 (Type)
+
+
+State 4
+
+   33 Type: BOOL •
+
+    $default  reduce using rule 33 (Type)
 
 
 State 5
@@ -220,12 +232,12 @@ State 7
     2 Funcs: ε •
     3      | • FuncDecl Funcs
     3      | FuncDecl • Funcs
-    4 FuncDecl: • RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE
-    5 RetType: • Type
-    6        | • VOID
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+    5 FuncDecl: • RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE
+    6 RetType: • Type
+    7        | • VOID
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
     VOID  shift, and go to state 1
     INT   shift, and go to state 2
@@ -242,16 +254,16 @@ State 7
 
 State 8
 
-    4 FuncDecl: RetType • ID LPAREN Formals RPAREN LBRACE Statements RBRACE
+    5 FuncDecl: RetType • ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE
 
     ID  shift, and go to state 12
 
 
 State 9
 
-    5 RetType: Type •
+    6 RetType: Type •
 
-    $default  reduce using rule 5 (RetType)
+    $default  reduce using rule 6 (RetType)
 
 
 State 10
@@ -270,28 +282,28 @@ State 11
 
 State 12
 
-    4 FuncDecl: RetType ID • LPAREN Formals RPAREN LBRACE Statements RBRACE
+    5 FuncDecl: RetType ID • LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE
 
     LPAREN  shift, and go to state 13
 
 
 State 13
 
-    4 FuncDecl: RetType ID LPAREN • Formals RPAREN LBRACE Statements RBRACE
-    7 Formals: ε •
-    8        | • FormalsList
-    9 FormalsList: • FormalDecl
-   10            | • FormalDecl COMMA FormalsList
-   11 FormalDecl: • Type ID
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+    5 FuncDecl: RetType ID LPAREN • Formals RPAREN $@1 LBRACE Statements RBRACE
+    8 Formals: ε •
+    9        | • FormalsList
+   10 FormalsList: • FormalDecl
+   11            | • FormalDecl COMMA FormalsList
+   12 FormalDecl: • Type ID
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
     INT   shift, and go to state 2
     BYTE  shift, and go to state 3
     BOOL  shift, and go to state 4
 
-    $default  reduce using rule 7 (Formals)
+    $default  reduce using rule 8 (Formals)
 
     Formals      go to state 14
     FormalsList  go to state 15
@@ -301,51 +313,54 @@ State 13
 
 State 14
 
-    4 FuncDecl: RetType ID LPAREN Formals • RPAREN LBRACE Statements RBRACE
+    5 FuncDecl: RetType ID LPAREN Formals • RPAREN $@1 LBRACE Statements RBRACE
 
     RPAREN  shift, and go to state 18
 
 
 State 15
 
-    8 Formals: FormalsList •
+    9 Formals: FormalsList •
 
-    $default  reduce using rule 8 (Formals)
+    $default  reduce using rule 9 (Formals)
 
 
 State 16
 
-    9 FormalsList: FormalDecl •
-   10            | FormalDecl • COMMA FormalsList
+   10 FormalsList: FormalDecl •
+   11            | FormalDecl • COMMA FormalsList
 
     COMMA  shift, and go to state 19
 
-    $default  reduce using rule 9 (FormalsList)
+    $default  reduce using rule 10 (FormalsList)
 
 
 State 17
 
-   11 FormalDecl: Type • ID
+   12 FormalDecl: Type • ID
 
     ID  shift, and go to state 20
 
 
 State 18
 
-    4 FuncDecl: RetType ID LPAREN Formals RPAREN • LBRACE Statements RBRACE
+    4 $@1: ε •
+    5 FuncDecl: RetType ID LPAREN Formals RPAREN • $@1 LBRACE Statements RBRACE
 
-    LBRACE  shift, and go to state 21
+    $default  reduce using rule 4 ($@1)
+
+    $@1  go to state 21
 
 
 State 19
 
-    9 FormalsList: • FormalDecl
-   10            | • FormalDecl COMMA FormalsList
-   10            | FormalDecl COMMA • FormalsList
-   11 FormalDecl: • Type ID
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+   10 FormalsList: • FormalDecl
+   11            | • FormalDecl COMMA FormalsList
+   11            | FormalDecl COMMA • FormalsList
+   12 FormalDecl: • Type ID
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
     INT   shift, and go to state 2
     BYTE  shift, and go to state 3
@@ -358,1548 +373,1555 @@ State 19
 
 State 20
 
-   11 FormalDecl: Type ID •
+   12 FormalDecl: Type ID •
 
-    $default  reduce using rule 11 (FormalDecl)
+    $default  reduce using rule 12 (FormalDecl)
 
 
 State 21
 
-    4 FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE • Statements RBRACE
-   12 Statements: • Statement
-   13           | • Statements Statement
-   14 Statement: • LBRACE Statements RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+    5 FuncDecl: RetType ID LPAREN Formals RPAREN $@1 • LBRACE Statements RBRACE
 
-    ID        shift, and go to state 23
-    INT       shift, and go to state 2
-    BYTE      shift, and go to state 3
-    BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
-
-    Statements  go to state 30
-    Statement   go to state 31
-    Call        go to state 32
-    Type        go to state 33
+    LBRACE  shift, and go to state 23
 
 
 State 22
 
-   10 FormalsList: FormalDecl COMMA FormalsList •
+   11 FormalsList: FormalDecl COMMA FormalsList •
 
-    $default  reduce using rule 10 (FormalsList)
+    $default  reduce using rule 11 (FormalsList)
 
 
 State 23
 
-   17 Statement: ID • ASSIGN Exp SC
-   26 Call: ID • LPAREN ExpList RPAREN
-   27     | ID • LPAREN RPAREN
+    5 FuncDecl: RetType ID LPAREN Formals RPAREN $@1 LBRACE • Statements RBRACE
+   13 Statements: • Statement
+   14           | • Statements Statement
+   15 Statement: • LBRACE Statements RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
-    LPAREN  shift, and go to state 34
-    ASSIGN  shift, and go to state 35
+    ID        shift, and go to state 24
+    INT       shift, and go to state 2
+    BYTE      shift, and go to state 3
+    BOOL      shift, and go to state 4
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
+
+    Statements  go to state 31
+    Statement   go to state 32
+    Call        go to state 33
+    Type        go to state 34
 
 
 State 24
 
-   19 Statement: RETURN • SC
-   20          | RETURN • Exp SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   18 Statement: ID • ASSIGN Exp SC
+   27 Call: ID • LPAREN ExpList RPAREN
+   28     | ID • LPAREN RPAREN
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    SC      shift, and go to state 41
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 45
+    LPAREN  shift, and go to state 35
+    ASSIGN  shift, and go to state 36
 
 
 State 25
 
-   23 Statement: WHILE • LPAREN Exp RPAREN Statement
+   20 Statement: RETURN • SC
+   21          | RETURN • Exp SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    LPAREN  shift, and go to state 46
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    SC      shift, and go to state 42
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 46
 
 
 State 26
 
-   24 Statement: BREAK • SC
+   24 Statement: WHILE • LPAREN Exp RPAREN Statement
 
-    SC  shift, and go to state 47
+    LPAREN  shift, and go to state 47
 
 
 State 27
 
-   25 Statement: CONTINUE • SC
+   25 Statement: BREAK • SC
 
     SC  shift, and go to state 48
 
 
 State 28
 
-   21 Statement: IF • LPAREN Exp RPAREN Statement
-   22          | IF • LPAREN Exp RPAREN Statement ELSE Statement
+   26 Statement: CONTINUE • SC
 
-    LPAREN  shift, and go to state 49
+    SC  shift, and go to state 49
 
 
 State 29
 
-   12 Statements: • Statement
-   13           | • Statements Statement
-   14 Statement: • LBRACE Statements RBRACE
-   14          | LBRACE • Statements RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+   22 Statement: IF • LPAREN Exp RPAREN Statement
+   23          | IF • LPAREN Exp RPAREN Statement ELSE Statement
 
-    ID        shift, and go to state 23
-    INT       shift, and go to state 2
-    BYTE      shift, and go to state 3
-    BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
-
-    Statements  go to state 50
-    Statement   go to state 31
-    Call        go to state 32
-    Type        go to state 33
+    LPAREN  shift, and go to state 50
 
 
 State 30
 
-    4 FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements • RBRACE
-   13 Statements: Statements • Statement
-   14 Statement: • LBRACE Statements RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+   13 Statements: • Statement
+   14           | • Statements Statement
+   15 Statement: • LBRACE Statements RBRACE
+   15          | LBRACE • Statements RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
-    ID        shift, and go to state 23
+    ID        shift, and go to state 24
     INT       shift, and go to state 2
     BYTE      shift, and go to state 3
     BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
-    RBRACE    shift, and go to state 51
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
 
-    Statement  go to state 52
-    Call       go to state 32
-    Type       go to state 33
+    Statements  go to state 51
+    Statement   go to state 32
+    Call        go to state 33
+    Type        go to state 34
 
 
 State 31
 
-   12 Statements: Statement •
+    5 FuncDecl: RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements • RBRACE
+   14 Statements: Statements • Statement
+   15 Statement: • LBRACE Statements RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
-    $default  reduce using rule 12 (Statements)
+    ID        shift, and go to state 24
+    INT       shift, and go to state 2
+    BYTE      shift, and go to state 3
+    BOOL      shift, and go to state 4
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
+    RBRACE    shift, and go to state 52
+
+    Statement  go to state 53
+    Call       go to state 33
+    Type       go to state 34
 
 
 State 32
 
-   18 Statement: Call • SC
+   13 Statements: Statement •
 
-    SC  shift, and go to state 53
+    $default  reduce using rule 13 (Statements)
 
 
 State 33
 
-   15 Statement: Type • ID SC
-   16          | Type • ID ASSIGN Exp SC
+   19 Statement: Call • SC
 
-    ID  shift, and go to state 54
+    SC  shift, and go to state 54
 
 
 State 34
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   26     | ID LPAREN • ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   27     | ID LPAREN • RPAREN
-   28 ExpList: • Exp
-   29        | • Exp COMMA ExpList
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   16 Statement: Type • ID SC
+   17          | Type • ID ASSIGN Exp SC
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    RPAREN  shift, and go to state 55
-    NOT     shift, and go to state 43
-
-    Call     go to state 44
-    ExpList  go to state 56
-    Exp      go to state 57
+    ID  shift, and go to state 55
 
 
 State 35
 
-   17 Statement: ID ASSIGN • Exp SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   27     | ID LPAREN • ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   28     | ID LPAREN • RPAREN
+   29 ExpList: • Exp
+   30        | • Exp COMMA ExpList
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    RPAREN  shift, and go to state 56
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
-    Exp   go to state 58
+    Call     go to state 45
+    ExpList  go to state 57
+    Exp      go to state 58
 
 
 State 36
 
-   26 Call: ID • LPAREN ExpList RPAREN
-   27     | ID • LPAREN RPAREN
-   37 Exp: ID •
+   18 Statement: ID ASSIGN • Exp SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    LPAREN  shift, and go to state 34
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    $default  reduce using rule 37 (Exp)
+    Call  go to state 45
+    Exp   go to state 59
 
 
 State 37
 
-   39 Exp: NUM •
-   40    | NUM • B
+   27 Call: ID • LPAREN ExpList RPAREN
+   28     | ID • LPAREN RPAREN
+   38 Exp: ID •
 
-    B  shift, and go to state 59
+    LPAREN  shift, and go to state 35
 
-    $default  reduce using rule 39 (Exp)
+    $default  reduce using rule 38 (Exp)
 
 
 State 38
 
-   41 Exp: STRING •
+   40 Exp: NUM •
+   41    | NUM • B
 
-    $default  reduce using rule 41 (Exp)
+    B  shift, and go to state 60
+
+    $default  reduce using rule 40 (Exp)
 
 
 State 39
 
-   42 Exp: TRUE •
+   42 Exp: STRING •
 
     $default  reduce using rule 42 (Exp)
 
 
 State 40
 
-   43 Exp: FALSE •
+   43 Exp: TRUE •
 
     $default  reduce using rule 43 (Exp)
 
 
 State 41
 
-   19 Statement: RETURN SC •
+   44 Exp: FALSE •
 
-    $default  reduce using rule 19 (Statement)
+    $default  reduce using rule 44 (Exp)
 
 
 State 42
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
-   33 Exp: • LPAREN Exp RPAREN
-   33    | LPAREN • Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
-   49    | LPAREN • Type RPAREN Exp
+   20 Statement: RETURN SC •
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    INT     shift, and go to state 2
-    BYTE    shift, and go to state 3
-    BOOL    shift, and go to state 4
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Type  go to state 60
-    Exp   go to state 61
+    $default  reduce using rule 20 (Statement)
 
 
 State 43
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   44    | NOT • Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
+   34 Exp: • LPAREN Exp RPAREN
+   34    | LPAREN • Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
+   50    | LPAREN • Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    INT     shift, and go to state 2
+    BYTE    shift, and go to state 3
+    BOOL    shift, and go to state 4
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
+    Call  go to state 45
+    Type  go to state 61
     Exp   go to state 62
 
 
 State 44
 
-   38 Exp: Call •
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   45    | NOT • Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    $default  reduce using rule 38 (Exp)
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 63
 
 
 State 45
 
-   20 Statement: RETURN Exp • SC
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   39 Exp: Call •
 
-    SC         shift, and go to state 63
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    $default  reduce using rule 39 (Exp)
 
 
 State 46
 
-   23 Statement: WHILE LPAREN • Exp RPAREN Statement
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   21 Statement: RETURN Exp • SC
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 71
+    SC         shift, and go to state 64
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 47
 
-   24 Statement: BREAK SC •
+   24 Statement: WHILE LPAREN • Exp RPAREN Statement
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    $default  reduce using rule 24 (Statement)
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 72
 
 
 State 48
 
-   25 Statement: CONTINUE SC •
+   25 Statement: BREAK SC •
 
     $default  reduce using rule 25 (Statement)
 
 
 State 49
 
-   21 Statement: IF LPAREN • Exp RPAREN Statement
-   22          | IF LPAREN • Exp RPAREN Statement ELSE Statement
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   26 Statement: CONTINUE SC •
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 72
+    $default  reduce using rule 26 (Statement)
 
 
 State 50
 
-   13 Statements: Statements • Statement
-   14 Statement: • LBRACE Statements RBRACE
-   14          | LBRACE Statements • RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+   22 Statement: IF LPAREN • Exp RPAREN Statement
+   23          | IF LPAREN • Exp RPAREN Statement ELSE Statement
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID        shift, and go to state 23
-    INT       shift, and go to state 2
-    BYTE      shift, and go to state 3
-    BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
-    RBRACE    shift, and go to state 73
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Statement  go to state 52
-    Call       go to state 32
-    Type       go to state 33
+    Call  go to state 45
+    Exp   go to state 73
 
 
 State 51
 
-    4 FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE •
+   14 Statements: Statements • Statement
+   15 Statement: • LBRACE Statements RBRACE
+   15          | LBRACE Statements • RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
-    $default  reduce using rule 4 (FuncDecl)
+    ID        shift, and go to state 24
+    INT       shift, and go to state 2
+    BYTE      shift, and go to state 3
+    BOOL      shift, and go to state 4
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
+    RBRACE    shift, and go to state 74
+
+    Statement  go to state 53
+    Call       go to state 33
+    Type       go to state 34
 
 
 State 52
 
-   13 Statements: Statements Statement •
+    5 FuncDecl: RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE •
 
-    $default  reduce using rule 13 (Statements)
+    $default  reduce using rule 5 (FuncDecl)
 
 
 State 53
 
-   18 Statement: Call SC •
+   14 Statements: Statements Statement •
 
-    $default  reduce using rule 18 (Statement)
+    $default  reduce using rule 14 (Statements)
 
 
 State 54
 
-   15 Statement: Type ID • SC
-   16          | Type ID • ASSIGN Exp SC
+   19 Statement: Call SC •
 
-    SC      shift, and go to state 74
-    ASSIGN  shift, and go to state 75
+    $default  reduce using rule 19 (Statement)
 
 
 State 55
 
-   27 Call: ID LPAREN RPAREN •
+   16 Statement: Type ID • SC
+   17          | Type ID • ASSIGN Exp SC
 
-    $default  reduce using rule 27 (Call)
+    SC      shift, and go to state 75
+    ASSIGN  shift, and go to state 76
 
 
 State 56
 
-   26 Call: ID LPAREN ExpList • RPAREN
+   28 Call: ID LPAREN RPAREN •
 
-    RPAREN  shift, and go to state 76
+    $default  reduce using rule 28 (Call)
 
 
 State 57
 
-   28 ExpList: Exp •
-   29        | Exp • COMMA ExpList
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   27 Call: ID LPAREN ExpList • RPAREN
 
-    COMMA      shift, and go to state 77
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
-
-    $default  reduce using rule 28 (ExpList)
+    RPAREN  shift, and go to state 77
 
 
 State 58
 
-   17 Statement: ID ASSIGN Exp • SC
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   29 ExpList: Exp •
+   30        | Exp • COMMA ExpList
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    SC         shift, and go to state 78
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    COMMA      shift, and go to state 78
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
+
+    $default  reduce using rule 29 (ExpList)
 
 
 State 59
 
-   40 Exp: NUM B •
+   18 Statement: ID ASSIGN Exp • SC
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    $default  reduce using rule 40 (Exp)
+    SC         shift, and go to state 79
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 60
 
-   49 Exp: LPAREN Type • RPAREN Exp
+   41 Exp: NUM B •
 
-    RPAREN  shift, and go to state 79
+    $default  reduce using rule 41 (Exp)
 
 
 State 61
 
-   33 Exp: LPAREN Exp • RPAREN
-   34    | Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   50 Exp: LPAREN Type • RPAREN Exp
 
-    RPAREN     shift, and go to state 80
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    RPAREN  shift, and go to state 80
 
 
 State 62
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   44    | NOT Exp •
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   34 Exp: LPAREN Exp • RPAREN
+   35    | Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    $default  reduce using rule 44 (Exp)
+    RPAREN     shift, and go to state 81
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 63
 
-   20 Statement: RETURN Exp SC •
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   45    | NOT Exp •
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    $default  reduce using rule 20 (Statement)
+    $default  reduce using rule 45 (Exp)
 
 
 State 64
 
-   34 Exp: Exp IF • LPAREN Exp RPAREN ELSE Exp
+   21 Statement: RETURN Exp SC •
 
-    LPAREN  shift, and go to state 81
+    $default  reduce using rule 21 (Statement)
 
 
 State 65
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   46    | Exp OR • Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   35 Exp: Exp IF • LPAREN Exp RPAREN ELSE Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 82
+    LPAREN  shift, and go to state 82
 
 
 State 66
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   45    | Exp AND • Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   47    | Exp OR • Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
+    Call  go to state 45
     Exp   go to state 83
 
 
 State 67
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   48    | Exp EQUALITY • Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   46    | Exp AND • Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
+    Call  go to state 45
     Exp   go to state 84
 
 
 State 68
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   47    | Exp RELOP • Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   49    | Exp EQUALITY • Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
+    Call  go to state 45
     Exp   go to state 85
 
 
 State 69
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   35    | Exp BINOP_ADD • Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   48    | Exp RELOP • Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
+    Call  go to state 45
     Exp   go to state 86
 
 
 State 70
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   36    | Exp BINOP_MUL • Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   36    | Exp BINOP_ADD • Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    Call  go to state 44
+    Call  go to state 45
     Exp   go to state 87
 
 
 State 71
 
-   23 Statement: WHILE LPAREN Exp • RPAREN Statement
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   37    | Exp BINOP_MUL • Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    RPAREN     shift, and go to state 88
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 88
 
 
 State 72
 
-   21 Statement: IF LPAREN Exp • RPAREN Statement
-   22          | IF LPAREN Exp • RPAREN Statement ELSE Statement
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   24 Statement: WHILE LPAREN Exp • RPAREN Statement
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
     RPAREN     shift, and go to state 89
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 73
 
-   14 Statement: LBRACE Statements RBRACE •
+   22 Statement: IF LPAREN Exp • RPAREN Statement
+   23          | IF LPAREN Exp • RPAREN Statement ELSE Statement
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    $default  reduce using rule 14 (Statement)
+    RPAREN     shift, and go to state 90
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 74
 
-   15 Statement: Type ID SC •
+   15 Statement: LBRACE Statements RBRACE •
 
     $default  reduce using rule 15 (Statement)
 
 
 State 75
 
-   16 Statement: Type ID ASSIGN • Exp SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   16 Statement: Type ID SC •
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 90
+    $default  reduce using rule 16 (Statement)
 
 
 State 76
 
-   26 Call: ID LPAREN ExpList RPAREN •
+   17 Statement: Type ID ASSIGN • Exp SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    $default  reduce using rule 26 (Call)
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 91
 
 
 State 77
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   28 ExpList: • Exp
-   29        | • Exp COMMA ExpList
-   29        | Exp COMMA • ExpList
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   27 Call: ID LPAREN ExpList RPAREN •
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call     go to state 44
-    ExpList  go to state 91
-    Exp      go to state 57
+    $default  reduce using rule 27 (Call)
 
 
 State 78
 
-   17 Statement: ID ASSIGN Exp SC •
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   29 ExpList: • Exp
+   30        | • Exp COMMA ExpList
+   30        | Exp COMMA • ExpList
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    $default  reduce using rule 17 (Statement)
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call     go to state 45
+    ExpList  go to state 92
+    Exp      go to state 58
 
 
 State 79
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
-   49    | LPAREN Type RPAREN • Exp
+   18 Statement: ID ASSIGN Exp SC •
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 92
+    $default  reduce using rule 18 (Statement)
 
 
 State 80
 
-   33 Exp: LPAREN Exp RPAREN •
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
+   50    | LPAREN Type RPAREN • Exp
 
-    $default  reduce using rule 33 (Exp)
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 93
 
 
 State 81
 
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   34    | Exp IF LPAREN • Exp RPAREN ELSE Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
+   34 Exp: LPAREN Exp RPAREN •
 
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 93
+    $default  reduce using rule 34 (Exp)
 
 
 State 82
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   46    | Exp OR Exp •
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   35    | Exp IF LPAREN • Exp RPAREN ELSE Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
 
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
 
-    $default  reduce using rule 46 (Exp)
+    Call  go to state 45
+    Exp   go to state 94
 
 
 State 83
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   45    | Exp AND Exp •
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   47    | Exp OR Exp •
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
-
-    $default  reduce using rule 45 (Exp)
-
-
-State 84
-
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
-   48    | Exp EQUALITY Exp •
-
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
-
-    $default  reduce using rule 48 (Exp)
-
-
-State 85
-
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   47    | Exp RELOP Exp •
-   48    | Exp • EQUALITY Exp
-
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
     $default  reduce using rule 47 (Exp)
 
 
+State 84
+
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   46    | Exp AND Exp •
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
+
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
+
+    $default  reduce using rule 46 (Exp)
+
+
+State 85
+
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
+   49    | Exp EQUALITY Exp •
+
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
+
+    $default  reduce using rule 49 (Exp)
+
+
 State 86
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   35    | Exp BINOP_ADD Exp •
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   48    | Exp RELOP Exp •
+   49    | Exp • EQUALITY Exp
 
-    BINOP_MUL  shift, and go to state 70
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
-    $default  reduce using rule 35 (Exp)
+    $default  reduce using rule 48 (Exp)
 
 
 State 87
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   36    | Exp BINOP_MUL Exp •
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   36    | Exp BINOP_ADD Exp •
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
+
+    BINOP_MUL  shift, and go to state 71
 
     $default  reduce using rule 36 (Exp)
 
 
 State 88
 
-   14 Statement: • LBRACE Statements RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   23          | WHILE LPAREN Exp RPAREN • Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   37    | Exp BINOP_MUL Exp •
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    ID        shift, and go to state 23
-    INT       shift, and go to state 2
-    BYTE      shift, and go to state 3
-    BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
-
-    Statement  go to state 94
-    Call       go to state 32
-    Type       go to state 33
+    $default  reduce using rule 37 (Exp)
 
 
 State 89
 
-   14 Statement: • LBRACE Statements RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   21          | IF LPAREN Exp RPAREN • Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   22          | IF LPAREN Exp RPAREN • Statement ELSE Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
+   15 Statement: • LBRACE Statements RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   24          | WHILE LPAREN Exp RPAREN • Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
-    ID        shift, and go to state 23
+    ID        shift, and go to state 24
     INT       shift, and go to state 2
     BYTE      shift, and go to state 3
     BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
 
     Statement  go to state 95
-    Call       go to state 32
-    Type       go to state 33
+    Call       go to state 33
+    Type       go to state 34
 
 
 State 90
 
-   16 Statement: Type ID ASSIGN Exp • SC
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   15 Statement: • LBRACE Statements RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   22          | IF LPAREN Exp RPAREN • Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   23          | IF LPAREN Exp RPAREN • Statement ELSE Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
 
-    SC         shift, and go to state 96
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    ID        shift, and go to state 24
+    INT       shift, and go to state 2
+    BYTE      shift, and go to state 3
+    BOOL      shift, and go to state 4
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
+
+    Statement  go to state 96
+    Call       go to state 33
+    Type       go to state 34
 
 
 State 91
 
-   29 ExpList: Exp COMMA ExpList •
+   17 Statement: Type ID ASSIGN Exp • SC
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    $default  reduce using rule 29 (ExpList)
+    SC         shift, and go to state 97
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 92
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
-   49    | LPAREN Type RPAREN Exp •
+   30 ExpList: Exp COMMA ExpList •
 
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
-
-    $default  reduce using rule 49 (Exp)
+    $default  reduce using rule 30 (ExpList)
 
 
 State 93
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   34    | Exp IF LPAREN Exp • RPAREN ELSE Exp
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
+   50    | LPAREN Type RPAREN Exp •
 
-    RPAREN     shift, and go to state 97
-    IF         shift, and go to state 64
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
+
+    $default  reduce using rule 50 (Exp)
 
 
 State 94
 
-   23 Statement: WHILE LPAREN Exp RPAREN Statement •
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   35    | Exp IF LPAREN Exp • RPAREN ELSE Exp
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
 
-    $default  reduce using rule 23 (Statement)
+    RPAREN     shift, and go to state 98
+    IF         shift, and go to state 65
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
 
 
 State 95
 
-   21 Statement: IF LPAREN Exp RPAREN Statement •
-   22          | IF LPAREN Exp RPAREN Statement • ELSE Statement
+   24 Statement: WHILE LPAREN Exp RPAREN Statement •
 
-    ELSE  shift, and go to state 98
-
-    $default  reduce using rule 21 (Statement)
+    $default  reduce using rule 24 (Statement)
 
 
 State 96
 
-   16 Statement: Type ID ASSIGN Exp SC •
-
-    $default  reduce using rule 16 (Statement)
-
-
-State 97
-
-   34 Exp: Exp IF LPAREN Exp RPAREN • ELSE Exp
+   22 Statement: IF LPAREN Exp RPAREN Statement •
+   23          | IF LPAREN Exp RPAREN Statement • ELSE Statement
 
     ELSE  shift, and go to state 99
-
-
-State 98
-
-   14 Statement: • LBRACE Statements RBRACE
-   15          | • Type ID SC
-   16          | • Type ID ASSIGN Exp SC
-   17          | • ID ASSIGN Exp SC
-   18          | • Call SC
-   19          | • RETURN SC
-   20          | • RETURN Exp SC
-   21          | • IF LPAREN Exp RPAREN Statement
-   22          | • IF LPAREN Exp RPAREN Statement ELSE Statement
-   22          | IF LPAREN Exp RPAREN Statement ELSE • Statement
-   23          | • WHILE LPAREN Exp RPAREN Statement
-   24          | • BREAK SC
-   25          | • CONTINUE SC
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   30 Type: • INT
-   31     | • BYTE
-   32     | • BOOL
-
-    ID        shift, and go to state 23
-    INT       shift, and go to state 2
-    BYTE      shift, and go to state 3
-    BOOL      shift, and go to state 4
-    RETURN    shift, and go to state 24
-    WHILE     shift, and go to state 25
-    BREAK     shift, and go to state 26
-    CONTINUE  shift, and go to state 27
-    IF        shift, and go to state 28
-    LBRACE    shift, and go to state 29
-
-    Statement  go to state 100
-    Call       go to state 32
-    Type       go to state 33
-
-
-State 99
-
-   26 Call: • ID LPAREN ExpList RPAREN
-   27     | • ID LPAREN RPAREN
-   33 Exp: • LPAREN Exp RPAREN
-   34    | • Exp IF LPAREN Exp RPAREN ELSE Exp
-   34    | Exp IF LPAREN Exp RPAREN ELSE • Exp
-   35    | • Exp BINOP_ADD Exp
-   36    | • Exp BINOP_MUL Exp
-   37    | • ID
-   38    | • Call
-   39    | • NUM
-   40    | • NUM B
-   41    | • STRING
-   42    | • TRUE
-   43    | • FALSE
-   44    | • NOT Exp
-   45    | • Exp AND Exp
-   46    | • Exp OR Exp
-   47    | • Exp RELOP Exp
-   48    | • Exp EQUALITY Exp
-   49    | • LPAREN Type RPAREN Exp
-
-    ID      shift, and go to state 36
-    NUM     shift, and go to state 37
-    STRING  shift, and go to state 38
-    TRUE    shift, and go to state 39
-    FALSE   shift, and go to state 40
-    LPAREN  shift, and go to state 42
-    NOT     shift, and go to state 43
-
-    Call  go to state 44
-    Exp   go to state 101
-
-
-State 100
-
-   22 Statement: IF LPAREN Exp RPAREN Statement ELSE Statement •
 
     $default  reduce using rule 22 (Statement)
 
 
+State 97
+
+   17 Statement: Type ID ASSIGN Exp SC •
+
+    $default  reduce using rule 17 (Statement)
+
+
+State 98
+
+   35 Exp: Exp IF LPAREN Exp RPAREN • ELSE Exp
+
+    ELSE  shift, and go to state 100
+
+
+State 99
+
+   15 Statement: • LBRACE Statements RBRACE
+   16          | • Type ID SC
+   17          | • Type ID ASSIGN Exp SC
+   18          | • ID ASSIGN Exp SC
+   19          | • Call SC
+   20          | • RETURN SC
+   21          | • RETURN Exp SC
+   22          | • IF LPAREN Exp RPAREN Statement
+   23          | • IF LPAREN Exp RPAREN Statement ELSE Statement
+   23          | IF LPAREN Exp RPAREN Statement ELSE • Statement
+   24          | • WHILE LPAREN Exp RPAREN Statement
+   25          | • BREAK SC
+   26          | • CONTINUE SC
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   31 Type: • INT
+   32     | • BYTE
+   33     | • BOOL
+
+    ID        shift, and go to state 24
+    INT       shift, and go to state 2
+    BYTE      shift, and go to state 3
+    BOOL      shift, and go to state 4
+    RETURN    shift, and go to state 25
+    WHILE     shift, and go to state 26
+    BREAK     shift, and go to state 27
+    CONTINUE  shift, and go to state 28
+    IF        shift, and go to state 29
+    LBRACE    shift, and go to state 30
+
+    Statement  go to state 101
+    Call       go to state 33
+    Type       go to state 34
+
+
+State 100
+
+   27 Call: • ID LPAREN ExpList RPAREN
+   28     | • ID LPAREN RPAREN
+   34 Exp: • LPAREN Exp RPAREN
+   35    | • Exp IF LPAREN Exp RPAREN ELSE Exp
+   35    | Exp IF LPAREN Exp RPAREN ELSE • Exp
+   36    | • Exp BINOP_ADD Exp
+   37    | • Exp BINOP_MUL Exp
+   38    | • ID
+   39    | • Call
+   40    | • NUM
+   41    | • NUM B
+   42    | • STRING
+   43    | • TRUE
+   44    | • FALSE
+   45    | • NOT Exp
+   46    | • Exp AND Exp
+   47    | • Exp OR Exp
+   48    | • Exp RELOP Exp
+   49    | • Exp EQUALITY Exp
+   50    | • LPAREN Type RPAREN Exp
+
+    ID      shift, and go to state 37
+    NUM     shift, and go to state 38
+    STRING  shift, and go to state 39
+    TRUE    shift, and go to state 40
+    FALSE   shift, and go to state 41
+    LPAREN  shift, and go to state 43
+    NOT     shift, and go to state 44
+
+    Call  go to state 45
+    Exp   go to state 102
+
+
 State 101
 
-   34 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
-   34    | Exp IF LPAREN Exp RPAREN ELSE Exp •
-   35    | Exp • BINOP_ADD Exp
-   36    | Exp • BINOP_MUL Exp
-   45    | Exp • AND Exp
-   46    | Exp • OR Exp
-   47    | Exp • RELOP Exp
-   48    | Exp • EQUALITY Exp
+   23 Statement: IF LPAREN Exp RPAREN Statement ELSE Statement •
 
-    OR         shift, and go to state 65
-    AND        shift, and go to state 66
-    EQUALITY   shift, and go to state 67
-    RELOP      shift, and go to state 68
-    BINOP_ADD  shift, and go to state 69
-    BINOP_MUL  shift, and go to state 70
+    $default  reduce using rule 23 (Statement)
 
-    $default  reduce using rule 34 (Exp)
+
+State 102
+
+   35 Exp: Exp • IF LPAREN Exp RPAREN ELSE Exp
+   35    | Exp IF LPAREN Exp RPAREN ELSE Exp •
+   36    | Exp • BINOP_ADD Exp
+   37    | Exp • BINOP_MUL Exp
+   46    | Exp • AND Exp
+   47    | Exp • OR Exp
+   48    | Exp • RELOP Exp
+   49    | Exp • EQUALITY Exp
+
+    OR         shift, and go to state 66
+    AND        shift, and go to state 67
+    EQUALITY   shift, and go to state 68
+    RELOP      shift, and go to state 69
+    BINOP_ADD  shift, and go to state 70
+    BINOP_MUL  shift, and go to state 71
+
+    $default  reduce using rule 35 (Exp)
