@@ -2,6 +2,8 @@
 #include "hw3_output.hpp"
 #include <sstream>
 
+
+
 using namespace std;
 
 void output::endScope(){
@@ -88,16 +90,23 @@ void output::errorByteTooLarge(int lineno, const string& value) {
 
 
 /// ############################################################################## ///
+/// ############################    Symbol    ############################///
+/// ############################################################################## ///
+
+
+
+
+/// ############################################################################## ///
 /// ############################    Node_ExpList    ############################///
 /// ############################################################################## ///
 
-Node_ExpList::Node_ExpList(std::shared_ptr<Node_Exp> exp) : Generic_Node({exp}){
+Node_ExpList::Node_ExpList(Node_Exp* exp) : Generic_Node({exp}){
     exp_list.clear();
     exp_list.push_back(exp->type);
 }
 
-Node_ExpList::Node_ExpList(std::shared_ptr<Node_Exp> node_exp, std::shared_ptr<Node_Token> node_token,
-                           std::shared_ptr<Node_ExpList> node_expList): Generic_Node({node_exp, node_token, node_expList}) {
+Node_ExpList::Node_ExpList(Node_Exp* node_exp, Node_Token* node_token,
+                           Node_ExpList* node_expList): Generic_Node({node_exp, node_token, node_expList}) {
     exp_list = node_expList->exp_list;
     exp_list.insert(exp_list.begin(), node_exp->type);
 }
@@ -107,7 +116,7 @@ Node_ExpList::Node_ExpList(std::shared_ptr<Node_Exp> node_exp, std::shared_ptr<N
 /// ############################    Node_FormalDecl    ############################///
 /// ############################################################################## ///
 
-Node_FormalDecl::Node_FormalDecl(std::shared_ptr<Node_Exp_Type> node_type, std::shared_ptr<Node_Token> node_token_id)
+Node_FormalDecl::Node_FormalDecl(Node_Exp_Type* node_type, Node_Token* node_token_id)
                 : Generic_Node({node_type, node_token_id}), id_symbol(node_type->type, node_token_id->value){
     if (frame_manager.find(id_symbol.name) != nullptr){
         output::errorDef(yylineno, id_symbol.name);
@@ -120,12 +129,12 @@ Node_FormalDecl::Node_FormalDecl(std::shared_ptr<Node_Exp_Type> node_type, std::
 /// ############################    Node_FormalsList    ############################///
 /// ############################################################################## ///
 
-Node_FormalsList::Node_FormalsList(std::shared_ptr<Node_FormalDecl> node_formalDecl): Generic_Node({node_formalDecl}) {
+Node_FormalsList::Node_FormalsList(Node_FormalDecl* node_formalDecl): Generic_Node({node_formalDecl}) {
     parameter_list.emplace_back(node_formalDecl->id_symbol);
 }
 
-Node_FormalsList::Node_FormalsList(std::shared_ptr<Node_FormalDecl> node_formalDecl,
-                                   std::shared_ptr<Node_Token> node_comma, std::shared_ptr<Node_FormalsList> node_formalsList)
+Node_FormalsList::Node_FormalsList(Node_FormalDecl* node_formalDecl,
+                                   Node_Token* node_comma, Node_FormalsList* node_formalsList)
                                    : Generic_Node({node_formalDecl, node_comma, node_formalsList}) {
     parameter_list = node_formalsList->parameter_list;
     parameter_list.insert(parameter_list.begin(), node_formalDecl->id_symbol);
@@ -135,8 +144,8 @@ Node_FormalsList::Node_FormalsList(std::shared_ptr<Node_FormalDecl> node_formalD
 /// ############################    Node_Call    ############################///
 /// ############################################################################## ///
 
-Node_Call::Node_Call(std::shared_ptr<Node_Token> node_id, std::shared_ptr<Node_Token> node_lparen,
-                     std::shared_ptr<Node_ExpList> node_expList, std::shared_ptr<Node_Token> node_rparen)
+Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen,
+                     Node_ExpList* node_expList, Node_Token* node_rparen)
                      : Generic_Node({node_id, node_lparen, node_expList, node_rparen}), func_id(Symbol::invalidSymbol()){
     // check if func declared
     auto id_entry = frame_manager.find(node_id->value);
@@ -173,18 +182,18 @@ Node_Statement::Node_Statement(NodeVector children): Generic_Node(children) {
 /// ############################    Node_Statement_ID_Decl    ############################///
 /// ############################################################################## ///
 
-Node_Statement_ID_Decl::Node_Statement_ID_Decl(std::shared_ptr<Node_Exp_Type> node_type,
-                                               std::shared_ptr<Node_Token> node_token,
-                                               std::shared_ptr<Node_Token> node_sc)
+Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp_Type* node_type,
+                                               Node_Token* node_token,
+                                               Node_Token* node_sc)
                                                : Node_Statement({node_type, node_token, node_sc}) {
     frame_manager.newEntry(DeclType::VAR, node_token->value, node_type->type);
 }
 
-Node_Statement_ID_Decl::Node_Statement_ID_Decl(std::shared_ptr<Node_Exp_Type> node_type,
-                                               std::shared_ptr<Node_Token> node_token,
-                                               std::shared_ptr<Node_Token> node_assign,
-                                               std::shared_ptr<Node_Exp> node_exp,
-                                               std::shared_ptr<Node_Token> node_sc)
+Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp_Type* node_type,
+                                               Node_Token* node_token,
+                                               Node_Token* node_assign,
+                                               Node_Exp* node_exp,
+                                               Node_Token* node_sc)
                                                : Node_Statement({node_type, node_token, node_assign, node_exp, node_sc}) {
     
     frame_manager.newEntry(DeclType::VAR, node_token->value, node_type->type);
@@ -200,10 +209,10 @@ Node_Statement_ID_Decl::Node_Statement_ID_Decl(std::shared_ptr<Node_Exp_Type> no
 /// ############################    Node_Statement_ID_Assign    ############################///
 /// ############################################################################## ///
 
-Node_Statement_ID_Assign::Node_Statement_ID_Assign(std::shared_ptr<Node_Token> node_id,
-                                                   std::shared_ptr<Node_Token> node_assign,
-                                                   std::shared_ptr<Node_Exp> node_exp,
-                                                   std::shared_ptr<Node_Token> node_sc)
+Node_Statement_ID_Assign::Node_Statement_ID_Assign(Node_Token* node_id,
+                                                   Node_Token* node_assign,
+                                                   Node_Exp* node_exp,
+                                                   Node_Token* node_sc)
                                                    : Node_Statement({node_id, node_assign, node_exp, node_sc}) {
     
     auto id_entry = frame_manager.find(node_id->value);
@@ -222,7 +231,7 @@ Node_Statement_ID_Assign::Node_Statement_ID_Assign(std::shared_ptr<Node_Token> n
 /// ############################    Node_Statement_Call    ############################///
 /// ############################################################################## ///
 
-Node_Statement_Call::Node_Statement_Call(std::shared_ptr<Node_Call> node_call, std::shared_ptr<Node_Token> node_sc)
+Node_Statement_Call::Node_Statement_Call(Node_Call* node_call, Node_Token* node_sc)
                                         : Node_Statement({node_call, node_sc}){
     
     
@@ -236,7 +245,7 @@ Node_Statement_Call::Node_Statement_Call(std::shared_ptr<Node_Call> node_call, s
 /// ############################################################################## ///
 
 
-Node_Statement_Ret::Node_Statement_Ret(std::shared_ptr<Node_Token> node_ret, std::shared_ptr<Node_Token> node_sc)
+Node_Statement_Ret::Node_Statement_Ret(Node_Token* node_ret, Node_Token* node_sc)
                                         : Node_Statement({node_ret, node_sc}){
     
     if (frame_manager.scopeRetType() != Type::VOID){
@@ -246,8 +255,8 @@ Node_Statement_Ret::Node_Statement_Ret(std::shared_ptr<Node_Token> node_ret, std
 }
 
 
-Node_Statement_Ret::Node_Statement_Ret(std::shared_ptr<Node_Token> node_ret, std::shared_ptr<Node_Exp> node_exp,
-                                       std::shared_ptr<Node_Token> node_sc)
+Node_Statement_Ret::Node_Statement_Ret(Node_Token* node_ret, Node_Exp* node_exp,
+                                       Node_Token* node_sc)
                                        : Node_Statement({node_ret, node_exp, node_sc}) {
     
     if (valid_implicit_cast(frame_manager.scopeRetType(), node_exp->type) == false){
@@ -259,9 +268,8 @@ Node_Statement_Ret::Node_Statement_Ret(std::shared_ptr<Node_Token> node_ret, std
 /// ############################    Node_Statement_IF    ############################///
 /// ############################################################################## ///
 
-Node_Statement_IF::Node_Statement_IF(std::shared_ptr<Node_Token> node_if, std::shared_ptr<Node_Token> node_lparen,
-                                     std::shared_ptr<Node_Exp> node_exp, std::shared_ptr<Node_Token> node_rparen,
-                                     std::shared_ptr<Node_Statement> node_statement)
+Node_Statement_IF::Node_Statement_IF(Node_Token *node_if, Node_Token *node_lparen, Node_Exp *node_exp,
+                                     Node_Token *node_rparen, Node_Statement *node_statement)
                                      : Node_Statement({node_if, node_lparen, node_exp, node_rparen, node_statement}){
     
     if (node_exp->typeCheck({Type::BOOL}) == false){
@@ -269,27 +277,24 @@ Node_Statement_IF::Node_Statement_IF(std::shared_ptr<Node_Token> node_if, std::s
     }
 }
 
-
-Node_Statement_IF::Node_Statement_IF(std::shared_ptr<Node_Token> node_if, std::shared_ptr<Node_Token> node_lparen,
-                                     std::shared_ptr<Node_Exp> node_exp, std::shared_ptr<Node_Token> node_rparen,
-                                     std::shared_ptr<Node_Statement> node_statement1,
-                                     std::shared_ptr<Node_Token> node_else,
-                                     std::shared_ptr<Node_Statement> node_statement2)
+Node_Statement_IF::Node_Statement_IF(Node_Token *node_if, Node_Token *node_lparen, Node_Exp *node_exp,
+                                     Node_Token *node_rparen, Node_Statement *node_statement1, Node_Token *node_else,
+                                     Node_Statement *node_statement2)
                                      :  Node_Statement({node_if, node_lparen, node_exp, node_rparen, node_statement1, node_else, node_statement2}){
+    
     if (node_exp->typeCheck({Type::BOOL}) == false){
         throw MismatchExc(yylineno);
     }
 }
 
-
 /// ############################################################################## ///
 /// ############################    Node_Statement_While    ############################///
 /// ############################################################################## ///
 
-Node_Statement_While::Node_Statement_While(std::shared_ptr<Node_Token> node_while,
-                                           std::shared_ptr<Node_Token> node_lparen, std::shared_ptr<Node_Exp> node_exp,
-                                           std::shared_ptr<Node_Token> node_rparen,
-                                           std::shared_ptr<Node_Statement> node_statement)
+Node_Statement_While::Node_Statement_While(Node_Token* node_while,
+                                           Node_Token* node_lparen, Node_Exp* node_exp,
+                                           Node_Token* node_rparen,
+                                           Node_Statement* node_statement)
                                            : Node_Statement({node_while, node_lparen, node_exp, node_rparen, node_statement}) {
     
     if (node_exp->typeCheck({Type::BOOL}) == false){
@@ -302,7 +307,7 @@ Node_Statement_While::Node_Statement_While(std::shared_ptr<Node_Token> node_whil
 /// ############################    Node_Statement_LoopMod    ############################///
 /// ############################################################################## ///
 
-Node_Statement_LoopMod::Node_Statement_LoopMod(std::shared_ptr<Node_Token> node_loop_mod, std::shared_ptr<Node_Token> node_sc)
+Node_Statement_LoopMod::Node_Statement_LoopMod(Node_Token* node_loop_mod, Node_Token* node_sc)
                                                 : Node_Statement({node_loop_mod, node_sc}){
     
     
@@ -319,10 +324,10 @@ Node_Statement_LoopMod::Node_Statement_LoopMod(std::shared_ptr<Node_Token> node_
 /// ############################    Node_FuncDecl    ############################///
 /// ############################################################################## ///
 
-Node_FuncDecl::Node_FuncDecl(std::shared_ptr<Node_Exp_Type> node_retType, std::shared_ptr<Node_Token> node_id,
-                             std::shared_ptr<Node_Token> node_lparen, std::shared_ptr<Node_FormalsList> node_formals,
-                             std::shared_ptr<Node_Token> node_rparen, std::shared_ptr<Node_Token> node_lbrace,
-                             std::shared_ptr<Node_Statement> node_statement, std::shared_ptr<Node_Token> node_rbrace)
+Node_FuncDecl::Node_FuncDecl(Node_Exp_Type* node_retType, Node_Token* node_id,
+                             Node_Token* node_lparen, Node_FormalsList* node_formals,
+                             Node_Token* node_rparen, Node_Token* node_lbrace,
+                             Node_Statement* node_statement, Node_Token* node_rbrace)
                              : Generic_Node({node_retType, node_id, node_lparen, node_formals, node_rparen, node_lbrace, node_statement, node_rbrace}){
     
     

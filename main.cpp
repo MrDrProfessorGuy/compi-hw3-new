@@ -9,8 +9,6 @@ extern int yyparse();
 extern int yylex();
 int yyerror(const char * message);
 
-#define NewNode(attr, children) $$ = createNode(); $$->setAttributes(attr); $$->setChildren(children);
-#define Cast(obj, Type) (std::static_pointer_cast<TYPE>(obj))
 
 
 
