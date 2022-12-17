@@ -1,8 +1,3 @@
-Nonterminals useless in grammar
-
-    Marker
-
-
 Grammar
 
     0 $accept: Program $end

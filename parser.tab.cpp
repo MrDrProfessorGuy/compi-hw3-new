@@ -555,12 +555,12 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   102,   102,   103,   104,   105,   105,   106,   107,   108,
-     109,   110,   111,   112,   113,   114,   115,   116,   117,   118,
-     119,   120,   121,   122,   123,   124,   125,   126,   127,   128,
-     129,   130,   131,   132,   133,   134,   135,   136,   137,   138,
-     139,   140,   141,   142,   143,   144,   145,   146,   147,   148,
-     149,   150,   151,   153,   154,   155
+       0,   101,   101,   102,   103,   104,   104,   105,   106,   107,
+     108,   109,   110,   111,   112,   113,   114,   115,   116,   117,
+     118,   119,   120,   121,   122,   123,   124,   125,   126,   127,
+     128,   129,   130,   131,   132,   133,   134,   135,   136,   137,
+     138,   139,   140,   141,   142,   143,   144,   145,   146,   147,
+     148,   149,   150,   152,   153,   154
 };
 #endif
 
@@ -1216,325 +1216,325 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: Funcs  */
-#line 102 "parser.ypp"
+#line 101 "parser.ypp"
                                                                                 {(yyval.ProgramNode) = new Node_Program((yyvsp[0].NodeFuncsList));output::printProductionRule(1);}
 #line 1222 "parser.tab.cpp"
     break;
 
   case 3: /* Funcs: %empty  */
-#line 103 "parser.ypp"
+#line 102 "parser.ypp"
                                                                                        {(yyval.NodeFuncsList) = new Node_FuncsList({});output::printProductionRule(2);}
 #line 1228 "parser.tab.cpp"
     break;
 
   case 4: /* Funcs: FuncDecl Funcs  */
-#line 104 "parser.ypp"
+#line 103 "parser.ypp"
                                                                                 {(yyval.NodeFuncsList) = new Node_FuncsList({(yyvsp[-1].NodeFuncDecl),(yyvsp[0].NodeFuncsList)});output::printProductionRule(3);}
 #line 1234 "parser.tab.cpp"
     break;
 
   case 5: /* $@1: %empty  */
-#line 105 "parser.ypp"
+#line 104 "parser.ypp"
                                                {Node_FuncDecl::newFuncFrame((yyvsp[-4].NodeRetType),(yyvsp[-3].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeFormals),(yyvsp[0].NodeToken));}
 #line 1240 "parser.tab.cpp"
     break;
 
   case 6: /* FuncDecl: RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE  */
-#line 105 "parser.ypp"
+#line 104 "parser.ypp"
                                                                                                                                 {(yyval.NodeFuncDecl) = new Node_FuncDecl((yyvsp[-8].NodeRetType),(yyvsp[-7].NodeToken),(yyvsp[-6].NodeToken),(yyvsp[-5].NodeFormals),(yyvsp[-4].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeStatement),(yyvsp[0].NodeToken));Frame_class::getInstance().closeFrame();output::printProductionRule(4);}
 #line 1246 "parser.tab.cpp"
     break;
 
   case 7: /* RetType: Type  */
-#line 106 "parser.ypp"
+#line 105 "parser.ypp"
                                                                                 {(yyval.NodeRetType) = new Node_RetType({(yyvsp[0].NodeExp)}, ((yyvsp[0].NodeExp))->type);output::printProductionRule(5);}
 #line 1252 "parser.tab.cpp"
     break;
 
   case 8: /* RetType: VOID  */
-#line 107 "parser.ypp"
+#line 106 "parser.ypp"
                                                                                 {(yyval.NodeRetType) = new Node_RetType({(yyvsp[0].NodeToken)}, Type::VOID);output::printProductionRule(6);}
 #line 1258 "parser.tab.cpp"
     break;
 
   case 9: /* Formals: %empty  */
-#line 108 "parser.ypp"
+#line 107 "parser.ypp"
                                                                                        {(yyval.NodeFormals) = new Node_Formals();output::printProductionRule(7);}
 #line 1264 "parser.tab.cpp"
     break;
 
   case 10: /* Formals: FormalsList  */
-#line 109 "parser.ypp"
+#line 108 "parser.ypp"
                                                                                 {(yyval.NodeFormals) = new Node_Formals((yyvsp[0].NodeFormalsList));output::printProductionRule(8);}
 #line 1270 "parser.tab.cpp"
     break;
 
   case 11: /* FormalsList: FormalDecl  */
-#line 110 "parser.ypp"
+#line 109 "parser.ypp"
                                                                                 {(yyval.NodeFormalsList) = new Node_FormalsList((yyvsp[0].NodeFormalDecl));output::printProductionRule(9);}
 #line 1276 "parser.tab.cpp"
     break;
 
   case 12: /* FormalsList: FormalDecl COMMA FormalsList  */
-#line 111 "parser.ypp"
+#line 110 "parser.ypp"
                                                                                 {(yyval.NodeFormalsList) = new Node_FormalsList((yyvsp[-2].NodeFormalDecl), (yyvsp[-1].NodeToken), (yyvsp[0].NodeFormalsList));output::printProductionRule(10);}
 #line 1282 "parser.tab.cpp"
     break;
 
   case 13: /* FormalDecl: Type ID  */
-#line 112 "parser.ypp"
+#line 111 "parser.ypp"
                                                                                 {(yyval.NodeFormalDecl) = new Node_FormalDecl((yyvsp[-1].NodeExp), (yyvsp[0].NodeToken));output::printProductionRule(11);}
 #line 1288 "parser.tab.cpp"
     break;
 
   case 14: /* Statements: Statement  */
-#line 113 "parser.ypp"
+#line 112 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement({(yyvsp[0].NodeStatement)});output::printProductionRule(12);}
 #line 1294 "parser.tab.cpp"
     break;
 
   case 15: /* Statements: Statements Statement  */
-#line 114 "parser.ypp"
+#line 113 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement({(yyvsp[-1].NodeStatement), (yyvsp[0].NodeStatement)});output::printProductionRule(13);}
 #line 1300 "parser.tab.cpp"
     break;
 
   case 16: /* Statement: LBRACE OpenScopeBlock Statements RBRACE CloseScope  */
-#line 115 "parser.ypp"
-                                                                                           {(yyval.NodeStatement) = new Node_Statement({(yyvsp[-4].NodeToken), (yyvsp[-2].NodeStatement), (yyvsp[-1].NodeToken)});output::printProductionRule(14);}
+#line 114 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement({(yyvsp[-4].NodeToken), (yyvsp[-2].NodeStatement), (yyvsp[-1].NodeToken)});output::printProductionRule(14);}
 #line 1306 "parser.tab.cpp"
     break;
 
   case 17: /* Statement: Type ID SC  */
-#line 116 "parser.ypp"
+#line 115 "parser.ypp"
                                                                                 {output::printProductionRule(15);(yyval.NodeStatement) = new Node_Statement_ID_Decl((yyvsp[-2].NodeExp), (yyvsp[-1].NodeToken), (yyvsp[0].NodeToken));}
 #line 1312 "parser.tab.cpp"
     break;
 
   case 18: /* Statement: Type ID ASSIGN Exp SC  */
-#line 117 "parser.ypp"
+#line 116 "parser.ypp"
                                                                                 {output::printProductionRule(16);(yyval.NodeStatement) = new Node_Statement_ID_Decl((yyvsp[-4].NodeExp), (yyvsp[-3].NodeToken), (yyvsp[-2].NodeToken), (yyvsp[-1].NodeExp), (yyvsp[0].NodeToken));}
 #line 1318 "parser.tab.cpp"
     break;
 
   case 19: /* Statement: ID ASSIGN Exp SC  */
-#line 118 "parser.ypp"
+#line 117 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement_ID_Assign((yyvsp[-3].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeExp),(yyvsp[0].NodeToken));output::printProductionRule(17);}
 #line 1324 "parser.tab.cpp"
     break;
 
   case 20: /* Statement: Call SC  */
-#line 119 "parser.ypp"
+#line 118 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement_Call((yyvsp[-1].NodeCall),(yyvsp[0].NodeToken));output::printProductionRule(18);}
 #line 1330 "parser.tab.cpp"
     break;
 
   case 21: /* Statement: RETURN SC  */
-#line 120 "parser.ypp"
+#line 119 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement_Ret((yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(19);}
 #line 1336 "parser.tab.cpp"
     break;
 
   case 22: /* Statement: RETURN Exp SC  */
-#line 121 "parser.ypp"
+#line 120 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement_Ret((yyvsp[-2].NodeToken),(yyvsp[-1].NodeExp),(yyvsp[0].NodeToken));output::printProductionRule(20);}
 #line 1342 "parser.tab.cpp"
     break;
 
   case 23: /* Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope  */
-#line 122 "parser.ypp"
+#line 121 "parser.ypp"
                                                                                                               {(yyval.NodeStatement) = new Node_Statement_IF((yyvsp[-6].NodeToken),(yyvsp[-5].NodeToken),(yyvsp[-3].NodeExp),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeStatement));output::printProductionRule(21);}
 #line 1348 "parser.tab.cpp"
     break;
 
   case 24: /* Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope  */
-#line 123 "parser.ypp"
+#line 122 "parser.ypp"
                                                                                                                                        {(yyval.NodeStatement) = new Node_Statement_IF((yyvsp[-10].NodeToken),(yyvsp[-9].NodeToken),(yyvsp[-7].NodeExp),(yyvsp[-6].NodeToken),(yyvsp[-5].NodeStatement),(yyvsp[-3].NodeToken),(yyvsp[-1].NodeStatement));output::printProductionRule(22);}
 #line 1354 "parser.tab.cpp"
     break;
 
   case 25: /* Statement: WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope  */
-#line 124 "parser.ypp"
+#line 123 "parser.ypp"
                                                                                                             {(yyval.NodeStatement) = new Node_Statement_While((yyvsp[-6].NodeToken),(yyvsp[-5].NodeToken),(yyvsp[-3].NodeExp),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeStatement));output::printProductionRule(23);}
 #line 1360 "parser.tab.cpp"
     break;
 
   case 26: /* Statement: BREAK SC  */
-#line 125 "parser.ypp"
+#line 124 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement_LoopMod((yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(24);}
 #line 1366 "parser.tab.cpp"
     break;
 
   case 27: /* Statement: CONTINUE SC  */
-#line 126 "parser.ypp"
+#line 125 "parser.ypp"
                                                                                 {(yyval.NodeStatement) = new Node_Statement_LoopMod((yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(25);}
 #line 1372 "parser.tab.cpp"
     break;
 
   case 28: /* Call: ID LPAREN ExpList RPAREN  */
-#line 127 "parser.ypp"
+#line 126 "parser.ypp"
                                                                                 {(yyval.NodeCall) = new Node_Call((yyvsp[-3].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeExpList),(yyvsp[0].NodeToken));output::printProductionRule(26);}
 #line 1378 "parser.tab.cpp"
     break;
 
   case 29: /* Call: ID LPAREN RPAREN  */
-#line 128 "parser.ypp"
+#line 127 "parser.ypp"
                                                                                 {(yyval.NodeCall) = new Node_Call((yyvsp[-2].NodeToken),(yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(27);}
 #line 1384 "parser.tab.cpp"
     break;
 
   case 30: /* ExpList: Exp  */
-#line 129 "parser.ypp"
+#line 128 "parser.ypp"
                                                                                 {(yyval.NodeExpList) = new Node_ExpList((yyvsp[0].NodeExp));output::printProductionRule(28);}
 #line 1390 "parser.tab.cpp"
     break;
 
   case 31: /* ExpList: Exp COMMA ExpList  */
-#line 130 "parser.ypp"
+#line 129 "parser.ypp"
                                                                                 {(yyval.NodeExpList) = new Node_ExpList((yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExpList));output::printProductionRule(29);}
 #line 1396 "parser.tab.cpp"
     break;
 
   case 32: /* Type: INT  */
-#line 131 "parser.ypp"
+#line 130 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Type({(yyvsp[0].NodeToken)}, Type::INT);output::printProductionRule(30);}
 #line 1402 "parser.tab.cpp"
     break;
 
   case 33: /* Type: BYTE  */
-#line 132 "parser.ypp"
+#line 131 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Type({(yyvsp[0].NodeToken)}, Type::BYTE);output::printProductionRule(31);}
 #line 1408 "parser.tab.cpp"
     break;
 
   case 34: /* Type: BOOL  */
-#line 133 "parser.ypp"
+#line 132 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Type({(yyvsp[0].NodeToken)}, Type::BOOL);output::printProductionRule(32);}
 #line 1414 "parser.tab.cpp"
     break;
 
   case 35: /* Exp: LPAREN Exp RPAREN  */
-#line 134 "parser.ypp"
+#line 133 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp({(yyvsp[-2].NodeToken),(yyvsp[-1].NodeExp),(yyvsp[0].NodeToken)},(yyvsp[-1].NodeExp)->type);output::printProductionRule(33);}
 #line 1420 "parser.tab.cpp"
     break;
 
   case 36: /* Exp: Exp IF LPAREN Exp RPAREN ELSE Exp  */
-#line 135 "parser.ypp"
+#line 134 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_IfElse({(yyvsp[-6].NodeExp),(yyvsp[-5].NodeToken),(yyvsp[-4].NodeToken),(yyvsp[-3].NodeExp),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(34);}
 #line 1426 "parser.tab.cpp"
     break;
 
   case 37: /* Exp: Exp BINOP_ADD Exp  */
-#line 136 "parser.ypp"
+#line 135 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Binop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(34);}
 #line 1432 "parser.tab.cpp"
     break;
 
   case 38: /* Exp: Exp BINOP_MUL Exp  */
-#line 137 "parser.ypp"
+#line 136 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Binop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(34);}
 #line 1438 "parser.tab.cpp"
     break;
 
   case 39: /* Exp: ID  */
-#line 138 "parser.ypp"
+#line 137 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_ID((yyvsp[0].NodeToken));output::printProductionRule(35);(yyval.NodeExp) = new Node_Exp_ID((yyvsp[0].NodeToken));}
 #line 1444 "parser.tab.cpp"
     break;
 
   case 40: /* Exp: Call  */
-#line 139 "parser.ypp"
+#line 138 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Call({(yyvsp[0].NodeCall)});output::printProductionRule(36);}
 #line 1450 "parser.tab.cpp"
     break;
 
   case 41: /* Exp: NUM  */
-#line 140 "parser.ypp"
+#line 139 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_NUM({(yyvsp[0].NodeToken)}, Type::INT);output::printProductionRule(37);}
 #line 1456 "parser.tab.cpp"
     break;
 
   case 42: /* Exp: NUM B  */
-#line 141 "parser.ypp"
+#line 140 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_NUM({(yyvsp[-1].NodeToken)}, Type::BYTE);output::printProductionRule(38);}
 #line 1462 "parser.tab.cpp"
     break;
 
   case 43: /* Exp: STRING  */
-#line 142 "parser.ypp"
+#line 141 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Str({(yyvsp[0].NodeToken)});output::printProductionRule(39);}
 #line 1468 "parser.tab.cpp"
     break;
 
   case 44: /* Exp: TRUE  */
-#line 143 "parser.ypp"
-                                                                                {(yyval.NodeExp) = new Node_Exp_Bool({(yyvsp[0].NodeToken)});output::printProductionRule(40);}
+#line 142 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[0].NodeToken));output::printProductionRule(40);}
 #line 1474 "parser.tab.cpp"
     break;
 
   case 45: /* Exp: FALSE  */
-#line 144 "parser.ypp"
-                                                                                {(yyval.NodeExp) = new Node_Exp_Bool({(yyvsp[0].NodeToken)});output::printProductionRule(41);}
+#line 143 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[0].NodeToken));output::printProductionRule(41);}
 #line 1480 "parser.tab.cpp"
     break;
 
   case 46: /* Exp: NOT Exp  */
-#line 145 "parser.ypp"
+#line 144 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[-1].NodeToken), (yyvsp[0].NodeExp));output::printProductionRule(42);}
 #line 1486 "parser.tab.cpp"
     break;
 
   case 47: /* Exp: Exp AND Exp  */
-#line 146 "parser.ypp"
+#line 145 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp));output::printProductionRule(43);}
 #line 1492 "parser.tab.cpp"
     break;
 
   case 48: /* Exp: Exp OR Exp  */
-#line 147 "parser.ypp"
+#line 146 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp));output::printProductionRule(44);}
 #line 1498 "parser.tab.cpp"
     break;
 
   case 49: /* Exp: Exp RELOP Exp  */
-#line 148 "parser.ypp"
+#line 147 "parser.ypp"
                                                                                 {(yyval.NodeExp) = new Node_Exp_Relop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(45);}
 #line 1504 "parser.tab.cpp"
     break;
 
   case 50: /* Exp: Exp EQUALITY Exp  */
-#line 149 "parser.ypp"
-                                                                              {(yyval.NodeExp) = new Node_Exp_Relop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(45);}
+#line 148 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Relop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(45);}
 #line 1510 "parser.tab.cpp"
     break;
 
   case 51: /* Exp: LPAREN Type RPAREN Exp  */
-#line 150 "parser.ypp"
-                                                                                               {(yyval.NodeExp) = new Node_Exp_Cast({(yyvsp[-3].NodeToken),(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(46);}
+#line 149 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Cast({(yyvsp[-3].NodeToken),(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(46);}
 #line 1516 "parser.tab.cpp"
     break;
 
   case 52: /* ExpBool: Exp  */
-#line 151 "parser.ypp"
-                                                                                {(yyval.NodeExp) = new Node_Exp_Bool({(yyvsp[0].NodeExp)});Log() << "ExpBoll <-- Exp" <<std::endl;}
+#line 150 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[0].NodeExp));}
 #line 1522 "parser.tab.cpp"
     break;
 
   case 53: /* OpenScopeBlock: %empty  */
-#line 153 "parser.ypp"
+#line 152 "parser.ypp"
                                                                                                 {Frame_class::getInstance().newFrame(FrameType::BLOCK);}
 #line 1528 "parser.tab.cpp"
     break;
 
   case 54: /* OpenScopeCont: %empty  */
-#line 154 "parser.ypp"
+#line 153 "parser.ypp"
                                                                                                {Frame_class::getInstance().newFrame(FrameType::LOOP);}
 #line 1534 "parser.tab.cpp"
     break;
 
   case 55: /* CloseScope: %empty  */
-#line 155 "parser.ypp"
+#line 154 "parser.ypp"
                                                                                             {Frame_class::getInstance().closeFrame();}
 #line 1540 "parser.tab.cpp"
     break;
@@ -1733,7 +1733,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 156 "parser.ypp"
+#line 155 "parser.ypp"
 
 
 int main(){

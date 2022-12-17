@@ -581,7 +581,19 @@ void Node_FuncDecl::newFuncFrame(Node_RetType *node_retType, Node_Token *node_id
 
 
 
-
+void StackEntry::addFuncParams(std::vector<Symbol> func_params){
+    int offset = next_offset-1;
+    for (auto iter = func_params.begin(); iter != func_params.end(); iter++){
+        if (frame_manager.find(iter->name) != nullptr){
+            throw DefExc(yylineno, iter->name);
+        }
+        auto entry = new symTableEntryID((*iter), DeclType::VAR, offset);
+        entries.insert({entry->symbol.name, entry});
+        entries_vector.push_back(entry);
+        offset--;
+    }
+    
+}
 
 
 

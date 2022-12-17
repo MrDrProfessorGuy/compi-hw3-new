@@ -272,8 +272,8 @@ public:
         next_offset = offset;
         if (frame_type == FrameType::FUNC){
             //next_offset = -dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list.size();
-            //Log(0) << "StackEntry:: offset=" << next_offset << std::endl;
-            addFuncParams(dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list);
+            Log() << "StackEntry:: offset=" << next_offset << std::endl;
+            //addFuncParams(dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list);
         }
         
     };
@@ -298,16 +298,7 @@ public:
         entries_vector.push_back(entry);
         //entry->print();
     }
-    void addFuncParams(std::vector<Symbol> func_params){
-        int offset = next_offset-1;
-        for (auto iter = func_params.begin(); iter != func_params.end(); iter++){
-            auto entry = new symTableEntryID((*iter), DeclType::VAR, offset);
-            entries.insert({entry->symbol.name, entry});
-            entries_vector.push_back(entry);
-            offset--;
-        }
-        
-    }
+    void addFuncParams(std::vector<Symbol> func_params);
     
     SymEntry find(std::string name) {
         Log() << "StackEntry::find(" << name <<")";
@@ -375,24 +366,25 @@ public:
         frames.back().newFuncEntry(Symbol(ret_type, name), func_params);
     }
     void newFrame(FrameType frame_type) {
-        Log(10) << "newFrame()" << std::endl;
+        Log() << "newFrame()" << std::endl;
         auto &curr_frame = frames.back();
         bool in_loop = (frame_type == FrameType::LOOP) || curr_frame.inside_loop;
         frames.emplace_back(frame_type, in_loop, curr_frame.scope_func_entry, curr_frame.next_offset);
     }
     void newFrame(FrameType frame_type, std::string scope_func) {
-        Log(10) << "newFrame(FUNC, " << scope_func << ")" << std::endl;
+        Log() << "newFrame(FUNC, " << scope_func << ")" << std::endl;
         assert(frame_type == FrameType::FUNC);
         SymEntry func_entry = find(scope_func);
         assert(func_entry != nullptr);
         frames.emplace_back(frame_type, false, func_entry);
+        frames.back().addFuncParams(dynamic_cast<symTableEntryFunc*>(func_entry)->parameter_list);
     }
     
     
     SymEntry find(std::string name) {
         Log() << "=========== frameManager::find(" << name <<") ";
         //Log() << frames.back();
-        for (auto iter = frames.rbegin(); iter != frames.rend(); ++iter) {
+        for (auto iter = frames.rbegin(); iter != frames.rend(); iter++) {
             SymEntry entry = iter->find(name);
             if (entry != nullptr) {
                 //entry->print();
