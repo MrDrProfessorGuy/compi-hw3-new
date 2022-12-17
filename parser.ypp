@@ -51,7 +51,9 @@ int yyerror(const char * message);
 %type <NodeCall> Call
 %type <NodeExpList> ExpList
 %type <NodeExp> Exp
-%type OpenScope
+%type <NodeExp> ExpBool
+%type OpenScopeBlock
+%type OpenScopeCont
 %type CloseScope
 %type Marker
 
@@ -100,7 +102,7 @@ int yyerror(const char * message);
     Program: Funcs                                                              {$$ = new Node_Program($1);output::printProductionRule(1);};
     Funcs: /*epsilon*/                                                          %empty {$$ = new Node_FuncsList({});output::printProductionRule(2);};
     Funcs: FuncDecl Funcs                                                       {$$ = new Node_FuncsList({$1,$2});output::printProductionRule(3);};
-    FuncDecl: RetType ID LPAREN Formals RPAREN {Node_FuncDecl::newFuncFrame($1,$2,$3,$4,$5);}  LBRACE Statements RBRACE         {$$ = new Node_FuncDecl($1,$2,$3,$4,$5,$7,$8,$9);output::printProductionRule(4);};
+    FuncDecl: RetType ID LPAREN Formals RPAREN {Node_FuncDecl::newFuncFrame($1,$2,$3,$4,$5);}  LBRACE Statements RBRACE         {$$ = new Node_FuncDecl($1,$2,$3,$4,$5,$7,$8,$9);Frame_class::getInstance().closeFrame();output::printProductionRule(4);};
     RetType: Type                                                               {$$ = new Node_RetType({$1}, ($1)->type);output::printProductionRule(5);};
     RetType:  VOID                                                              {$$ = new Node_RetType({$1}, Type::VOID);output::printProductionRule(6);};
     Formals: /*epsilon*/                                                        %empty {$$ = new Node_Formals();output::printProductionRule(7);};
@@ -110,16 +112,16 @@ int yyerror(const char * message);
     FormalDecl: Type ID                                                         {$$ = new Node_FormalDecl($1, $2);output::printProductionRule(11);};
     Statements: Statement                                                       {$$ = new Node_Statement({$1});output::printProductionRule(12);};
     Statements: Statements Statement                                            {$$ = new Node_Statement({$1, $2});output::printProductionRule(13);};
-    Statement: LBRACE Statements RBRACE                                         {$$ = new Node_Statement({$1, $2, $3});output::printProductionRule(14);};
+    Statement: LBRACE OpenScopeBlock Statements RBRACE                          {$$ = new Node_Statement({$1, $3, $4});output::printProductionRule(14);};
     Statement: Type ID SC                                                       {output::printProductionRule(15);$$ = new Node_Statement_ID_Decl($1, $2, $3);};
     Statement: Type ID ASSIGN Exp SC                                            {output::printProductionRule(16);$$ = new Node_Statement_ID_Decl($1, $2, $3, $4, $5);};
     Statement: ID ASSIGN Exp SC                                                 {$$ = new Node_Statement_ID_Assign($1,$2,$3,$4);output::printProductionRule(17);};
     Statement: Call SC                                                          {$$ = new Node_Statement_Call($1,$2);output::printProductionRule(18);};
     Statement: RETURN SC                                                        {$$ = new Node_Statement_Ret($1,$2);output::printProductionRule(19);};
     Statement: RETURN Exp SC                                                    {$$ = new Node_Statement_Ret($1,$2,$3);output::printProductionRule(20);};
-    Statement: IF LPAREN Exp RPAREN Statement %prec IF                          {$$ = new Node_Statement_IF($1,$2,$3,$4,$5);output::printProductionRule(21);};
-    Statement: IF LPAREN Exp RPAREN Statement ELSE Statement                    {$$ = new Node_Statement_IF($1,$2,$3,$4,$5,$6,$7);output::printProductionRule(22);};
-    Statement: WHILE LPAREN Exp RPAREN Statement                                {$$ = new Node_Statement_While($1,$2,$3,$4,$5);output::printProductionRule(23);};
+    Statement: IF LPAREN ExpBool RPAREN Statement %prec IF                          {$$ = new Node_Statement_IF($1,$2,$3,$4,$5);output::printProductionRule(21);};
+    Statement: IF LPAREN ExpBool RPAREN Statement ELSE Statement                    {$$ = new Node_Statement_IF($1,$2,$3,$4,$5,$6,$7);output::printProductionRule(22);};
+    Statement: WHILE LPAREN ExpBool RPAREN Statement                                {$$ = new Node_Statement_While($1,$2,$3,$4,$5);output::printProductionRule(23);};
     Statement: BREAK SC                                                         {$$ = new Node_Statement_LoopMod($1,$2);output::printProductionRule(24);};
     Statement: CONTINUE SC                                                      {$$ = new Node_Statement_LoopMod($1,$2);output::printProductionRule(25);};
     Call: ID LPAREN ExpList RPAREN                                              {$$ = new Node_Call($1,$2,$3,$4);output::printProductionRule(26);};
@@ -131,21 +133,22 @@ int yyerror(const char * message);
     Type: BOOL                                                                  {$$ = new Node_Exp_Type({$1}, Type::BOOL);output::printProductionRule(32);};
     Exp: LPAREN Exp RPAREN                                                      {$$ = new Node_Exp({$1,$2,$3},$2->type);output::printProductionRule(33);};
     Exp: Exp IF LPAREN Exp RPAREN ELSE Exp                                      {$$ = new Node_Exp_IfElse({$1,$2,$3,$4,$5,$6,$7});output::printProductionRule(34);};
-    Exp: Exp BINOP_ADD Exp                                                      {$$ = new Node_Exp_Binop({$1,$2,$3});output::printProductionRule(35);};
-    Exp: Exp BINOP_MUL Exp                                                      {$$ = new Node_Exp_Binop({$1,$2,$3});output::printProductionRule(35);};
-    Exp: ID                                                                     {$$ = new Node_Exp_ID($1);output::printProductionRule(36);$$ = new Node_Exp_ID($1);};
-    Exp: Call                                                                   {$$ = new Node_Exp_Call({$1});output::printProductionRule(37);};
-    Exp: NUM                                                                    {$$ = new Node_Exp_NUM({$1}, Type::INT);output::printProductionRule(38);};
-    Exp: NUM B                                                                  {$$ = new Node_Exp_NUM({$1}, Type::BYTE);output::printProductionRule(39);};
-    Exp: STRING                                                                 {$$ = new Node_Exp_Str({$1});output::printProductionRule(40);};
-    Exp: TRUE                                                                   {$$ = new Node_Exp_Bool({$1});output::printProductionRule(41);};
-    Exp: FALSE                                                                  {$$ = new Node_Exp_Bool({$1});output::printProductionRule(42);};
-    Exp: NOT Exp                                                                {$$ = new Node_Exp_Bool($1, $2);output::printProductionRule(43);};
-    Exp: Exp AND Exp                                                            {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(44);};
+    Exp: Exp BINOP_ADD Exp                                                      {$$ = new Node_Exp_Binop({$1,$2,$3});output::printProductionRule(34);};
+    Exp: Exp BINOP_MUL Exp                                                      {$$ = new Node_Exp_Binop({$1,$2,$3});output::printProductionRule(34);};
+    Exp: ID                                                                     {$$ = new Node_Exp_ID($1);output::printProductionRule(35);$$ = new Node_Exp_ID($1);};
+    Exp: Call                                                                   {$$ = new Node_Exp_Call({$1});output::printProductionRule(36);};
+    Exp: NUM                                                                    {$$ = new Node_Exp_NUM({$1}, Type::INT);output::printProductionRule(37);};
+    Exp: NUM B                                                                  {$$ = new Node_Exp_NUM({$1}, Type::BYTE);output::printProductionRule(38);};
+    Exp: STRING                                                                 {$$ = new Node_Exp_Str({$1});output::printProductionRule(39);};
+    Exp: TRUE                                                                   {$$ = new Node_Exp_Bool({$1});output::printProductionRule(40);};
+    Exp: FALSE                                                                  {$$ = new Node_Exp_Bool({$1});output::printProductionRule(41);};
+    Exp: NOT Exp                                                                {$$ = new Node_Exp_Bool($1, $2);output::printProductionRule(42);};
+    Exp: Exp AND Exp                                                            {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(43);};
     Exp: Exp OR Exp                                                             {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(44);};
-    Exp: Exp RELOP Exp                                                          {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(45);};
-    Exp: Exp EQUALITY Exp                                                       {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(45);};
-    Exp: LPAREN Type RPAREN Exp                                                 {$$ = new Node_Exp_Cast({$1,$2,$3,$4});output::printProductionRule(46);};
+    Exp: Exp RELOP Exp                                                          {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(44);};
+    Exp: Exp EQUALITY Exp                                                       {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(44);};
+    Exp: LPAREN Type RPAREN Exp                                                 {$$ = new Node_Exp_Cast({$1,$2,$3,$4});output::printProductionRule(45);};
+    ExpBool: Exp                                                                {$$ = new Node_Exp_Bool({$1});Log() << "ExpBoll <-- Exp" <<std::endl;};
 %%
 
 int main(){
@@ -158,7 +161,7 @@ int main(){
 		  //cout << yylineno << " " << tokentype_str[token] << " " << token_value.c_str() << endl;
 		  //flush(cout);
 	}
-	
+	Frame_class::getInstance().closeFrame();
 	return 0;
 }
 

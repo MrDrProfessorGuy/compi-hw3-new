@@ -57,7 +57,8 @@ const std::string output::rules[] = {
 };
 
 void output::printProductionRule(const int ruleno) {
-    std::cout << ruleno << ": " << output::rules[ruleno-1] << "\n";
+    Log() << ruleno << ": " << output::rules[ruleno-1] << "\n";
+    Log() << "===================== Reduced =====================" << std::endl;
 }
 
 
@@ -191,7 +192,7 @@ void symTableEntryID::print() const{
 
 void symTableEntryFunc::print() const{
     std::vector<string> a = typeToStrVector(paramsToTypeVec());
-    cout << symbol.name << " " << output::makeFunctionType(TypeToSTR(symbol.type),a);
+    cout << symbol.name << " " << output::makeFunctionType(TypeToSTR(symbol.type),a) << " " << offset << std::endl;
 }
 
 /// ############################################################################## ///
@@ -263,7 +264,6 @@ Node_Formals::Node_Formals(Node_FormalsList* node_formalsList): Generic_Node({no
 Node_Exp_ID::Node_Exp_ID(Node_Token* node_token) : Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()) {
     Log() << "Node_Exp_ID(" << node_token->value << ")"  << std::endl;
     auto entry = frame_manager.find(node_token->value);
-    Log() << "Node_Exp_ID() 2" << std::endl;
     if (entry == nullptr) {
         Log() << "Node_Exp_ID()::UndefExc" << std::endl;
         throw UndefExc(yylineno, node_token->value);
@@ -295,13 +295,19 @@ Node_Exp_Bool::Node_Exp_Bool(Node_Exp *node_exp1, Node_Token *node_AndOR, Node_E
     }
 }
 
+Node_Exp_Bool::Node_Exp_Bool(Node_Exp *node_exp) : Node_Exp({node_exp}, node_exp->type){
+    Log() << "ExpBool Reduced" << std::endl;
+    if (!node_exp->typeCheck({Type::BOOL})){
+        throw MismatchExc(yylineno);
+    }
+}
+
 /// ############################################################################## ///
 /// ############################    Node_Exp_Relop    ############################///
 /// ############################################################################## ///
 
 Node_Exp_Relop::Node_Exp_Relop(NodeVector children) : Node_Exp(children, Type::BOOL) {
     auto exp1 = (Node_Exp*)(children[0]);
-    auto binop = (Node_Token*)(children[1]);
     auto exp2 = (Node_Exp*)(children[2]);
     
     if (!exp1->typeCheck({Type::INT, Type::BYTE}) || !exp2->typeCheck({Type::INT, Type::BYTE})) {
@@ -325,7 +331,7 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen,
     func_id = Symbol(id_entry->symbol.type, id_entry->symbol.name);
     func_parameters = node_expList->exp_list;
     // check if func prototype matches func call
-    auto func_entry = std::dynamic_pointer_cast<symTableEntryFunc>(id_entry);
+    auto func_entry = dynamic_cast<symTableEntryFunc*>(id_entry);
     if (func_entry->parameter_list.size() != func_parameters.size()){
         throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
     }
@@ -347,7 +353,7 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen, Node_Token* n
     func_id = Symbol(id_entry->symbol.type, id_entry->symbol.name);
     func_parameters = {};
     // check if func prototype matches func call
-    auto func_entry = std::dynamic_pointer_cast<symTableEntryFunc>(id_entry);
+    auto func_entry = dynamic_cast<symTableEntryFunc*>(id_entry);
     if (func_entry->parameter_list.size() != func_parameters.size()){
         throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
     }
@@ -524,15 +530,20 @@ Node_FuncDecl::Node_FuncDecl(Node_RetType* node_retType, Node_Token* node_id,
                              : Generic_Node({node_retType, node_id, node_lparen, node_formals, node_rparen, node_lbrace, node_statement, node_rbrace}){
     
     
-    
-    
 }
 
 void Node_FuncDecl::newFuncFrame(Node_RetType *node_retType, Node_Token *node_id, Node_Token *node_lparen,
                              Node_Formals *node_formals, Node_Token * node_rparen){
-    
+    Log() << "newFuncFrame:: " << node_id->value << std::endl;
     frame_manager.newEntry(DeclType::FUNC, node_id->value, node_retType->type, node_formals->parameter_list);
+    
+    Log() << "newFuncFrame:: " << node_id->value << std::endl;
     frame_manager.newFrame(FrameType::FUNC, node_id->value);
+    
+    auto params = node_formals->parameter_list;
+    for (auto iter = params.begin(); iter != params.end(); iter++){
+        frame_manager.newEntry(DeclType::VAR, iter->name, iter->type);
+    }
     
 }
 

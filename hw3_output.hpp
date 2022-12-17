@@ -10,8 +10,13 @@
 #include <ostream>
 #include "iostream"
 
-static std::ostream& Log(){
-    return std::cout;
+static std::ostream dev_null{nullptr};
+#define Debug_LVL 0
+static std::ostream& Log(int level=90){
+    if (level <= Debug_LVL){
+        return std::cout << "Log()::";
+    }
+    return dev_null;
 }
 
 //using namespace std;
@@ -49,7 +54,7 @@ enum class DeclType {
     INVALID = 0, VAR, FUNC
 };
 enum class FrameType {
-    FUNC, LOOP, BLOCK, IF_ELSE, GLOBAL
+    FUNC, LOOP, BLOCK, IF_WHILE, GLOBAL
 };
 static std::vector<std::string> TypeToSTRVec = {"INVALID", "INT", "BYTE", "BOOL", "STRING", "VOID", "TOKEN"};
 static std::string TypeToSTR(Type type){
@@ -166,7 +171,7 @@ class Node_FuncsList;
 
 typedef Generic_Node* Node;
 typedef std::vector<Node> NodeVector;
-typedef std::shared_ptr<symTableEntry> SymEntry;
+typedef symTableEntry* SymEntry;
 typedef std::map<std::string, SymEntry> dict;
 typedef std::vector<StackEntry> frame;
 
@@ -266,8 +271,10 @@ public:
         scope_func_entry = scope_func;
         next_offset = offset;
         if (frame_type == FrameType::FUNC){
-            next_offset = std::dynamic_pointer_cast<symTableEntryFunc>(scope_func_entry)->parameter_list.size();
+            next_offset = -dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list.size();
+            //Log(0) << "StackEntry:: offset=" << next_offset << std::endl;
         }
+        
     };
     
     ~StackEntry() = default;
@@ -275,20 +282,20 @@ public:
     StackEntry(StackEntry const&) = default;
     
     void newIdEntry(Symbol sym) {
-        auto entry = std::make_shared<symTableEntryID>(sym, DeclType::VAR, next_offset);
+        auto entry = new symTableEntryID(sym, DeclType::VAR, next_offset);
         next_offset++;
         
         entries.insert({entry->symbol.name, entry});
         entries_vector.push_back(entry);
-        entry->print();
+        //entry->print();
     }
     void newFuncEntry(Symbol sym, std::vector<Symbol> func_params) {
-        auto entry = std::make_shared<symTableEntryFunc>(sym, DeclType::FUNC, next_offset, func_params);
-        next_offset++;
+        auto entry = new symTableEntryFunc(sym, DeclType::FUNC, 0, func_params);
+        //next_offset++;
         
         entries.insert({entry->symbol.name, entry});
         entries_vector.push_back(entry);
-        entry->print();
+        //entry->print();
     }
     
     SymEntry find(std::string name) {
@@ -313,7 +320,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const StackEntry &frame) {
         output::endScope();
         for (auto iter = frame.entries_vector.begin(); iter != frame.entries_vector.end(); iter++) {
-            os << *(iter->get()) << std::endl;
+            os << *(*iter);
         }
         return os;
     }
@@ -327,7 +334,7 @@ public:
     
     Frame_class() {
         Symbol sym(Type::INVALID, "Global");
-        SymEntry a = std::make_shared<symTableEntryID>(sym, DeclType::INVALID, 0);
+        SymEntry a = new symTableEntryID(sym, DeclType::INVALID, 0);
         frames.emplace_back(FrameType::GLOBAL, false, a);
     
         newEntry(DeclType::FUNC, "print", Type::VOID, {Symbol(Type::STRING, "str")});
@@ -341,6 +348,7 @@ public:
     
     
     void newEntry(DeclType entry_type, std::string name, Type id_type) {
+        Log(10) << "newEntry(ID, " << name << ")" << std::endl;
         SymEntry entry = find(name);
         if (entry != nullptr) {
             output::errorDef(yylineno, name);
@@ -349,7 +357,7 @@ public:
         frames.back().newIdEntry(Symbol(id_type, name));
     }
     void newEntry(DeclType entry_type, std::string name, Type ret_type, std::vector<Symbol> func_params) {
-        
+        Log(10) << "newEntry(FUNC, " << name << ")" << std::endl;
         SymEntry entry = find(name);
         if (entry != nullptr) {
             output::errorDef(yylineno, name);
@@ -358,32 +366,35 @@ public:
         frames.back().newFuncEntry(Symbol(ret_type, name), func_params);
     }
     void newFrame(FrameType frame_type) {
+        Log(10) << "newFrame()" << std::endl;
         auto &curr_frame = frames.back();
         bool in_loop = (frame_type == FrameType::LOOP) || curr_frame.inside_loop;
-        frames.emplace_back(frame_type, in_loop, curr_frame.scope_func_entry);
+        frames.emplace_back(frame_type, in_loop, curr_frame.scope_func_entry, curr_frame.next_offset);
     }
     void newFrame(FrameType frame_type, std::string scope_func) {
+        Log(10) << "newFrame(FUNC, " << scope_func << ")" << std::endl;
         assert(frame_type == FrameType::FUNC);
         SymEntry func_entry = find(scope_func);
         assert(func_entry != nullptr);
         frames.emplace_back(frame_type, false, func_entry);
     }
     SymEntry find(std::string name) {
-        Log() << "########### frameManager::find(" << name <<") ###########" << std::endl;
-        std::cout << frames.back();
+        Log() << "=========== frameManager::find(" << name <<") ";
+        //Log() << frames.back();
         for (auto iter = frames.rbegin(); iter != frames.rend(); ++iter) {
             SymEntry entry = iter->find(name);
             if (entry != nullptr) {
                 //entry->print();
-                Log() << "=========== frameManager::find(" << name <<") --> NO ===========" << std::endl;
+                Log() << " --> Yes ===========" << std::endl;
                 return entry;
             }
         }
-        Log() << "=========== frameManager::find(" << name <<") --> YES ===========" << std::endl;
+        Log() << " --> NO ===========" << std::endl;
         return nullptr;
     }
     
     void closeFrame(){
+        Log() << "--- Closing Frame ---" << std::endl;
         std::cout << frames.back();
         frames.pop_back();
     }
@@ -452,7 +463,6 @@ public:
     }
     
     ~Node_Token() = default;
-    
     Node_Token(Node_Token &) = delete;
 };
 
@@ -741,6 +751,7 @@ public:
     Node_Exp_Bool(Node_Token* node_token);
     Node_Exp_Bool(Node_Token* node_not, Node_Exp* node_exp);
     Node_Exp_Bool(Node_Exp* node_exp1, Node_Token* node_AndOR, Node_Exp* node_exp2);
+    Node_Exp_Bool(Node_Exp* node_exp);
     ~Node_Exp_Bool() = default;
     
     Node_Exp_Bool(Node_Exp_Bool &) = delete;
