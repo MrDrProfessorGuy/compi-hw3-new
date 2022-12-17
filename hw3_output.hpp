@@ -271,8 +271,9 @@ public:
         scope_func_entry = scope_func;
         next_offset = offset;
         if (frame_type == FrameType::FUNC){
-            next_offset = -dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list.size();
+            //next_offset = -dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list.size();
             //Log(0) << "StackEntry:: offset=" << next_offset << std::endl;
+            addFuncParams(dynamic_cast<symTableEntryFunc*>(scope_func_entry)->parameter_list);
         }
         
     };
@@ -296,6 +297,16 @@ public:
         entries.insert({entry->symbol.name, entry});
         entries_vector.push_back(entry);
         //entry->print();
+    }
+    void addFuncParams(std::vector<Symbol> func_params){
+        int offset = next_offset-1;
+        for (auto iter = func_params.begin(); iter != func_params.end(); iter++){
+            auto entry = new symTableEntryID((*iter), DeclType::VAR, offset);
+            entries.insert({entry->symbol.name, entry});
+            entries_vector.push_back(entry);
+            offset--;
+        }
+        
     }
     
     SymEntry find(std::string name) {
@@ -351,8 +362,7 @@ public:
         Log(10) << "newEntry(ID, " << name << ")" << std::endl;
         SymEntry entry = find(name);
         if (entry != nullptr) {
-            output::errorDef(yylineno, name);
-            exit(0);
+            throw DefExc(yylineno, name);
         }
         frames.back().newIdEntry(Symbol(id_type, name));
     }
@@ -360,8 +370,7 @@ public:
         Log(10) << "newEntry(FUNC, " << name << ")" << std::endl;
         SymEntry entry = find(name);
         if (entry != nullptr) {
-            output::errorDef(yylineno, name);
-            exit(0);
+            throw DefExc(yylineno, name);
         }
         frames.back().newFuncEntry(Symbol(ret_type, name), func_params);
     }
@@ -378,6 +387,8 @@ public:
         assert(func_entry != nullptr);
         frames.emplace_back(frame_type, false, func_entry);
     }
+    
+    
     SymEntry find(std::string name) {
         Log() << "=========== frameManager::find(" << name <<") ";
         //Log() << frames.back();

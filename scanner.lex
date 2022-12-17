@@ -107,6 +107,7 @@ token_string    (\"([^\n\r\"\\]|\\[rnt"\\])+\")
 {token_rbrace}    yylval.NodeToken = (new Node_Token(yytext));return RBRACE;
 {token_assign}    yylval.NodeToken = (new Node_Token(yytext));return ASSIGN;
 {token_relop}     yylval.NodeToken = (new Node_Token(yytext));return RELOP;
+{token_comma}     yylval.NodeToken = (new Node_Token(yytext));return COMMA;
 {token_equeality}    yylval.NodeToken = (new Node_Token(yytext));return EQUALITY;
 {token_binop_add}     yylval.NodeToken = (new Node_Token(yytext));return BINOP_ADD;
 {token_binop_mul}     yylval.NodeToken = (new Node_Token(yytext));return BINOP_MUL;

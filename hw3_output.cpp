@@ -7,6 +7,8 @@
 using namespace std;
 
 
+
+
 const std::string output::rules[] = {
         "Program -> Funcs",
         "Funcs -> epsilon",
@@ -179,7 +181,13 @@ bool valid_implicit_cast(Type to, Type from) {
 /// ############################################################################## ///
 /// ############################    Symbol    ############################///
 /// ############################################################################## ///
-
+std::vector<Type> symbolToTypeVec(std::vector<Symbol> func_params){
+    std::vector<Type> typeVec = {};
+    for (auto iter = func_params.begin(); iter != func_params.end(); iter++){
+        typeVec.push_back((*iter).type);
+    }
+    return typeVec;
+}
 
 
 /// ############################################################################## ///
@@ -338,11 +346,11 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen,
     // check if func prototype matches func call
     auto func_entry = dynamic_cast<symTableEntryFunc*>(id_entry);
     if (func_entry->parameter_list.size() != func_parameters.size()){
-        throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
+        throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
     }
     for (int index = 0; index < func_entry->parameter_list.size(); index++){
         if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
-            throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
+            throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
         }
     }
     
@@ -360,11 +368,11 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen, Node_Token* n
     // check if func prototype matches func call
     auto func_entry = dynamic_cast<symTableEntryFunc*>(id_entry);
     if (func_entry->parameter_list.size() != func_parameters.size()){
-        throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
+        throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
     }
     for (int index = 0; index < func_entry->parameter_list.size(); index++){
         if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
-            throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(func_parameters));
+            throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
         }
     }
     
@@ -402,7 +410,7 @@ Node_Statement_ID_Decl::Node_Statement_ID_Decl(Node_Exp* node_type,
     
     if (!valid_implicit_cast(node_type_p->type, node_exp->type)){
         //frame_manager.removeEntryFromCurrentScope(node_token->value);
-        output::errorMismatch(yylineno);
+        throw MismatchExc(yylineno);
     }
     Log() << "Node_Statement_ID_Decl:: " << TypeToSTR(node_type->type) << " " << node_token->value << std::endl;
 }
@@ -463,7 +471,7 @@ Node_Statement_Ret::Node_Statement_Ret(Node_Token* node_ret, Node_Exp* node_exp,
                                        Node_Token* node_sc)
                                        : Node_Statement({node_ret, node_exp, node_sc}) {
     
-    if (valid_implicit_cast(frame_manager.scopeRetType(), node_exp->type) == false){
+    if (frame_manager.scopeRetType() == Type::VOID || valid_implicit_cast(frame_manager.scopeRetType(), node_exp->type) == false){
         throw MismatchExc(yylineno);
     }
 }
@@ -545,11 +553,7 @@ void Node_FuncDecl::newFuncFrame(Node_RetType *node_retType, Node_Token *node_id
     Log() << "newFuncFrame:: " << node_id->value << std::endl;
     frame_manager.newFrame(FrameType::FUNC, node_id->value);
     
-    auto params = node_formals->parameter_list;
-    for (auto iter = params.begin(); iter != params.end(); iter++){
-        frame_manager.newEntry(DeclType::VAR, iter->name, iter->type);
-    }
-    
+
 }
 
 
