@@ -119,8 +119,8 @@ int yyerror(const char * message);
     Statement: Call SC                                                          {$$ = new Node_Statement_Call($1,$2);output::printProductionRule(18);};
     Statement: RETURN SC                                                        {$$ = new Node_Statement_Ret($1,$2);output::printProductionRule(19);};
     Statement: RETURN Exp SC                                                    {$$ = new Node_Statement_Ret($1,$2,$3);output::printProductionRule(20);};
-    Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope %prec IF                          {$$ = new Node_Statement_IF($1,$2,$4,$5,$6);output::printProductionRule(21);};
-    Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope                   {$$ = new Node_Statement_IF($1,$2,$4,$5,$6,$8,$10);output::printProductionRule(22);};
+    Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope %prec IF                          {$$ = new Node_Statement_IF($1,$2,$4,$5,$6);output::printProductionRule(21);};
+    Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope                   {$$ = new Node_Statement_IF($1,$2,$4,$5,$6,$8,$10);output::printProductionRule(22);};
     Statement: WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope                               {$$ = new Node_Statement_While($1,$2,$4,$5,$6);output::printProductionRule(23);};
     Statement: BREAK SC                                                         {$$ = new Node_Statement_LoopMod($1,$2);output::printProductionRule(24);};
     Statement: CONTINUE SC                                                      {$$ = new Node_Statement_LoopMod($1,$2);output::printProductionRule(25);};
@@ -145,13 +145,13 @@ int yyerror(const char * message);
     Exp: NOT Exp                                                                {$$ = new Node_Exp_Bool($1, $2);output::printProductionRule(42);};
     Exp: Exp AND Exp                                                            {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(43);};
     Exp: Exp OR Exp                                                             {$$ = new Node_Exp_Bool($1,$2,$3);output::printProductionRule(44);};
-    Exp: Exp RELOP Exp                                                          {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(44);};
-    Exp: Exp EQUALITY Exp                                                       {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(44);};
-    Exp: LPAREN Type RPAREN Exp                                                 {$$ = new Node_Exp_Cast({$1,$2,$3,$4});output::printProductionRule(45);};
+    Exp: Exp RELOP Exp                                                          {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(45);};
+    Exp: Exp EQUALITY Exp                                                     {$$ = new Node_Exp_Relop({$1,$2,$3});output::printProductionRule(45);};
+    Exp: LPAREN Type RPAREN Exp %prec EQUALITY                                                 {$$ = new Node_Exp_Cast({$1,$2,$3,$4});output::printProductionRule(46);};
     ExpBool: Exp                                                                {$$ = new Node_Exp_Bool({$1});Log() << "ExpBoll <-- Exp" <<std::endl;};
 
     OpenScopeBlock: /*epsilon*/                                                          %empty {Frame_class::getInstance().newFrame(FrameType::BLOCK);};
-    OpenScopeCont: /*epsilon*/                                                          %empty {Frame_class::getInstance().newFrame(FrameType::IF_WHILE);};
+    OpenScopeCont: /*epsilon*/                                                          %empty {Frame_class::getInstance().newFrame(FrameType::LOOP);};
     CloseScope: /*epsilon*/                                                          %empty {Frame_class::getInstance().closeFrame();};
 %%
 
@@ -159,17 +159,21 @@ int main(){
 	yydebug = 0;
 	int token;
 	Frame_class::getInstance();
-	while ((token = yyparse())) {
+    try {
+        while ((token = yyparse())) {
 		continue;
 	      //printf("%d %s %s\n", yylineno, token, yytext);
 		  //cout << yylineno << " " << tokentype_str[token] << " " << token_value.c_str() << endl;
 		  //flush(cout);
-	}
-
-    if (Frame_class::getInstance().mainDeclared() == false){
-        throw MainMissingExc();
+        }
+        if (Frame_class::getInstance().mainDeclared() == false){
+            throw MainMissingExc();
+        }
+        Frame_class::getInstance().closeFrame();
+    } catch (AppaException& exc) {
+        exit(0);
     }
-	Frame_class::getInstance().closeFrame();
+	
 	return 0;
 }
 

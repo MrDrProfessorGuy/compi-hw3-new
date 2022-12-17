@@ -214,8 +214,10 @@ Node_ExpList::Node_ExpList(Node_Exp* exp) : Generic_Node({exp}){
 
 Node_ExpList::Node_ExpList(Node_Exp* node_exp, Node_Token* node_token,
                            Node_ExpList* node_expList): Generic_Node({node_exp, node_token, node_expList}) {
+    Log() << "Node_ExpList():: 1" << std::endl;
     exp_list = node_expList->exp_list;
     exp_list.insert(exp_list.begin(), node_exp->type);
+    Log() << "Node_ExpList():: 2" << std::endl;
 }
 
 
@@ -227,8 +229,7 @@ Node_FormalDecl::Node_FormalDecl(Node_Exp* node_type, Node_Token* node_token_id)
                 : Generic_Node({node_type, node_token_id}), id_symbol(node_type->type, node_token_id->value){
     
     if (frame_manager.find(id_symbol.name) != nullptr){
-        output::errorDef(yylineno, id_symbol.name);
-        exit(0);
+        throw DefExc(yylineno, id_symbol.name);
     }
     
 }
@@ -274,11 +275,15 @@ Node_Formals::Node_Formals(Node_FormalsList* node_formalsList): Generic_Node({no
 /// ############################    Node_Exp_ID    ############################///
 /// ############################################################################## ///
 
-Node_Exp_ID::Node_Exp_ID(Node_Token* node_token) : Node_Exp(children, Type::INVALID), id(Symbol::invalidSymbol()) {
+Node_Exp_ID::Node_Exp_ID(Node_Token* node_token) : Node_Exp({node_token}, Type::INVALID), id(Symbol::invalidSymbol()) {
     Log() << "Node_Exp_ID(" << node_token->value << ")"  << std::endl;
     auto entry = frame_manager.find(node_token->value);
     if (entry == nullptr) {
         Log() << "Node_Exp_ID()::UndefExc" << std::endl;
+        throw UndefExc(yylineno, node_token->value);
+    }
+    
+    if (entry->entry_type != DeclType::VAR){
         throw UndefExc(yylineno, node_token->value);
     }
     Log() << "Node_Exp_ID()::PASSED" << std::endl;
@@ -322,12 +327,29 @@ Node_Exp_Bool::Node_Exp_Bool(Node_Exp *node_exp) : Node_Exp({node_exp}, node_exp
 Node_Exp_Relop::Node_Exp_Relop(NodeVector children) : Node_Exp(children, Type::BOOL) {
     auto exp1 = (Node_Exp*)(children[0]);
     auto exp2 = (Node_Exp*)(children[2]);
-    
+    Log() << "Node_Exp_Relop"<<std::endl;
     if (!exp1->typeCheck({Type::INT, Type::BYTE}) || !exp2->typeCheck({Type::INT, Type::BYTE})) {
         throw MismatchExc(yylineno);
     }
 
 }
+/// ############################################################################## ///
+/// ############################    Node_Exp_Relop    ############################///
+/// ############################################################################## ///
+
+
+Node_Exp_Cast::Node_Exp_Cast(NodeVector children) : Node_Exp(children, Type::INVALID) {
+    auto type_node = (Node_Exp_Type*)(children[1]);
+    auto exp = (Node_Exp*)(children[3]);
+    
+    Log() << "Node_Exp_Cast::to= "<< TypeToSTR(type_node->type) << ", from= "<< TypeToSTR(exp->type) << std::endl;
+    if (!valid_cast(type_node->type, exp->type)) {
+        Log() << "Node_Exp_Cast::MismatchExc"<<std::endl;
+        throw MismatchExc(yylineno);
+    }
+    set_type(type_node->type);
+}
+
 
 /// ############################################################################## ///
 /// ############################    Node_Call    ############################///
@@ -341,13 +363,16 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen,
     if (id_entry == nullptr || id_entry->entry_type != DeclType::FUNC){
         throw UndDefFuncExc(yylineno, node_id->value);
     }
+    
     func_id = Symbol(id_entry->symbol.type, id_entry->symbol.name);
     func_parameters = node_expList->exp_list;
     // check if func prototype matches func call
     auto func_entry = dynamic_cast<symTableEntryFunc*>(id_entry);
+    Log() << "Node_Call:: size1=" << func_entry->parameter_list.size() << "size2=" << func_parameters.size() <<std::endl;
     if (func_entry->parameter_list.size() != func_parameters.size()){
         throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
     }
+    
     for (int index = 0; index < func_entry->parameter_list.size(); index++){
         if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
             throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
@@ -370,11 +395,11 @@ Node_Call::Node_Call(Node_Token* node_id, Node_Token* node_lparen, Node_Token* n
     if (func_entry->parameter_list.size() != func_parameters.size()){
         throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
     }
-    for (int index = 0; index < func_entry->parameter_list.size(); index++){
+/*    for (int index = 0; index < func_entry->parameter_list.size(); index++){
         if (!valid_cast(func_entry->parameter_list[index].type, func_parameters[index])){
             throw PrototypeMismatchExc(yylineno, func_id.name, typeToStrVector(symbolToTypeVec(func_entry->parameter_list)));
         }
-    }
+    }*/
     
 }
 
@@ -427,15 +452,13 @@ Node_Statement_ID_Assign::Node_Statement_ID_Assign(Node_Token* node_id,
                                                    : Node_Statement({node_id, node_assign, node_exp, node_sc}) {
     
     auto id_entry = frame_manager.find(node_id->value);
-    if (id_entry == nullptr){
+    if (id_entry == nullptr || id_entry->entry_type != DeclType::VAR){
         throw UndefExc(yylineno, node_id->value);
     }
     
     if (!valid_implicit_cast(id_entry->symbol.type, node_exp->type)){
         throw MismatchExc(yylineno);
     }
-    
-    
 }
 
 

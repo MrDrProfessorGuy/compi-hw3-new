@@ -37,8 +37,8 @@ Grammar
    19          | Call SC
    20          | RETURN SC
    21          | RETURN Exp SC
-   22          | IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | BREAK SC
    26          | CONTINUE SC
@@ -167,10 +167,10 @@ Nonterminals, with rules where they appear
         on right: 22 23 24
     OpenScopeBlock (49)
         on left: 52
-        on right: 15
+        on right: 15 22 23
     OpenScopeCont (50)
         on left: 53
-        on right: 22 23 24
+        on right: 24
     CloseScope (51)
         on left: 54
         on right: 15 22 23 24
@@ -422,8 +422,8 @@ State 23
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | • BREAK SC
    26          | • CONTINUE SC
@@ -520,8 +520,8 @@ State 28
 
 State 29
 
-   22 Statement: IF • LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | IF • LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22 Statement: IF • LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | IF • LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
 
     LPAREN  shift, and go to state 50
 
@@ -547,8 +547,8 @@ State 31
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | • BREAK SC
    26          | • CONTINUE SC
@@ -853,13 +853,13 @@ State 49
 
 State 50
 
-   22 Statement: IF LPAREN • OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | IF LPAREN • OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
-   53 OpenScopeCont: ε •
+   22 Statement: IF LPAREN • OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | IF LPAREN • OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
+   52 OpenScopeBlock: ε •
 
-    $default  reduce using rule 53 (OpenScopeCont)
+    $default  reduce using rule 52 (OpenScopeBlock)
 
-    OpenScopeCont  go to state 73
+    OpenScopeBlock  go to state 73
 
 
 State 51
@@ -874,8 +874,8 @@ State 51
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | • BREAK SC
    26          | • CONTINUE SC
@@ -1303,8 +1303,8 @@ State 72
 
 State 73
 
-   22 Statement: IF LPAREN OpenScopeCont • ExpBool RPAREN Statement CloseScope
-   23          | IF LPAREN OpenScopeCont • ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22 Statement: IF LPAREN OpenScopeBlock • ExpBool RPAREN Statement CloseScope
+   23          | IF LPAREN OpenScopeBlock • ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    27 Call: • ID LPAREN ExpList RPAREN
    28     | • ID LPAREN RPAREN
    34 Exp: • LPAREN Exp RPAREN
@@ -1350,8 +1350,8 @@ State 74
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | • BREAK SC
    26          | • CONTINUE SC
@@ -1684,8 +1684,8 @@ State 90
 
 State 91
 
-   22 Statement: IF LPAREN OpenScopeCont ExpBool • RPAREN Statement CloseScope
-   23          | IF LPAREN OpenScopeCont ExpBool • RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22 Statement: IF LPAREN OpenScopeBlock ExpBool • RPAREN Statement CloseScope
+   23          | IF LPAREN OpenScopeBlock ExpBool • RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
 
     RPAREN  shift, and go to state 98
 
@@ -1739,10 +1739,6 @@ State 95
    49    | Exp • EQUALITY Exp
    50    | LPAREN Type RPAREN Exp •
 
-    IF         shift, and go to state 65
-    OR         shift, and go to state 66
-    AND        shift, and go to state 67
-    EQUALITY   shift, and go to state 68
     RELOP      shift, and go to state 69
     BINOP_ADD  shift, and go to state 70
     BINOP_MUL  shift, and go to state 71
@@ -1780,8 +1776,8 @@ State 97
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    24          | WHILE LPAREN OpenScopeCont ExpBool RPAREN • Statement CloseScope
    25          | • BREAK SC
@@ -1817,10 +1813,10 @@ State 98
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   22          | IF LPAREN OpenScopeCont ExpBool RPAREN • Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
-   23          | IF LPAREN OpenScopeCont ExpBool RPAREN • Statement CloseScope ELSE OpenScopeCont Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   22          | IF LPAREN OpenScopeBlock ExpBool RPAREN • Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
+   23          | IF LPAREN OpenScopeBlock ExpBool RPAREN • Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | • BREAK SC
    26          | • CONTINUE SC
@@ -1879,8 +1875,8 @@ State 102
 
 State 103
 
-   22 Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement • CloseScope
-   23          | IF LPAREN OpenScopeCont ExpBool RPAREN Statement • CloseScope ELSE OpenScopeCont Statement CloseScope
+   22 Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement • CloseScope
+   23          | IF LPAREN OpenScopeBlock ExpBool RPAREN Statement • CloseScope ELSE OpenScopeBlock Statement CloseScope
    54 CloseScope: ε •
 
     $default  reduce using rule 54 (CloseScope)
@@ -1932,8 +1928,8 @@ State 105
 
 State 106
 
-   22 Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope •
-   23          | IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope • ELSE OpenScopeCont Statement CloseScope
+   22 Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope •
+   23          | IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope • ELSE OpenScopeBlock Statement CloseScope
 
     ELSE  shift, and go to state 108
 
@@ -1963,12 +1959,12 @@ State 107
 
 State 108
 
-   23 Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE • OpenScopeCont Statement CloseScope
-   53 OpenScopeCont: ε •
+   23 Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE • OpenScopeBlock Statement CloseScope
+   52 OpenScopeBlock: ε •
 
-    $default  reduce using rule 53 (OpenScopeCont)
+    $default  reduce using rule 52 (OpenScopeBlock)
 
-    OpenScopeCont  go to state 109
+    OpenScopeBlock  go to state 109
 
 
 State 109
@@ -1980,9 +1976,9 @@ State 109
    19          | • Call SC
    20          | • RETURN SC
    21          | • RETURN Exp SC
-   22          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
-   23          | • IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope
-   23          | IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont • Statement CloseScope
+   22          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope
+   23          | • IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope
+   23          | IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock • Statement CloseScope
    24          | • WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope
    25          | • BREAK SC
    26          | • CONTINUE SC
@@ -2010,7 +2006,7 @@ State 109
 
 State 110
 
-   23 Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement • CloseScope
+   23 Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement • CloseScope
    54 CloseScope: ε •
 
     $default  reduce using rule 54 (CloseScope)
@@ -2020,6 +2016,6 @@ State 110
 
 State 111
 
-   23 Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope •
+   23 Statement: IF LPAREN OpenScopeBlock ExpBool RPAREN Statement CloseScope ELSE OpenScopeBlock Statement CloseScope •
 
     $default  reduce using rule 23 (Statement)

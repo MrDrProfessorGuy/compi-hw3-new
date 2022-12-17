@@ -406,6 +406,7 @@ public:
     
     void closeFrame(){
         Log() << "--- Closing Frame ---" << std::endl;
+        assert(frames.size() >= 1);
         std::cout << frames.back();
         frames.pop_back();
     }
@@ -737,17 +738,7 @@ class Node_Exp_Cast : public Node_Exp {
 public:
 /////////// Methods ///////////
     
-    Node_Exp_Cast(NodeVector children) : Node_Exp(children, Type::INT) {
-        //Todo: if bool, update type
-        auto type_node = (Node_Exp_Type*)(children[1]);
-        auto exp = (Node_Exp*)(children[3]);
-        
-        if (!type_node->typeCheck({Type::INT, Type::BYTE}) || !exp->typeCheck({Type::INT, Type::BYTE})) {
-            throw MismatchExc(yylineno);
-        }
-        
-        set_type(type_node->type);
-    }
+    Node_Exp_Cast(NodeVector children);
     
     ~Node_Exp_Cast() = default;
     
