@@ -224,6 +224,11 @@ Node_FormalDecl::Node_FormalDecl(Node_Exp* node_type, Node_Token* node_token_id)
     }
     
 }
+
+/// ############################################################################## ///
+/// ############################    Node_Program    ############################///
+/// ############################################################################## ///
+
 Node_Program::Node_Program(Node_FuncsList* node_funcsList):
     Generic_Node({node_funcsList}){
     

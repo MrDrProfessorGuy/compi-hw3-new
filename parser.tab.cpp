@@ -149,7 +149,24 @@ enum yysymbol_kind_t
   YYSYMBOL_LBRACE = 31,                    /* LBRACE  */
   YYSYMBOL_RBRACE = 32,                    /* RBRACE  */
   YYSYMBOL_YYACCEPT = 33,                  /* $accept  */
-  YYSYMBOL_OpenScopeBlock = 34             /* OpenScopeBlock  */
+  YYSYMBOL_Program = 34,                   /* Program  */
+  YYSYMBOL_Funcs = 35,                     /* Funcs  */
+  YYSYMBOL_FuncDecl = 36,                  /* FuncDecl  */
+  YYSYMBOL_37_1 = 37,                      /* $@1  */
+  YYSYMBOL_RetType = 38,                   /* RetType  */
+  YYSYMBOL_Formals = 39,                   /* Formals  */
+  YYSYMBOL_FormalsList = 40,               /* FormalsList  */
+  YYSYMBOL_FormalDecl = 41,                /* FormalDecl  */
+  YYSYMBOL_Statements = 42,                /* Statements  */
+  YYSYMBOL_Statement = 43,                 /* Statement  */
+  YYSYMBOL_Call = 44,                      /* Call  */
+  YYSYMBOL_ExpList = 45,                   /* ExpList  */
+  YYSYMBOL_Type = 46,                      /* Type  */
+  YYSYMBOL_Exp = 47,                       /* Exp  */
+  YYSYMBOL_ExpBool = 48,                   /* ExpBool  */
+  YYSYMBOL_OpenScopeBlock = 49,            /* OpenScopeBlock  */
+  YYSYMBOL_OpenScopeCont = 50,             /* OpenScopeCont  */
+  YYSYMBOL_CloseScope = 51                 /* CloseScope  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -475,18 +492,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  2
+#define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   0
+#define YYLAST   242
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  33
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  2
+#define YYNNTS  19
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  2
+#define YYNRULES  55
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  3
+#define YYNSTATES  112
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   287
@@ -536,9 +553,14 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,   102,   102
+       0,   102,   102,   103,   104,   105,   105,   106,   107,   108,
+     109,   110,   111,   112,   113,   114,   115,   116,   117,   118,
+     119,   120,   121,   122,   123,   124,   125,   126,   127,   128,
+     129,   130,   131,   132,   133,   134,   135,   136,   137,   138,
+     139,   140,   141,   142,   143,   144,   145,   146,   147,   148,
+     149,   150,   151,   153,   154,   155
 };
 #endif
 
@@ -558,7 +580,10 @@ static const char *const yytname[] =
   "VOID", "INT", "BYTE", "B", "BOOL", "TRUE", "FALSE", "RETURN", "WHILE",
   "BREAK", "CONTINUE", "SC", "COMMA", "LPAREN", "RPAREN", "ASSIGN", "IF",
   "ELSE", "OR", "AND", "EQUALITY", "RELOP", "BINOP_ADD", "BINOP_MUL",
-  "NOT", "LBRACE", "RBRACE", "$accept", "OpenScopeBlock", YY_NULLPTR
+  "NOT", "LBRACE", "RBRACE", "$accept", "Program", "Funcs", "FuncDecl",
+  "$@1", "RetType", "Formals", "FormalsList", "FormalDecl", "Statements",
+  "Statement", "Call", "ExpList", "Type", "Exp", "ExpBool",
+  "OpenScopeBlock", "OpenScopeCont", "CloseScope", YY_NULLPTR
 };
 
 static const char *
@@ -568,7 +593,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-1)
+#define YYPACT_NINF (-98)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -580,9 +605,20 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-static const yytype_int8 yypact[] =
+static const yytype_int16 yypact[] =
 {
-      -1,     0,    -1
+      30,   -98,   -98,   -98,   -98,     4,   -98,    30,     6,   -98,
+     -98,   -98,    12,    63,     5,   -98,    21,    52,   -98,    63,
+     -98,    28,   -98,    19,     2,   135,    42,    46,    55,    65,
+     -98,    82,   -98,    70,    88,   138,   158,    75,    84,   -98,
+     -98,   -98,   -98,   118,   158,   -98,    40,   -98,   -98,   -98,
+     -98,    19,   -98,   -98,   -98,   -14,   -98,    86,   179,   154,
+     -98,    87,   189,   -98,   -98,    89,   158,   158,   158,   158,
+     158,   158,   158,   158,   102,   -98,   158,   -98,   158,   -98,
+     158,   -98,   158,    74,   -12,    54,    50,    90,   -98,   207,
+      91,   100,   -98,   167,   -98,   207,   199,    19,    19,   -98,
+     -98,   104,   -98,   -98,   158,   -98,   108,   213,   -98,    19,
+     -98,   -98
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -590,19 +626,32 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1
+       3,     8,    32,    33,    34,     0,     2,     3,     0,     7,
+       1,     4,     0,     9,     0,    10,    11,     0,     5,     0,
+      13,     0,    12,     0,     0,     0,     0,     0,     0,     0,
+      53,     0,    14,     0,     0,     0,     0,    39,    41,    43,
+      44,    45,    21,     0,     0,    40,     0,    54,    26,    27,
+      54,     0,     6,    15,    20,     0,    29,     0,    30,     0,
+      42,     0,     0,    46,    22,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,    17,     0,    28,     0,    19,
+       0,    35,     0,    48,    47,    50,    49,    37,    38,    52,
+       0,     0,    55,     0,    31,    51,     0,     0,     0,    16,
+      18,     0,    55,    55,     0,    25,    23,    36,    54,     0,
+      55,    24
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -1,    -1
+     -98,   -98,   125,   -98,   -98,   -98,   -98,   116,   -98,    85,
+     -21,   -23,    66,    11,   -24,    72,   -98,   -48,   -97
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1
+       0,     5,     6,     7,    21,     8,    14,    15,    16,    31,
+      32,    45,    57,    34,    58,    90,    51,    72,    99
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -610,31 +659,100 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       2
+      33,    46,    73,    75,    10,   105,   106,    76,    33,    12,
+      53,     9,    59,   111,    68,    69,    70,    71,     9,    62,
+      63,    35,    24,    36,    17,    18,     2,     3,    33,     4,
+      17,    13,    25,    26,    27,    28,     1,     2,     3,    19,
+       4,    29,    83,    84,    85,    86,    87,    88,    89,    89,
+      30,    33,    93,    53,    61,    20,    95,    64,    96,    23,
+     109,    47,    65,    48,    66,    67,    68,    69,    70,    71,
+       2,     3,    49,     4,    33,    33,   102,   103,    70,    71,
+     107,    69,    70,    71,    50,    24,    33,    54,   110,     2,
+       3,    55,     4,    60,    35,    25,    26,    27,    28,    67,
+      68,    69,    70,    71,    29,    24,    77,    80,    82,     2,
+       3,    97,     4,    30,    52,    25,    26,    27,    28,    71,
+      98,    37,    38,    39,    29,     2,     3,   104,     4,    40,
+      41,   108,    11,    30,    92,    22,    74,    43,    37,    38,
+      39,    37,    38,    39,    94,    91,    40,    41,    44,    40,
+      41,     0,    42,     0,    43,     0,     0,    43,    56,     0,
+       0,    37,    38,    39,     0,    44,     0,     0,    44,    40,
+      41,    79,     0,     0,     0,     0,    65,    43,    66,    67,
+      68,    69,    70,    71,   100,     0,     0,     0,    44,    65,
+       0,    66,    67,    68,    69,    70,    71,    78,     0,     0,
+       0,    65,     0,    66,    67,    68,    69,    70,    71,    81,
+       0,    65,     0,    66,    67,    68,    69,    70,    71,   101,
+       0,    65,     0,    66,    67,    68,    69,    70,    71,    65,
+       0,    66,    67,    68,    69,    70,    71,    66,    67,    68,
+      69,    70,    71
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0
+      23,    25,    50,    17,     0,   102,   103,    21,    31,     3,
+      31,     0,    36,   110,    26,    27,    28,    29,     7,    43,
+      44,    19,     3,    21,    13,    20,     7,     8,    51,    10,
+      19,    19,    13,    14,    15,    16,     6,     7,     8,    18,
+      10,    22,    66,    67,    68,    69,    70,    71,    72,    73,
+      31,    74,    76,    74,    43,     3,    80,    17,    82,    31,
+     108,    19,    22,    17,    24,    25,    26,    27,    28,    29,
+       7,     8,    17,    10,    97,    98,    97,    98,    28,    29,
+     104,    27,    28,    29,    19,     3,   109,    17,   109,     7,
+       8,     3,    10,     9,    19,    13,    14,    15,    16,    25,
+      26,    27,    28,    29,    22,     3,    20,    20,    19,     7,
+       8,    20,    10,    31,    32,    13,    14,    15,    16,    29,
+      20,     3,     4,     5,    22,     7,     8,    23,    10,    11,
+      12,    23,     7,    31,    32,    19,    51,    19,     3,     4,
+       5,     3,     4,     5,    78,    73,    11,    12,    30,    11,
+      12,    -1,    17,    -1,    19,    -1,    -1,    19,    20,    -1,
+      -1,     3,     4,     5,    -1,    30,    -1,    -1,    30,    11,
+      12,    17,    -1,    -1,    -1,    -1,    22,    19,    24,    25,
+      26,    27,    28,    29,    17,    -1,    -1,    -1,    30,    22,
+      -1,    24,    25,    26,    27,    28,    29,    18,    -1,    -1,
+      -1,    22,    -1,    24,    25,    26,    27,    28,    29,    20,
+      -1,    22,    -1,    24,    25,    26,    27,    28,    29,    20,
+      -1,    22,    -1,    24,    25,    26,    27,    28,    29,    22,
+      -1,    24,    25,    26,    27,    28,    29,    24,    25,    26,
+      27,    28,    29
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    34,     0
+       0,     6,     7,     8,    10,    34,    35,    36,    38,    46,
+       0,    35,     3,    19,    39,    40,    41,    46,    20,    18,
+       3,    37,    40,    31,     3,    13,    14,    15,    16,    22,
+      31,    42,    43,    44,    46,    19,    21,     3,     4,     5,
+      11,    12,    17,    19,    30,    44,    47,    19,    17,    17,
+      19,    49,    32,    43,    17,     3,    20,    45,    47,    47,
+       9,    46,    47,    47,    17,    22,    24,    25,    26,    27,
+      28,    29,    50,    50,    42,    17,    21,    20,    18,    17,
+      20,    20,    19,    47,    47,    47,    47,    47,    47,    47,
+      48,    48,    32,    47,    45,    47,    47,    20,    20,    51,
+      17,    20,    43,    43,    23,    51,    51,    47,    23,    50,
+      43,    51
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    33,    34
+       0,    33,    34,    35,    35,    37,    36,    38,    38,    39,
+      39,    40,    40,    41,    42,    42,    43,    43,    43,    43,
+      43,    43,    43,    43,    43,    43,    43,    43,    44,    44,
+      45,    45,    46,    46,    46,    47,    47,    47,    47,    47,
+      47,    47,    47,    47,    47,    47,    47,    47,    47,    47,
+      47,    47,    48,    49,    50,    51
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0
+       0,     2,     1,     0,     2,     0,     9,     1,     1,     0,
+       1,     1,     3,     2,     1,     2,     5,     3,     5,     4,
+       2,     2,     3,     7,    11,     7,     2,     2,     4,     3,
+       1,     3,     1,     1,     1,     3,     7,     3,     3,     1,
+       1,     1,     2,     1,     1,     1,     2,     3,     3,     3,
+       3,     4,     1,     0,     0,     0
 };
 
 
@@ -1097,14 +1215,332 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 2: /* OpenScopeBlock: %empty  */
+  case 2: /* Program: Funcs  */
 #line 102 "parser.ypp"
-                                                                                       {Frame_class::getInstance().newFrame(FrameType::BLOCK);}
-#line 1104 "parser.tab.cpp"
+                                                                                {(yyval.ProgramNode) = new Node_Program((yyvsp[0].NodeFuncsList));output::printProductionRule(1);}
+#line 1222 "parser.tab.cpp"
+    break;
+
+  case 3: /* Funcs: %empty  */
+#line 103 "parser.ypp"
+                                                                                       {(yyval.NodeFuncsList) = new Node_FuncsList({});output::printProductionRule(2);}
+#line 1228 "parser.tab.cpp"
+    break;
+
+  case 4: /* Funcs: FuncDecl Funcs  */
+#line 104 "parser.ypp"
+                                                                                {(yyval.NodeFuncsList) = new Node_FuncsList({(yyvsp[-1].NodeFuncDecl),(yyvsp[0].NodeFuncsList)});output::printProductionRule(3);}
+#line 1234 "parser.tab.cpp"
+    break;
+
+  case 5: /* $@1: %empty  */
+#line 105 "parser.ypp"
+                                               {Node_FuncDecl::newFuncFrame((yyvsp[-4].NodeRetType),(yyvsp[-3].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeFormals),(yyvsp[0].NodeToken));}
+#line 1240 "parser.tab.cpp"
+    break;
+
+  case 6: /* FuncDecl: RetType ID LPAREN Formals RPAREN $@1 LBRACE Statements RBRACE  */
+#line 105 "parser.ypp"
+                                                                                                                                {(yyval.NodeFuncDecl) = new Node_FuncDecl((yyvsp[-8].NodeRetType),(yyvsp[-7].NodeToken),(yyvsp[-6].NodeToken),(yyvsp[-5].NodeFormals),(yyvsp[-4].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeStatement),(yyvsp[0].NodeToken));Frame_class::getInstance().closeFrame();output::printProductionRule(4);}
+#line 1246 "parser.tab.cpp"
+    break;
+
+  case 7: /* RetType: Type  */
+#line 106 "parser.ypp"
+                                                                                {(yyval.NodeRetType) = new Node_RetType({(yyvsp[0].NodeExp)}, ((yyvsp[0].NodeExp))->type);output::printProductionRule(5);}
+#line 1252 "parser.tab.cpp"
+    break;
+
+  case 8: /* RetType: VOID  */
+#line 107 "parser.ypp"
+                                                                                {(yyval.NodeRetType) = new Node_RetType({(yyvsp[0].NodeToken)}, Type::VOID);output::printProductionRule(6);}
+#line 1258 "parser.tab.cpp"
+    break;
+
+  case 9: /* Formals: %empty  */
+#line 108 "parser.ypp"
+                                                                                       {(yyval.NodeFormals) = new Node_Formals();output::printProductionRule(7);}
+#line 1264 "parser.tab.cpp"
+    break;
+
+  case 10: /* Formals: FormalsList  */
+#line 109 "parser.ypp"
+                                                                                {(yyval.NodeFormals) = new Node_Formals((yyvsp[0].NodeFormalsList));output::printProductionRule(8);}
+#line 1270 "parser.tab.cpp"
+    break;
+
+  case 11: /* FormalsList: FormalDecl  */
+#line 110 "parser.ypp"
+                                                                                {(yyval.NodeFormalsList) = new Node_FormalsList((yyvsp[0].NodeFormalDecl));output::printProductionRule(9);}
+#line 1276 "parser.tab.cpp"
+    break;
+
+  case 12: /* FormalsList: FormalDecl COMMA FormalsList  */
+#line 111 "parser.ypp"
+                                                                                {(yyval.NodeFormalsList) = new Node_FormalsList((yyvsp[-2].NodeFormalDecl), (yyvsp[-1].NodeToken), (yyvsp[0].NodeFormalsList));output::printProductionRule(10);}
+#line 1282 "parser.tab.cpp"
+    break;
+
+  case 13: /* FormalDecl: Type ID  */
+#line 112 "parser.ypp"
+                                                                                {(yyval.NodeFormalDecl) = new Node_FormalDecl((yyvsp[-1].NodeExp), (yyvsp[0].NodeToken));output::printProductionRule(11);}
+#line 1288 "parser.tab.cpp"
+    break;
+
+  case 14: /* Statements: Statement  */
+#line 113 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement({(yyvsp[0].NodeStatement)});output::printProductionRule(12);}
+#line 1294 "parser.tab.cpp"
+    break;
+
+  case 15: /* Statements: Statements Statement  */
+#line 114 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement({(yyvsp[-1].NodeStatement), (yyvsp[0].NodeStatement)});output::printProductionRule(13);}
+#line 1300 "parser.tab.cpp"
+    break;
+
+  case 16: /* Statement: LBRACE OpenScopeBlock Statements RBRACE CloseScope  */
+#line 115 "parser.ypp"
+                                                                                           {(yyval.NodeStatement) = new Node_Statement({(yyvsp[-4].NodeToken), (yyvsp[-2].NodeStatement), (yyvsp[-1].NodeToken)});output::printProductionRule(14);}
+#line 1306 "parser.tab.cpp"
+    break;
+
+  case 17: /* Statement: Type ID SC  */
+#line 116 "parser.ypp"
+                                                                                {output::printProductionRule(15);(yyval.NodeStatement) = new Node_Statement_ID_Decl((yyvsp[-2].NodeExp), (yyvsp[-1].NodeToken), (yyvsp[0].NodeToken));}
+#line 1312 "parser.tab.cpp"
+    break;
+
+  case 18: /* Statement: Type ID ASSIGN Exp SC  */
+#line 117 "parser.ypp"
+                                                                                {output::printProductionRule(16);(yyval.NodeStatement) = new Node_Statement_ID_Decl((yyvsp[-4].NodeExp), (yyvsp[-3].NodeToken), (yyvsp[-2].NodeToken), (yyvsp[-1].NodeExp), (yyvsp[0].NodeToken));}
+#line 1318 "parser.tab.cpp"
+    break;
+
+  case 19: /* Statement: ID ASSIGN Exp SC  */
+#line 118 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement_ID_Assign((yyvsp[-3].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeExp),(yyvsp[0].NodeToken));output::printProductionRule(17);}
+#line 1324 "parser.tab.cpp"
+    break;
+
+  case 20: /* Statement: Call SC  */
+#line 119 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement_Call((yyvsp[-1].NodeCall),(yyvsp[0].NodeToken));output::printProductionRule(18);}
+#line 1330 "parser.tab.cpp"
+    break;
+
+  case 21: /* Statement: RETURN SC  */
+#line 120 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement_Ret((yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(19);}
+#line 1336 "parser.tab.cpp"
+    break;
+
+  case 22: /* Statement: RETURN Exp SC  */
+#line 121 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement_Ret((yyvsp[-2].NodeToken),(yyvsp[-1].NodeExp),(yyvsp[0].NodeToken));output::printProductionRule(20);}
+#line 1342 "parser.tab.cpp"
+    break;
+
+  case 23: /* Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope  */
+#line 122 "parser.ypp"
+                                                                                                             {(yyval.NodeStatement) = new Node_Statement_IF((yyvsp[-6].NodeToken),(yyvsp[-5].NodeToken),(yyvsp[-3].NodeExp),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeStatement));output::printProductionRule(21);}
+#line 1348 "parser.tab.cpp"
+    break;
+
+  case 24: /* Statement: IF LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope ELSE OpenScopeCont Statement CloseScope  */
+#line 123 "parser.ypp"
+                                                                                                                                     {(yyval.NodeStatement) = new Node_Statement_IF((yyvsp[-10].NodeToken),(yyvsp[-9].NodeToken),(yyvsp[-7].NodeExp),(yyvsp[-6].NodeToken),(yyvsp[-5].NodeStatement),(yyvsp[-3].NodeToken),(yyvsp[-1].NodeStatement));output::printProductionRule(22);}
+#line 1354 "parser.tab.cpp"
+    break;
+
+  case 25: /* Statement: WHILE LPAREN OpenScopeCont ExpBool RPAREN Statement CloseScope  */
+#line 124 "parser.ypp"
+                                                                                                            {(yyval.NodeStatement) = new Node_Statement_While((yyvsp[-6].NodeToken),(yyvsp[-5].NodeToken),(yyvsp[-3].NodeExp),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeStatement));output::printProductionRule(23);}
+#line 1360 "parser.tab.cpp"
+    break;
+
+  case 26: /* Statement: BREAK SC  */
+#line 125 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement_LoopMod((yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(24);}
+#line 1366 "parser.tab.cpp"
+    break;
+
+  case 27: /* Statement: CONTINUE SC  */
+#line 126 "parser.ypp"
+                                                                                {(yyval.NodeStatement) = new Node_Statement_LoopMod((yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(25);}
+#line 1372 "parser.tab.cpp"
+    break;
+
+  case 28: /* Call: ID LPAREN ExpList RPAREN  */
+#line 127 "parser.ypp"
+                                                                                {(yyval.NodeCall) = new Node_Call((yyvsp[-3].NodeToken),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeExpList),(yyvsp[0].NodeToken));output::printProductionRule(26);}
+#line 1378 "parser.tab.cpp"
+    break;
+
+  case 29: /* Call: ID LPAREN RPAREN  */
+#line 128 "parser.ypp"
+                                                                                {(yyval.NodeCall) = new Node_Call((yyvsp[-2].NodeToken),(yyvsp[-1].NodeToken),(yyvsp[0].NodeToken));output::printProductionRule(27);}
+#line 1384 "parser.tab.cpp"
+    break;
+
+  case 30: /* ExpList: Exp  */
+#line 129 "parser.ypp"
+                                                                                {(yyval.NodeExpList) = new Node_ExpList((yyvsp[0].NodeExp));output::printProductionRule(28);}
+#line 1390 "parser.tab.cpp"
+    break;
+
+  case 31: /* ExpList: Exp COMMA ExpList  */
+#line 130 "parser.ypp"
+                                                                                {(yyval.NodeExpList) = new Node_ExpList((yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExpList));output::printProductionRule(29);}
+#line 1396 "parser.tab.cpp"
+    break;
+
+  case 32: /* Type: INT  */
+#line 131 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Type({(yyvsp[0].NodeToken)}, Type::INT);output::printProductionRule(30);}
+#line 1402 "parser.tab.cpp"
+    break;
+
+  case 33: /* Type: BYTE  */
+#line 132 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Type({(yyvsp[0].NodeToken)}, Type::BYTE);output::printProductionRule(31);}
+#line 1408 "parser.tab.cpp"
+    break;
+
+  case 34: /* Type: BOOL  */
+#line 133 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Type({(yyvsp[0].NodeToken)}, Type::BOOL);output::printProductionRule(32);}
+#line 1414 "parser.tab.cpp"
+    break;
+
+  case 35: /* Exp: LPAREN Exp RPAREN  */
+#line 134 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp({(yyvsp[-2].NodeToken),(yyvsp[-1].NodeExp),(yyvsp[0].NodeToken)},(yyvsp[-1].NodeExp)->type);output::printProductionRule(33);}
+#line 1420 "parser.tab.cpp"
+    break;
+
+  case 36: /* Exp: Exp IF LPAREN Exp RPAREN ELSE Exp  */
+#line 135 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_IfElse({(yyvsp[-6].NodeExp),(yyvsp[-5].NodeToken),(yyvsp[-4].NodeToken),(yyvsp[-3].NodeExp),(yyvsp[-2].NodeToken),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(34);}
+#line 1426 "parser.tab.cpp"
+    break;
+
+  case 37: /* Exp: Exp BINOP_ADD Exp  */
+#line 136 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Binop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(34);}
+#line 1432 "parser.tab.cpp"
+    break;
+
+  case 38: /* Exp: Exp BINOP_MUL Exp  */
+#line 137 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Binop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(34);}
+#line 1438 "parser.tab.cpp"
+    break;
+
+  case 39: /* Exp: ID  */
+#line 138 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_ID((yyvsp[0].NodeToken));output::printProductionRule(35);(yyval.NodeExp) = new Node_Exp_ID((yyvsp[0].NodeToken));}
+#line 1444 "parser.tab.cpp"
+    break;
+
+  case 40: /* Exp: Call  */
+#line 139 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Call({(yyvsp[0].NodeCall)});output::printProductionRule(36);}
+#line 1450 "parser.tab.cpp"
+    break;
+
+  case 41: /* Exp: NUM  */
+#line 140 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_NUM({(yyvsp[0].NodeToken)}, Type::INT);output::printProductionRule(37);}
+#line 1456 "parser.tab.cpp"
+    break;
+
+  case 42: /* Exp: NUM B  */
+#line 141 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_NUM({(yyvsp[-1].NodeToken)}, Type::BYTE);output::printProductionRule(38);}
+#line 1462 "parser.tab.cpp"
+    break;
+
+  case 43: /* Exp: STRING  */
+#line 142 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Str({(yyvsp[0].NodeToken)});output::printProductionRule(39);}
+#line 1468 "parser.tab.cpp"
+    break;
+
+  case 44: /* Exp: TRUE  */
+#line 143 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool({(yyvsp[0].NodeToken)});output::printProductionRule(40);}
+#line 1474 "parser.tab.cpp"
+    break;
+
+  case 45: /* Exp: FALSE  */
+#line 144 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool({(yyvsp[0].NodeToken)});output::printProductionRule(41);}
+#line 1480 "parser.tab.cpp"
+    break;
+
+  case 46: /* Exp: NOT Exp  */
+#line 145 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[-1].NodeToken), (yyvsp[0].NodeExp));output::printProductionRule(42);}
+#line 1486 "parser.tab.cpp"
+    break;
+
+  case 47: /* Exp: Exp AND Exp  */
+#line 146 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp));output::printProductionRule(43);}
+#line 1492 "parser.tab.cpp"
+    break;
+
+  case 48: /* Exp: Exp OR Exp  */
+#line 147 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool((yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp));output::printProductionRule(44);}
+#line 1498 "parser.tab.cpp"
+    break;
+
+  case 49: /* Exp: Exp RELOP Exp  */
+#line 148 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Relop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(44);}
+#line 1504 "parser.tab.cpp"
+    break;
+
+  case 50: /* Exp: Exp EQUALITY Exp  */
+#line 149 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Relop({(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(44);}
+#line 1510 "parser.tab.cpp"
+    break;
+
+  case 51: /* Exp: LPAREN Type RPAREN Exp  */
+#line 150 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Cast({(yyvsp[-3].NodeToken),(yyvsp[-2].NodeExp),(yyvsp[-1].NodeToken),(yyvsp[0].NodeExp)});output::printProductionRule(45);}
+#line 1516 "parser.tab.cpp"
+    break;
+
+  case 52: /* ExpBool: Exp  */
+#line 151 "parser.ypp"
+                                                                                {(yyval.NodeExp) = new Node_Exp_Bool({(yyvsp[0].NodeExp)});Log() << "ExpBoll <-- Exp" <<std::endl;}
+#line 1522 "parser.tab.cpp"
+    break;
+
+  case 53: /* OpenScopeBlock: %empty  */
+#line 153 "parser.ypp"
+                                                                                                {Frame_class::getInstance().newFrame(FrameType::BLOCK);}
+#line 1528 "parser.tab.cpp"
+    break;
+
+  case 54: /* OpenScopeCont: %empty  */
+#line 154 "parser.ypp"
+                                                                                               {Frame_class::getInstance().newFrame(FrameType::IF_WHILE);}
+#line 1534 "parser.tab.cpp"
+    break;
+
+  case 55: /* CloseScope: %empty  */
+#line 155 "parser.ypp"
+                                                                                            {Frame_class::getInstance().closeFrame();}
+#line 1540 "parser.tab.cpp"
     break;
 
 
-#line 1108 "parser.tab.cpp"
+#line 1544 "parser.tab.cpp"
 
       default: break;
     }
@@ -1297,7 +1733,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 155 "parser.ypp"
+#line 156 "parser.ypp"
 
 
 int main(){
@@ -1310,6 +1746,10 @@ int main(){
 		  //cout << yylineno << " " << tokentype_str[token] << " " << token_value.c_str() << endl;
 		  //flush(cout);
 	}
+
+    if (Frame_class::getInstance().mainDeclared() == false){
+        throw MainMissingExc();
+    }
 	Frame_class::getInstance().closeFrame();
 	return 0;
 }

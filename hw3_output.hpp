@@ -148,7 +148,7 @@ public:
 
 class MainMissingExc : public AppaException {
 public:
-    MainMissingExc(long lineno) : AppaException(lineno) {
+    MainMissingExc() : AppaException(0) {
         output::errorMainMissing();
     };
 };
@@ -408,6 +408,18 @@ public:
     }
     Type scopeRetType() {
         return frames.back().scope_func_entry->symbol.type;
+    }
+    
+    bool mainDeclared(){
+        
+        symTableEntryFunc* main_entry = dynamic_cast<symTableEntryFunc*>(find("main"));
+        if (main_entry == nullptr){
+            return false;
+        }
+        if (main_entry->symbol.type != Type::VOID || main_entry->parameter_list.size() != 0){
+            return false;
+        }
+        return true;
     }
 };
 
